@@ -1,7 +1,7 @@
 ---
 title: "Introduction"
 date: 01-07-2020
-output: pdf_document
+output: html_document
 ---
 
 R will be the main computer language we will be using.
