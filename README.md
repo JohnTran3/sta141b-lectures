@@ -24,7 +24,7 @@
 - [Piazza](https://piazza.com/ucdavis/winter2020/sta141b) for discussion
 - [GitHub](https://github.com/UCDavis-STA-141B-Winter-2020) for lecture notes
 
-*Important*: submit your GitHub username to https://forms.gle/aRUUJW54Wd3vocAQ7
+*Important*: submit your GitHub username to https://forms.gle/E8AiF7i1xTVEFshM7
 
 
 ## Tentative Schedule
