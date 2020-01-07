@@ -1,7 +1,9 @@
 ---
 title: "Introduction"
-date: 01-07-2020
-output: html_document
+date: "01-07-2020"
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 R will be the main computer language we will be using.
