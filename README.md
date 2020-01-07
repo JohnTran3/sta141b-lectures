@@ -1,4 +1,4 @@
-# STA 141B Winter 2020
+# STA 141B Data & Web Technologies for Data Analysis
 
 ## People
 
@@ -71,7 +71,7 @@ Each group will be 3 to 4 people. Details of project will be announced later.
 
 - J. Bryan, Data wrangling, exploration, and analysis with R (https://stat545.com/)
 - J. Bryan, the STAT 545 TAs, J. Hester, Happy Git and GitHub for the useR (https://happygitwithr.com/)
-- G. Grolemund and H. Wickhom, R for Data Science (https://r4ds.had.co.nz/)
+- G. Grolemund and H. Wickham, R for Data Science (https://r4ds.had.co.nz/)
 - H. Wickham, Advanced R (https://adv-r.hadley.nz/)
 <!-- - M. Grosser, H. Bumann and H. Wickham Advanced R Solutions (https://advanced-r-solutions.rbind.io/) -->
 - R. Peng, S. Kross, and B. Anderson, Mastering Software Development in R (https://bookdown.org/rdpeng/RProgDA/)
