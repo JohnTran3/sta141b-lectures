@@ -8,8 +8,8 @@
 - Office hour: Tuesday and Wednesday 2:00 - 3:00pm  (or by appointment)
 
 - TA: Franco Liang (frnliang@ucdavis.edu)
-- Meeting time: 5:10 - 6:00 PM, W or 6:10 - 7:00 PM, W
-- Office hour: to be announced
+- Meeting time: 5:10 - 6:00 PM, W (Wellman 1) or 6:10 - 7:00 PM, W (Young 184)
+- Office hour: 4:00 - 6:00 PM, R (MSB 1117)
 
 ## Material
 
