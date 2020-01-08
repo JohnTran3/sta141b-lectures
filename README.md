@@ -5,7 +5,7 @@
 - Instructor: Randy Lai (rcslai@ucdavis.edu)
 - Meeting time: 9:00 - 10:20 AM, TR
 - Location: Wellman Hall 216
-- Office hour: Tuesday and Wednesday 2:00 - 3:00pm  (or by appointment)
+- Office hour: MSB 4111 Tuesday and Wednesday 2:00 - 3:00pm  (or by appointment)
 
 - TA: Franco Liang (frnliang@ucdavis.edu)
 - Meeting time: 5:10 - 6:00 PM, W (Wellman 1) or 6:10 - 7:00 PM, W (Young 184)
