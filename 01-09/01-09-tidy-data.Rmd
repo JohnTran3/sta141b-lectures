@@ -94,9 +94,13 @@ select(flights, -contains("dep"))
 select(flights, matches("^(arr|dep)_"))
 # of course, we could select everything
 select(flights, everything())
+# move air_time to the front
+select(flights, air_time, everything())
 ```
 
-PS: if you just need a single variable, you could use `pull`.
+Remarks:
+- if you just need a single variable, you could use `pull`.
+- you could use `rename` to rename columns
 
 ## `filter`: picks cases based on their values
 
@@ -296,14 +300,51 @@ flights %>% sample_n(5)
 flights %>% top_n(3, air_time)
 ```
 
-## `_if` and `_at`
+## Some variations of verbs
+
+`tidyverse` also ships with some variations of verbs which could be useful.
+
+```{r}
+# only select columns which are numerical
+flights %>% select_if(is.numeric)
+flights %>% select_if(~is.numeric(.))
+flights %>% select_if(~!is.numeric(.))
+flights %>% rename_if(is.numeric, toupper)
+
+flights %>% mutate_if(
+  ~is.numeric(.) && is.double(.),
+  round
+  )
+
+flights %>% filter_if(
+  ~is.numeric(.), 
+  any_vars(. != 2013))
+```
+
+```{r}
+flights %>% rename_at(
+  vars(starts_with("arr_")), 
+  ~str_replace(., "arr_", "arrival_"))
 
 
+flights %>% filter_at(
+  vars(ends_with("_time"), -air_time), 
+  all_vars(. >= 1200))
+```
 
 ## Two-table verbs
 
 
+## Tidy Data
+```{r}
+library(tidyr)
+data(relig_income, package = "tidyr")
+```
 
+
+```{r}
+
+```
 
 ## Reference:
 
