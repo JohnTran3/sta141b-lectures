@@ -49,7 +49,7 @@ So what is tidyverse?
 
 ## Obtain some Data
 
-First of all, we need some data to work with. If the data is stored in a `cvs`,
+First of all, we need some data to work with. If the data is stored in a `csv`,
 
 ```{r, eval = FALSE}
 flights <- read_csv("flights.csv")
