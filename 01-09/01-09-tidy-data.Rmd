@@ -65,7 +65,7 @@ The datasets are actually obtained from the R package `nycflights13`
 
 ```{r}
 # Airline on-time data for all flights departing NYC in 2013.
-data(flights, package = "nycflights13")
+library(nycflights13)
 ```
 
 ## `select`: picks variables based on their names.
@@ -121,27 +121,31 @@ Very often, we will need to use multiple `dplyr` verbs, for example
 ```{r}
 filter(select(flights, origin, arr_time), origin == "JFK")
 # the pipe operator %>% increases readability
-flights %>% 
+flights %>%
   select(origin, air_time) %>%
   filter(origin == "JFK")
 ```
 
 ```{r}
 # a few more examples
-flights %>% 
+flights %>%
   select(origin, air_time) %>%
   filter(origin == "JFK", air_time < mean(air_time, na.rm = TRUE))
 
-mean_air_time <- flights %>% pull(air_time) %>% mean(na.rm = TRUE)
-flights %>% 
+mean_air_time <- flights %>%
+  pull(air_time) %>%
+  mean(na.rm = TRUE)
+flights %>%
   select(origin, air_time) %>%
   filter(origin == "JFK", air_time > mean_air_time)
 
 # what if there is a name colision?
-air_time <- flights %>% pull(air_time) %>% mean(na.rm = TRUE)
-flights %>% 
+air_time <- flights %>%
+  pull(air_time) %>%
+  mean(na.rm = TRUE)
+flights %>%
   select(origin, air_time) %>%
-  filter(origin == "JFK", air_time > {{air_time}})
+  filter(origin == "JFK", air_time > {{ air_time }})
 
 # you could use . to represent the working data frame
 flights %>%
@@ -153,9 +157,11 @@ In fact, this pipe operator is exported from the package `magrittr` and could be
 ```{r}
 x1 <- 1:5
 x2 <- 2:6
-sqrt(sum((x2-x1)^2))
+sqrt(sum((x2 - x1)^2))
 
-(x2-x1)^2 %>% sum %>% sqrt
+(x2 - x1)^2 %>%
+  sum() %>%
+  sqrt()
 ```
 
 ```{r}
@@ -226,23 +232,28 @@ some_data2 %>% mutate(diff1 = value - lag(value), diff2 = lead(value) - value)
 ### Conditional mutation
 
 ```{r}
-flights %>% transmute(arr_delay, 
-                      status = if_else(arr_delay > 0, "delayed", "on time"))
-flight_distances <- flights %>% 
-  transmute(distance, 
-            distance_type = case_when(distance < 500 ~ "short", 
-                                      distance < 1000 ~ "mid", 
-                                      TRUE ~ "long" ))
+flights %>% transmute(arr_delay,
+  status = if_else(arr_delay > 0, "delayed", "on time")
+)
+flight_distances <- flights %>%
+  transmute(distance,
+    distance_type = case_when(
+      distance < 500 ~ "short",
+      distance < 1000 ~ "mid",
+      TRUE ~ "long"
+    )
+  )
 flight_distances
 ```
 
 ### `recode` values
 
 ```{r}
-flight_distances %>% mutate(distance_type = recode(distance_type, 
-                                                   long = "long-distance",
-                                                   mid = "mid-distance",
-                                                   short = "short-distance"))
+flight_distances %>% mutate(distance_type = recode(distance_type,
+  long = "long-distance",
+  mid = "mid-distance",
+  short = "short-distance"
+))
 ```
 
 
@@ -257,13 +268,17 @@ flights %>% arrange(desc(dep_delay))
 
 
 ```{r}
-flights %>% group_by(tailnum) %>% summarize()
-flights %>% group_by(tailnum) %>% tally() # shorthand
-flights %>% count(tailnum)  # another shorthand
+flights %>%
+  group_by(tailnum) %>%
+  summarize()
+flights %>%
+  group_by(tailnum) %>%
+  tally() # shorthand
+flights %>% count(tailnum) # another shorthand
 ```
 
 ```{r}
-flights %>% 
+flights %>%
   group_by(tailnum) %>%
   summarize(
     count = n(),
@@ -271,7 +286,7 @@ flights %>%
     delay = mean(arr_delay, na.rm = TRUE)
   )
 
-flights %>% 
+flights %>%
   group_by(dest) %>%
   summarize(
     planes = n_distinct(tailnum),
@@ -285,10 +300,10 @@ flights %>%
   summarize(flights = n()))
 
 (per_month <- per_day %>%
-    summarize(flights = sum(flights)))
+  summarize(flights = sum(flights)))
 
 (per_year <- per_month %>%
-    summarize(flights = sum(flights)))
+  summarize(flights = sum(flights)))
 ```
 
 ## Other useful functions
@@ -307,32 +322,54 @@ flights %>% top_n(3, air_time)
 ```{r}
 # only select columns which are numerical
 flights %>% select_if(is.numeric)
-flights %>% select_if(~is.numeric(.))
-flights %>% select_if(~!is.numeric(.))
+flights %>% select_if(~ is.numeric(.))
+flights %>% select_if(~ !is.numeric(.))
 flights %>% rename_if(is.numeric, toupper)
 
 flights %>% mutate_if(
-  ~is.numeric(.) && is.double(.),
+  ~ is.numeric(.) && is.double(.),
   round
-  )
+)
 
 flights %>% filter_if(
-  ~is.numeric(.), 
-  any_vars(. != 2013))
+  ~ is.numeric(.),
+  any_vars(. != 2013)
+)
 ```
 
 ```{r}
 flights %>% rename_at(
-  vars(starts_with("arr_")), 
-  ~str_replace(., "arr_", "arrival_"))
+  vars(starts_with("arr_")),
+  ~ str_replace(., "arr_", "arrival_")
+)
 
 
 flights %>% filter_at(
-  vars(ends_with("_time"), -air_time), 
-  all_vars(. >= 1200))
+  vars(ends_with("_time"), -air_time),
+  all_vars(. >= 1200)
+)
 ```
 
 ## Two-table verbs
+
+There are 4 types of joins.
+
+- `inner_join(x, y)` only includes observations that match in both x and y
+- `left_join(x, y)` includes all observations in x, regardless of whether they match or not. 
+- `right_join(x, y)` equivalent to left_join(y, x)
+- `full_join(x, y)` includes all observations from x and y
+
+```{r}
+df1 <- tibble(x = c(1, 2), y = 2:1)
+df2 <- tibble(x = c(1, 3), a = 10, b = "a")
+```
+
+```{r}
+df1 %>% inner_join(df2)
+df1 %>% left_join(df2)
+df1 %>% right_join(df2)
+df1 %>% full_join(df2)
+```
 
 
 ## Tidy Data

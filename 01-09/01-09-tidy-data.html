@@ -7,7 +7,6 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
-<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
@@ -269,6 +268,7 @@ code {
 }
 img {
   max-width:100%;
+  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -342,6 +342,18 @@ summary {
 }
 </style>
 
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
 <!-- code folding -->
 
 
@@ -414,7 +426,7 @@ summary {
 <p>We are using the <code>tidyverse</code> function <code>read_csv</code> to import the <code>flights.csv</code> instead of the obsolete base function <code>read.csv</code>. - <code>read_csv</code> imports data as <code>tibble</code> which has better output - <code>read_csv</code> is often faster than <code>read.csv</code> - <code>read_csv</code> handles unicode characters better</p>
 <p>The datasets are actually obtained from the R package <code>nycflights13</code></p>
 <pre class="r"><code># Airline on-time data for all flights departing NYC in 2013.
-data(flights, package = &quot;nycflights13&quot;)</code></pre>
+library(nycflights13)</code></pre>
 </div>
 <div id="select-picks-variables-based-on-their-names." class="section level2">
 <h2><code>select</code>: picks variables based on their names.</h2>
@@ -699,7 +711,7 @@ filter(flights, complete.cases(flights))</code></pre>
 ## 10 JFK         925
 ## # … with 111,269 more rows</code></pre>
 <pre class="r"><code># the pipe operator %&gt;% increases readability
-flights %&gt;% 
+flights %&gt;%
   select(origin, air_time) %&gt;%
   filter(origin == &quot;JFK&quot;)</code></pre>
 <pre><code>## # A tibble: 111,279 x 2
@@ -717,7 +729,7 @@ flights %&gt;%
 ## 10 JFK         175
 ## # … with 111,269 more rows</code></pre>
 <pre class="r"><code># a few more examples
-flights %&gt;% 
+flights %&gt;%
   select(origin, air_time) %&gt;%
   filter(origin == &quot;JFK&quot;, air_time &lt; mean(air_time, na.rm = TRUE))</code></pre>
 <pre><code>## # A tibble: 55,521 x 2
@@ -734,8 +746,10 @@ flights %&gt;%
 ##  9 JFK          64
 ## 10 JFK          54
 ## # … with 55,511 more rows</code></pre>
-<pre class="r"><code>mean_air_time &lt;- flights %&gt;% pull(air_time) %&gt;% mean(na.rm = TRUE)
-flights %&gt;% 
+<pre class="r"><code>mean_air_time &lt;- flights %&gt;%
+  pull(air_time) %&gt;%
+  mean(na.rm = TRUE)
+flights %&gt;%
   select(origin, air_time) %&gt;%
   filter(origin == &quot;JFK&quot;, air_time &gt; mean_air_time)</code></pre>
 <pre><code>## # A tibble: 53,558 x 2
@@ -753,10 +767,12 @@ flights %&gt;%
 ## 10 JFK         323
 ## # … with 53,548 more rows</code></pre>
 <pre class="r"><code># what if there is a name colision?
-air_time &lt;- flights %&gt;% pull(air_time) %&gt;% mean(na.rm = TRUE)
-flights %&gt;% 
+air_time &lt;- flights %&gt;%
+  pull(air_time) %&gt;%
+  mean(na.rm = TRUE)
+flights %&gt;%
   select(origin, air_time) %&gt;%
-  filter(origin == &quot;JFK&quot;, air_time &gt; {{air_time}})</code></pre>
+  filter(origin == &quot;JFK&quot;, air_time &gt; {{ air_time }})</code></pre>
 <pre><code>## # A tibble: 53,558 x 2
 ##    origin air_time
 ##    &lt;chr&gt;     &lt;dbl&gt;
@@ -793,9 +809,11 @@ flights %&gt;%
 <p>In fact, this pipe operator is exported from the package <code>magrittr</code> and could be used solely</p>
 <pre class="r"><code>x1 &lt;- 1:5
 x2 &lt;- 2:6
-sqrt(sum((x2-x1)^2))</code></pre>
+sqrt(sum((x2 - x1)^2))</code></pre>
 <pre><code>## [1] 2.236068</code></pre>
-<pre class="r"><code>(x2-x1)^2 %&gt;% sum %&gt;% sqrt</code></pre>
+<pre class="r"><code>(x2 - x1)^2 %&gt;%
+  sum() %&gt;%
+  sqrt()</code></pre>
 <pre><code>## [1] 2.236068</code></pre>
 <pre class="r"><code># computer the binomial coefficients
 n &lt;- 5
@@ -917,8 +935,9 @@ some_data2 %&gt;% mutate(diff1 = value - lag(value), diff2 = lead(value) - value
 </div>
 <div id="conditional-mutation" class="section level3">
 <h3>Conditional mutation</h3>
-<pre class="r"><code>flights %&gt;% transmute(arr_delay, 
-                      status = if_else(arr_delay &gt; 0, &quot;delayed&quot;, &quot;on time&quot;))</code></pre>
+<pre class="r"><code>flights %&gt;% transmute(arr_delay,
+  status = if_else(arr_delay &gt; 0, &quot;delayed&quot;, &quot;on time&quot;)
+)</code></pre>
 <pre><code>## # A tibble: 336,776 x 2
 ##    arr_delay status 
 ##        &lt;dbl&gt; &lt;chr&gt;  
@@ -933,11 +952,14 @@ some_data2 %&gt;% mutate(diff1 = value - lag(value), diff2 = lead(value) - value
 ##  9        -8 on time
 ## 10         8 delayed
 ## # … with 336,766 more rows</code></pre>
-<pre class="r"><code>flight_distances &lt;- flights %&gt;% 
-  transmute(distance, 
-            distance_type = case_when(distance &lt; 500 ~ &quot;short&quot;, 
-                                      distance &lt; 1000 ~ &quot;mid&quot;, 
-                                      TRUE ~ &quot;long&quot; ))
+<pre class="r"><code>flight_distances &lt;- flights %&gt;%
+  transmute(distance,
+    distance_type = case_when(
+      distance &lt; 500 ~ &quot;short&quot;,
+      distance &lt; 1000 ~ &quot;mid&quot;,
+      TRUE ~ &quot;long&quot;
+    )
+  )
 flight_distances</code></pre>
 <pre><code>## # A tibble: 336,776 x 2
 ##    distance distance_type
@@ -956,10 +978,11 @@ flight_distances</code></pre>
 </div>
 <div id="recode-values" class="section level3">
 <h3><code>recode</code> values</h3>
-<pre class="r"><code>flight_distances %&gt;% mutate(distance_type = recode(distance_type, 
-                                                   long = &quot;long-distance&quot;,
-                                                   mid = &quot;mid-distance&quot;,
-                                                   short = &quot;short-distance&quot;))</code></pre>
+<pre class="r"><code>flight_distances %&gt;% mutate(distance_type = recode(distance_type,
+  long = &quot;long-distance&quot;,
+  mid = &quot;mid-distance&quot;,
+  short = &quot;short-distance&quot;
+))</code></pre>
 <pre><code>## # A tibble: 336,776 x 2
 ##    distance distance_type 
 ##       &lt;dbl&gt; &lt;chr&gt;         
@@ -1015,52 +1038,56 @@ flight_distances</code></pre>
 </div>
 <div id="summarize-and-group_by-operations" class="section level2">
 <h2><code>summarize</code> and <code>group_by</code> operations</h2>
-<pre class="r"><code>flights %&gt;% group_by(tailnum) %&gt;% summarize()</code></pre>
+<pre class="r"><code>flights %&gt;%
+  group_by(tailnum) %&gt;%
+  summarize()</code></pre>
 <pre><code>## # A tibble: 4,044 x 1
 ##    tailnum
 ##    &lt;chr&gt;  
-##  1 D942DN 
-##  2 N0EGMQ 
-##  3 N10156 
-##  4 N102UW 
-##  5 N103US 
-##  6 N104UW 
-##  7 N10575 
-##  8 N105UW 
-##  9 N107US 
-## 10 N108UW 
+##  1 &lt;NA&gt;   
+##  2 D942DN 
+##  3 N0EGMQ 
+##  4 N10156 
+##  5 N102UW 
+##  6 N103US 
+##  7 N104UW 
+##  8 N10575 
+##  9 N105UW 
+## 10 N107US 
 ## # … with 4,034 more rows</code></pre>
-<pre class="r"><code>flights %&gt;% group_by(tailnum) %&gt;% tally() # shorthand</code></pre>
+<pre class="r"><code>flights %&gt;%
+  group_by(tailnum) %&gt;%
+  tally() # shorthand</code></pre>
 <pre><code>## # A tibble: 4,044 x 2
 ##    tailnum     n
 ##    &lt;chr&gt;   &lt;int&gt;
-##  1 D942DN      4
-##  2 N0EGMQ    371
-##  3 N10156    153
-##  4 N102UW     48
-##  5 N103US     46
-##  6 N104UW     47
-##  7 N10575    289
-##  8 N105UW     45
-##  9 N107US     41
-## 10 N108UW     60
+##  1 &lt;NA&gt;     2512
+##  2 D942DN      4
+##  3 N0EGMQ    371
+##  4 N10156    153
+##  5 N102UW     48
+##  6 N103US     46
+##  7 N104UW     47
+##  8 N10575    289
+##  9 N105UW     45
+## 10 N107US     41
 ## # … with 4,034 more rows</code></pre>
-<pre class="r"><code>flights %&gt;% count(tailnum)  # another shorthand</code></pre>
+<pre class="r"><code>flights %&gt;% count(tailnum) # another shorthand</code></pre>
 <pre><code>## # A tibble: 4,044 x 2
 ##    tailnum     n
 ##    &lt;chr&gt;   &lt;int&gt;
-##  1 D942DN      4
-##  2 N0EGMQ    371
-##  3 N10156    153
-##  4 N102UW     48
-##  5 N103US     46
-##  6 N104UW     47
-##  7 N10575    289
-##  8 N105UW     45
-##  9 N107US     41
-## 10 N108UW     60
+##  1 &lt;NA&gt;     2512
+##  2 D942DN      4
+##  3 N0EGMQ    371
+##  4 N10156    153
+##  5 N102UW     48
+##  6 N103US     46
+##  7 N104UW     47
+##  8 N10575    289
+##  9 N105UW     45
+## 10 N107US     41
 ## # … with 4,034 more rows</code></pre>
-<pre class="r"><code>flights %&gt;% 
+<pre class="r"><code>flights %&gt;%
   group_by(tailnum) %&gt;%
   summarize(
     count = n(),
@@ -1068,20 +1095,20 @@ flight_distances</code></pre>
     delay = mean(arr_delay, na.rm = TRUE)
   )</code></pre>
 <pre><code>## # A tibble: 4,044 x 4
-##    tailnum count  dist  delay
-##    &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
-##  1 D942DN      4  854. 31.5  
-##  2 N0EGMQ    371  676.  9.98 
-##  3 N10156    153  758. 12.7  
-##  4 N102UW     48  536.  2.94 
-##  5 N103US     46  535. -6.93 
-##  6 N104UW     47  535.  1.80 
-##  7 N10575    289  520. 20.7  
-##  8 N105UW     45  525. -0.267
-##  9 N107US     41  529. -5.73 
-## 10 N108UW     60  534. -1.25 
+##    tailnum count  dist   delay
+##    &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt;
+##  1 &lt;NA&gt;     2512  710. NaN    
+##  2 D942DN      4  854.  31.5  
+##  3 N0EGMQ    371  676.   9.98 
+##  4 N10156    153  758.  12.7  
+##  5 N102UW     48  536.   2.94 
+##  6 N103US     46  535.  -6.93 
+##  7 N104UW     47  535.   1.80 
+##  8 N10575    289  520.  20.7  
+##  9 N105UW     45  525.  -0.267
+## 10 N107US     41  529.  -5.73 
 ## # … with 4,034 more rows</code></pre>
-<pre class="r"><code>flights %&gt;% 
+<pre class="r"><code>flights %&gt;%
   group_by(dest) %&gt;%
   summarize(
     planes = n_distinct(tailnum),
@@ -1122,7 +1149,7 @@ flight_distances</code></pre>
 ## 10  2013     1    10     932
 ## # … with 355 more rows</code></pre>
 <pre class="r"><code>(per_month &lt;- per_day %&gt;%
-    summarize(flights = sum(flights)))</code></pre>
+  summarize(flights = sum(flights)))</code></pre>
 <pre><code>## # A tibble: 12 x 3
 ## # Groups:   year [1]
 ##     year month flights
@@ -1140,7 +1167,7 @@ flight_distances</code></pre>
 ## 11  2013    11   27268
 ## 12  2013    12   28135</code></pre>
 <pre class="r"><code>(per_year &lt;- per_month %&gt;%
-    summarize(flights = sum(flights)))</code></pre>
+  summarize(flights = sum(flights)))</code></pre>
 <pre><code>## # A tibble: 1 x 2
 ##    year flights
 ##   &lt;int&gt;   &lt;int&gt;
@@ -1174,11 +1201,11 @@ flight_distances</code></pre>
 <pre><code>## # A tibble: 5 x 19
 ##    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
 ##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
-## 1  2013     6    20      628            630        -2      746            755
-## 2  2013     7    20     1756           1727        29     1958           1902
-## 3  2013    11    19      952           1000        -8     1109           1113
-## 4  2013    12    11      751            752        -1     1051           1046
-## 5  2013     4     3     1853           1900        -7     1947           2015
+## 1  2013    11     8     1144           1145        -1     1410           1403
+## 2  2013     7     2     1254           1300        -6     1350           1409
+## 3  2013     5    23      620            624        -4      720            746
+## 4  2013     7    20      956            955         1     1201           1212
+## 5  2013     8    21     1903           1859         4     2128           2120
 ## # … with 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
 ## #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
 ## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
@@ -1215,7 +1242,7 @@ flights %&gt;% select_if(is.numeric)</code></pre>
 ## 10  2013     1     1      558            600        -2      753            745
 ## # … with 336,766 more rows, and 6 more variables: arr_delay &lt;dbl&gt;,
 ## #   flight &lt;int&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;</code></pre>
-<pre class="r"><code>flights %&gt;% select_if(~is.numeric(.))</code></pre>
+<pre class="r"><code>flights %&gt;% select_if(~ is.numeric(.))</code></pre>
 <pre><code>## # A tibble: 336,776 x 14
 ##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
@@ -1231,7 +1258,7 @@ flights %&gt;% select_if(is.numeric)</code></pre>
 ## 10  2013     1     1      558            600        -2      753            745
 ## # … with 336,766 more rows, and 6 more variables: arr_delay &lt;dbl&gt;,
 ## #   flight &lt;int&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;</code></pre>
-<pre class="r"><code>flights %&gt;% select_if(~!is.numeric(.))</code></pre>
+<pre class="r"><code>flights %&gt;% select_if(~ !is.numeric(.))</code></pre>
 <pre><code>## # A tibble: 336,776 x 5
 ##    carrier tailnum origin dest  time_hour          
 ##    &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt; &lt;dttm&gt;             
@@ -1264,9 +1291,9 @@ flights %&gt;% select_if(is.numeric)</code></pre>
 ## #   carrier &lt;chr&gt;, FLIGHT &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
 ## #   AIR_TIME &lt;dbl&gt;, DISTANCE &lt;dbl&gt;, HOUR &lt;dbl&gt;, MINUTE &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
 <pre class="r"><code>flights %&gt;% mutate_if(
-  ~is.numeric(.) &amp;&amp; is.double(.),
+  ~ is.numeric(.) &amp;&amp; is.double(.),
   round
-  )</code></pre>
+)</code></pre>
 <pre><code>## # A tibble: 336,776 x 19
 ##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
@@ -1284,8 +1311,9 @@ flights %&gt;% select_if(is.numeric)</code></pre>
 ## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
 ## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
 <pre class="r"><code>flights %&gt;% filter_if(
-  ~is.numeric(.), 
-  any_vars(. != 2013))</code></pre>
+  ~ is.numeric(.),
+  any_vars(. != 2013)
+)</code></pre>
 <pre><code>## # A tibble: 336,776 x 19
 ##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
@@ -1303,8 +1331,9 @@ flights %&gt;% select_if(is.numeric)</code></pre>
 ## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
 ## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
 <pre class="r"><code>flights %&gt;% rename_at(
-  vars(starts_with(&quot;arr_&quot;)), 
-  ~str_replace(., &quot;arr_&quot;, &quot;arrival_&quot;))</code></pre>
+  vars(starts_with(&quot;arr_&quot;)),
+  ~ str_replace(., &quot;arr_&quot;, &quot;arrival_&quot;)
+)</code></pre>
 <pre><code>## # A tibble: 336,776 x 19
 ##     year month   day dep_time sched_dep_time dep_delay arrival_time
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;        &lt;int&gt;
@@ -1323,8 +1352,9 @@ flights %&gt;% select_if(is.numeric)</code></pre>
 ## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 ## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
 <pre class="r"><code>flights %&gt;% filter_at(
-  vars(ends_with(&quot;_time&quot;), -air_time), 
-  all_vars(. &gt;= 1200))</code></pre>
+  vars(ends_with(&quot;_time&quot;), -air_time),
+  all_vars(. &gt;= 1200)
+)</code></pre>
 <pre><code>## # A tibble: 183,159 x 19
 ##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
@@ -1344,11 +1374,50 @@ flights %&gt;% select_if(is.numeric)</code></pre>
 </div>
 <div id="two-table-verbs" class="section level2">
 <h2>Two-table verbs</h2>
+<p>There are 4 types of joins.</p>
+<ul>
+<li><code>inner_join(x, y)</code> only includes observations that match in both x and y</li>
+<li><code>left_join(x, y)</code> includes all observations in x, regardless of whether they match or not.</li>
+<li><code>right_join(x, y)</code> equivalent to left_join(y, x)</li>
+<li><code>full_join(x, y)</code> includes all observations from x and y</li>
+</ul>
+<pre class="r"><code>df1 &lt;- tibble(x = c(1, 2), y = 2:1)
+df2 &lt;- tibble(x = c(1, 3), a = 10, b = &quot;a&quot;)</code></pre>
+<pre class="r"><code>df1 %&gt;% inner_join(df2)</code></pre>
+<pre><code>## Joining, by = &quot;x&quot;</code></pre>
+<pre><code>## # A tibble: 1 x 4
+##       x     y     a b    
+##   &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;
+## 1     1     2    10 a</code></pre>
+<pre class="r"><code>df1 %&gt;% left_join(df2)</code></pre>
+<pre><code>## Joining, by = &quot;x&quot;</code></pre>
+<pre><code>## # A tibble: 2 x 4
+##       x     y     a b    
+##   &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;
+## 1     1     2    10 a    
+## 2     2     1    NA &lt;NA&gt;</code></pre>
+<pre class="r"><code>df1 %&gt;% right_join(df2)</code></pre>
+<pre><code>## Joining, by = &quot;x&quot;</code></pre>
+<pre><code>## # A tibble: 2 x 4
+##       x     y     a b    
+##   &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;
+## 1     1     2    10 a    
+## 2     3    NA    10 a</code></pre>
+<pre class="r"><code>df1 %&gt;% full_join(df2)</code></pre>
+<pre><code>## Joining, by = &quot;x&quot;</code></pre>
+<pre><code>## # A tibble: 3 x 4
+##       x     y     a b    
+##   &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;
+## 1     1     2    10 a    
+## 2     2     1    NA &lt;NA&gt; 
+## 3     3    NA    10 a</code></pre>
 </div>
 <div id="tidy-data" class="section level2">
 <h2>Tidy Data</h2>
 <pre class="r"><code>library(tidyr)
 data(relig_income, package = &quot;tidyr&quot;)</code></pre>
+<pre><code>## Warning in data(relig_income, package = &quot;tidyr&quot;): data set &#39;relig_income&#39; not
+## found</code></pre>
 </div>
 <div id="reference" class="section level2">
 <h2>Reference:</h2>
@@ -1375,23 +1444,6 @@ $(document).ready(function () {
 
 
 </script>
-
-<!-- tabsets -->
-
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
-<!-- code folding -->
-
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
