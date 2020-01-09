@@ -426,12 +426,31 @@ $(document).ready(function () {
 <p>We are using the <code>tidyverse</code> function <code>read_csv</code> to import the <code>flights.csv</code> instead of the obsolete base function <code>read.csv</code>. - <code>read_csv</code> imports data as <code>tibble</code> which has better output - <code>read_csv</code> is often faster than <code>read.csv</code> - <code>read_csv</code> handles unicode characters better</p>
 <p>The datasets are actually obtained from the R package <code>nycflights13</code></p>
 <pre class="r"><code># Airline on-time data for all flights departing NYC in 2013.
-library(nycflights13)</code></pre>
+library(nycflights13)
+flights</code></pre>
+<pre><code>## # A tibble: 336,776 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      517            515         2      830            819
+##  2  2013     1     1      533            529         4      850            830
+##  3  2013     1     1      542            540         2      923            850
+##  4  2013     1     1      544            545        -1     1004           1022
+##  5  2013     1     1      554            600        -6      812            837
+##  6  2013     1     1      554            558        -4      740            728
+##  7  2013     1     1      555            600        -5      913            854
+##  8  2013     1     1      557            600        -3      709            723
+##  9  2013     1     1      557            600        -3      838            846
+## 10  2013     1     1      558            600        -2      753            745
+## # … with 336,766 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
 </div>
 <div id="select-picks-variables-based-on-their-names." class="section level2">
 <h2><code>select</code>: picks variables based on their names.</h2>
 <p>To select arrival and departure times,</p>
-<pre class="r"><code>select(flights, arr_time, dep_time)</code></pre>
+<pre class="r"><code># old way to do it
+# flights[, c(&quot;arr_time&quot;, &quot;dep_time&quot;)]
+select(flights, arr_time, dep_time)</code></pre>
 <pre><code>## # A tibble: 336,776 x 2
 ##    arr_time dep_time
 ##       &lt;int&gt;    &lt;int&gt;
@@ -656,21 +675,21 @@ filter(flights, origin == &quot;JFK&quot; &amp; distance &gt; 1000)</code></pre>
 ## # … with 227,312 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
 ## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
 ## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
-<pre class="r"><code>filter(flights, between(distance, 500, 1000))</code></pre>
-<pre><code>## # A tibble: 109,454 x 19
+<pre class="r"><code>filter(flights, !between(distance, 500, 1000))</code></pre>
+<pre><code>## # A tibble: 227,322 x 19
 ##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
-##  1  2013     1     1      554            600        -6      812            837
-##  2  2013     1     1      554            558        -4      740            728
-##  3  2013     1     1      557            600        -3      838            846
-##  4  2013     1     1      558            600        -2      753            745
-##  5  2013     1     1      600            600         0      837            825
-##  6  2013     1     1      602            605        -3      821            805
-##  7  2013     1     1      606            610        -4      837            845
-##  8  2013     1     1      608            600         8      807            735
-##  9  2013     1     1      615            615         0      833            842
-## 10  2013     1     1      629            630        -1      824            810
-## # … with 109,444 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
+##  1  2013     1     1      517            515         2      830            819
+##  2  2013     1     1      533            529         4      850            830
+##  3  2013     1     1      542            540         2      923            850
+##  4  2013     1     1      544            545        -1     1004           1022
+##  5  2013     1     1      555            600        -5      913            854
+##  6  2013     1     1      557            600        -3      709            723
+##  7  2013     1     1      558            600        -2      849            851
+##  8  2013     1     1      558            600        -2      853            856
+##  9  2013     1     1      558            600        -2      924            917
+## 10  2013     1     1      558            600        -2      923            937
+## # … with 227,312 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
 ## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
 ## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
 <pre class="r"><code># only keep the complete cases
@@ -713,21 +732,23 @@ filter(flights, complete.cases(flights))</code></pre>
 <pre class="r"><code># the pipe operator %&gt;% increases readability
 flights %&gt;%
   select(origin, air_time) %&gt;%
-  filter(origin == &quot;JFK&quot;)</code></pre>
-<pre><code>## # A tibble: 111,279 x 2
-##    origin air_time
-##    &lt;chr&gt;     &lt;dbl&gt;
-##  1 JFK         160
-##  2 JFK         183
-##  3 JFK         140
-##  4 JFK         149
-##  5 JFK         158
-##  6 JFK         345
-##  7 JFK          44
-##  8 JFK         128
-##  9 JFK         366
-## 10 JFK         175
-## # … with 111,269 more rows</code></pre>
+  filter(origin == &quot;JFK&quot;) %&gt;%
+  filter(air_time &lt; 500) %&gt;%
+  rename(airtime = air_time)</code></pre>
+<pre><code>## # A tibble: 108,737 x 2
+##    origin airtime
+##    &lt;chr&gt;    &lt;dbl&gt;
+##  1 JFK        160
+##  2 JFK        183
+##  3 JFK        140
+##  4 JFK        149
+##  5 JFK        158
+##  6 JFK        345
+##  7 JFK         44
+##  8 JFK        128
+##  9 JFK        366
+## 10 JFK        175
+## # … with 108,727 more rows</code></pre>
 <pre class="r"><code># a few more examples
 flights %&gt;%
   select(origin, air_time) %&gt;%
@@ -829,6 +850,19 @@ choose(n, x)</code></pre>
 }</code></pre>
 <pre><code>## [1]  1  5 10 10  5  1</code></pre>
 <p>PS: use <code>slice</code> if you want particular rows</p>
+<pre class="r"><code>flights %&gt;% slice(100:105)</code></pre>
+<pre><code>## # A tibble: 6 x 19
+##    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+## 1  2013     1     1      752            759        -7      955            959
+## 2  2013     1     1      753            755        -2     1056           1110
+## 3  2013     1     1      754            759        -5     1039           1041
+## 4  2013     1     1      754            755        -1     1103           1030
+## 5  2013     1     1      758            800        -2     1053           1054
+## 6  2013     1     1      759            800        -1     1057           1127
+## # … with 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
+## #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
+## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
 </div>
 <div id="mutate-adds-new-variables-that-are-functions-of-existing-variables" class="section level2">
 <h2><code>mutate</code>: adds new variables that are functions of existing variables</h2>
@@ -1044,16 +1078,16 @@ flight_distances</code></pre>
 <pre><code>## # A tibble: 4,044 x 1
 ##    tailnum
 ##    &lt;chr&gt;  
-##  1 &lt;NA&gt;   
-##  2 D942DN 
-##  3 N0EGMQ 
-##  4 N10156 
-##  5 N102UW 
-##  6 N103US 
-##  7 N104UW 
-##  8 N10575 
-##  9 N105UW 
-## 10 N107US 
+##  1 D942DN 
+##  2 N0EGMQ 
+##  3 N10156 
+##  4 N102UW 
+##  5 N103US 
+##  6 N104UW 
+##  7 N10575 
+##  8 N105UW 
+##  9 N107US 
+## 10 N108UW 
 ## # … with 4,034 more rows</code></pre>
 <pre class="r"><code>flights %&gt;%
   group_by(tailnum) %&gt;%
@@ -1061,31 +1095,31 @@ flight_distances</code></pre>
 <pre><code>## # A tibble: 4,044 x 2
 ##    tailnum     n
 ##    &lt;chr&gt;   &lt;int&gt;
-##  1 &lt;NA&gt;     2512
-##  2 D942DN      4
-##  3 N0EGMQ    371
-##  4 N10156    153
-##  5 N102UW     48
-##  6 N103US     46
-##  7 N104UW     47
-##  8 N10575    289
-##  9 N105UW     45
-## 10 N107US     41
+##  1 D942DN      4
+##  2 N0EGMQ    371
+##  3 N10156    153
+##  4 N102UW     48
+##  5 N103US     46
+##  6 N104UW     47
+##  7 N10575    289
+##  8 N105UW     45
+##  9 N107US     41
+## 10 N108UW     60
 ## # … with 4,034 more rows</code></pre>
 <pre class="r"><code>flights %&gt;% count(tailnum) # another shorthand</code></pre>
 <pre><code>## # A tibble: 4,044 x 2
 ##    tailnum     n
 ##    &lt;chr&gt;   &lt;int&gt;
-##  1 &lt;NA&gt;     2512
-##  2 D942DN      4
-##  3 N0EGMQ    371
-##  4 N10156    153
-##  5 N102UW     48
-##  6 N103US     46
-##  7 N104UW     47
-##  8 N10575    289
-##  9 N105UW     45
-## 10 N107US     41
+##  1 D942DN      4
+##  2 N0EGMQ    371
+##  3 N10156    153
+##  4 N102UW     48
+##  5 N103US     46
+##  6 N104UW     47
+##  7 N10575    289
+##  8 N105UW     45
+##  9 N107US     41
+## 10 N108UW     60
 ## # … with 4,034 more rows</code></pre>
 <pre class="r"><code>flights %&gt;%
   group_by(tailnum) %&gt;%
@@ -1095,18 +1129,18 @@ flight_distances</code></pre>
     delay = mean(arr_delay, na.rm = TRUE)
   )</code></pre>
 <pre><code>## # A tibble: 4,044 x 4
-##    tailnum count  dist   delay
-##    &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt;
-##  1 &lt;NA&gt;     2512  710. NaN    
-##  2 D942DN      4  854.  31.5  
-##  3 N0EGMQ    371  676.   9.98 
-##  4 N10156    153  758.  12.7  
-##  5 N102UW     48  536.   2.94 
-##  6 N103US     46  535.  -6.93 
-##  7 N104UW     47  535.   1.80 
-##  8 N10575    289  520.  20.7  
-##  9 N105UW     45  525.  -0.267
-## 10 N107US     41  529.  -5.73 
+##    tailnum count  dist  delay
+##    &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1 D942DN      4  854. 31.5  
+##  2 N0EGMQ    371  676.  9.98 
+##  3 N10156    153  758. 12.7  
+##  4 N102UW     48  536.  2.94 
+##  5 N103US     46  535. -6.93 
+##  6 N104UW     47  535.  1.80 
+##  7 N10575    289  520. 20.7  
+##  8 N105UW     45  525. -0.267
+##  9 N107US     41  529. -5.73 
+## 10 N108UW     60  534. -1.25 
 ## # … with 4,034 more rows</code></pre>
 <pre class="r"><code>flights %&gt;%
   group_by(dest) %&gt;%
@@ -1201,11 +1235,11 @@ flight_distances</code></pre>
 <pre><code>## # A tibble: 5 x 19
 ##    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
 ##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
-## 1  2013    11     8     1144           1145        -1     1410           1403
-## 2  2013     7     2     1254           1300        -6     1350           1409
-## 3  2013     5    23      620            624        -4      720            746
-## 4  2013     7    20      956            955         1     1201           1212
-## 5  2013     8    21     1903           1859         4     2128           2120
+## 1  2013     3    22     1530           1535        -5     1837           1850
+## 2  2013     7    10     1226           1200        26     1412           1354
+## 3  2013    10     6     1601           1548        13     1900           1911
+## 4  2013     7    18      759            800        -1      927            940
+## 5  2013    12    31     2332           2245        47       58              3
 ## # … with 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
 ## #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
 ## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
@@ -1414,10 +1448,103 @@ df2 &lt;- tibble(x = c(1, 3), a = 10, b = &quot;a&quot;)</code></pre>
 </div>
 <div id="tidy-data" class="section level2">
 <h2>Tidy Data</h2>
-<pre class="r"><code>library(tidyr)
-data(relig_income, package = &quot;tidyr&quot;)</code></pre>
-<pre><code>## Warning in data(relig_income, package = &quot;tidyr&quot;): data set &#39;relig_income&#39; not
-## found</code></pre>
+<p>There are three interrelated rules which make a dataset tidy</p>
+<ul>
+<li>Each variable must have its own column (long format).</li>
+<li>Each observation must have its own row (wide format).</li>
+<li>Each value must have its own cell.</li>
+</ul>
+<p>Using the datasets from R for Data Science to show that the same data could be organised in different ways.</p>
+<pre class="r"><code># make sure you have tidyr 1.0
+library(tidyr)</code></pre>
+<div id="privot-longer" class="section level3">
+<h3>Privot longer</h3>
+<pre class="r"><code>relig_income %&gt;%
+  pivot_longer(-religion, names_to = &quot;income&quot;, values_to = &quot;count&quot;)</code></pre>
+<pre><code>## # A tibble: 180 x 3
+##    religion income             count
+##    &lt;chr&gt;    &lt;chr&gt;              &lt;dbl&gt;
+##  1 Agnostic &lt;$10k                 27
+##  2 Agnostic $10-20k               34
+##  3 Agnostic $20-30k               60
+##  4 Agnostic $30-40k               81
+##  5 Agnostic $40-50k               76
+##  6 Agnostic $50-75k              137
+##  7 Agnostic $75-100k             122
+##  8 Agnostic $100-150k            109
+##  9 Agnostic &gt;150k                 84
+## 10 Agnostic Don&#39;t know/refused    96
+## # … with 170 more rows</code></pre>
+<pre class="r"><code>billboard %&gt;%
+  pivot_longer(
+    cols = starts_with(&quot;wk&quot;),
+    names_to = &quot;week&quot;,
+    names_prefix = &quot;wk&quot;,
+    names_ptypes = list(week = integer()),
+    values_to = &quot;rank&quot;,
+    values_drop_na = TRUE,
+  )</code></pre>
+<pre><code>## # A tibble: 5,307 x 5
+##    artist  track                   date.entered  week  rank
+##    &lt;chr&gt;   &lt;chr&gt;                   &lt;date&gt;       &lt;int&gt; &lt;dbl&gt;
+##  1 2 Pac   Baby Don&#39;t Cry (Keep... 2000-02-26       1    87
+##  2 2 Pac   Baby Don&#39;t Cry (Keep... 2000-02-26       2    82
+##  3 2 Pac   Baby Don&#39;t Cry (Keep... 2000-02-26       3    72
+##  4 2 Pac   Baby Don&#39;t Cry (Keep... 2000-02-26       4    77
+##  5 2 Pac   Baby Don&#39;t Cry (Keep... 2000-02-26       5    87
+##  6 2 Pac   Baby Don&#39;t Cry (Keep... 2000-02-26       6    94
+##  7 2 Pac   Baby Don&#39;t Cry (Keep... 2000-02-26       7    99
+##  8 2Ge+her The Hardest Part Of ... 2000-09-02       1    91
+##  9 2Ge+her The Hardest Part Of ... 2000-09-02       2    87
+## 10 2Ge+her The Hardest Part Of ... 2000-09-02       3    92
+## # … with 5,297 more rows</code></pre>
+</div>
+<div id="privot-wider" class="section level3">
+<h3>Privot wider</h3>
+<pre class="r"><code>fish_encounters %&gt;% pivot_wider(
+  names_from = station,
+  values_from = seen,
+  values_fill = list(seen = 0)
+)</code></pre>
+<pre><code>## # A tibble: 19 x 12
+##    fish  Release I80_1 Lisbon  Rstr Base_TD   BCE   BCW  BCE2  BCW2   MAE   MAW
+##    &lt;fct&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt; &lt;int&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##  1 4842        1     1      1     1       1     1     1     1     1     1     1
+##  2 4843        1     1      1     1       1     1     1     1     1     1     1
+##  3 4844        1     1      1     1       1     1     1     1     1     1     1
+##  4 4845        1     1      1     1       1     0     0     0     0     0     0
+##  5 4847        1     1      1     0       0     0     0     0     0     0     0
+##  6 4848        1     1      1     1       0     0     0     0     0     0     0
+##  7 4849        1     1      0     0       0     0     0     0     0     0     0
+##  8 4850        1     1      0     1       1     1     1     0     0     0     0
+##  9 4851        1     1      0     0       0     0     0     0     0     0     0
+## 10 4854        1     1      0     0       0     0     0     0     0     0     0
+## 11 4855        1     1      1     1       1     0     0     0     0     0     0
+## 12 4857        1     1      1     1       1     1     1     1     1     0     0
+## 13 4858        1     1      1     1       1     1     1     1     1     1     1
+## 14 4859        1     1      1     1       1     0     0     0     0     0     0
+## 15 4861        1     1      1     1       1     1     1     1     1     1     1
+## 16 4862        1     1      1     1       1     1     1     1     1     0     0
+## 17 4863        1     1      0     0       0     0     0     0     0     0     0
+## 18 4864        1     1      0     0       0     0     0     0     0     0     0
+## 19 4865        1     1      1     0       0     0     0     0     0     0     0</code></pre>
+<pre class="r"><code>us_rent_income %&gt;%
+  pivot_wider(names_from = variable, values_from = c(estimate, moe))</code></pre>
+<pre><code>## # A tibble: 52 x 6
+##    GEOID NAME                 estimate_income estimate_rent moe_income moe_rent
+##    &lt;chr&gt; &lt;chr&gt;                          &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+##  1 01    Alabama                        24476           747        136        3
+##  2 02    Alaska                         32940          1200        508       13
+##  3 04    Arizona                        27517           972        148        4
+##  4 05    Arkansas                       23789           709        165        5
+##  5 06    California                     29454          1358        109        3
+##  6 08    Colorado                       32401          1125        109        5
+##  7 09    Connecticut                    35326          1123        195        5
+##  8 10    Delaware                       31560          1076        247       10
+##  9 11    District of Columbia           43198          1424        681       17
+## 10 12    Florida                        25952          1077         70        3
+## # … with 42 more rows</code></pre>
+</div>
 </div>
 <div id="reference" class="section level2">
 <h2>Reference:</h2>

@@ -66,12 +66,15 @@ The datasets are actually obtained from the R package `nycflights13`
 ```{r}
 # Airline on-time data for all flights departing NYC in 2013.
 library(nycflights13)
+flights
 ```
 
 ## `select`: picks variables based on their names.
 
 To select arrival and departure times,
 ```{r}
+# old way to do it
+# flights[, c("arr_time", "dep_time")]
 select(flights, arr_time, dep_time)
 ```
 
@@ -102,6 +105,7 @@ Remarks:
 - if you just need a single variable, you could use `pull`.
 - you could use `rename` to rename columns
 
+
 ## `filter`: picks cases based on their values
 
 ```{r}
@@ -110,7 +114,7 @@ filter(flights, distance > 1000)
 # note that we are using a single `&` instead of `&&` as in base R
 filter(flights, origin == "JFK" & distance > 1000)
 filter(flights, distance < 500 | distance > 1000)
-filter(flights, between(distance, 500, 1000))
+filter(flights, !between(distance, 500, 1000))
 # only keep the complete cases
 filter(flights, complete.cases(flights))
 ```
@@ -123,7 +127,9 @@ filter(select(flights, origin, arr_time), origin == "JFK")
 # the pipe operator %>% increases readability
 flights %>%
   select(origin, air_time) %>%
-  filter(origin == "JFK")
+  filter(origin == "JFK") %>%
+  filter(air_time < 500) %>%
+  rename(airtime = air_time)
 ```
 
 ```{r}
@@ -179,6 +185,9 @@ list(n = 5, x = 0:5) %>% {
 
 PS: use `slice` if you want particular rows
 
+```{r}
+flights %>% slice(100:105)
+```
 
 ## `mutate`: adds new variables that are functions of existing variables
 
@@ -373,14 +382,55 @@ df1 %>% full_join(df2)
 
 
 ## Tidy Data
+
+There are three interrelated rules which make a dataset tidy
+
+- Each variable must have its own column (long format).
+- Each observation must have its own row (wide format).
+- Each value must have its own cell.
+
+Using the datasets from R for Data Science to show that the same data could be organised in different ways.
+
+
+
 ```{r}
+# make sure you have tidyr 1.0
 library(tidyr)
-data(relig_income, package = "tidyr")
+```
+
+### Privot longer
+
+```{r}
+relig_income %>%
+  pivot_longer(-religion, names_to = "income", values_to = "count")
 ```
 
 
 ```{r}
+billboard %>%
+  pivot_longer(
+    cols = starts_with("wk"),
+    names_to = "week",
+    names_prefix = "wk",
+    names_ptypes = list(week = integer()),
+    values_to = "rank",
+    values_drop_na = TRUE,
+  )
+```
 
+### Privot wider
+
+```{r}
+fish_encounters %>% pivot_wider(
+  names_from = station,
+  values_from = seen,
+  values_fill = list(seen = 0)
+)
+```
+
+```{r}
+us_rent_income %>%
+  pivot_wider(names_from = variable, values_from = c(estimate, moe))
 ```
 
 ## Reference:
