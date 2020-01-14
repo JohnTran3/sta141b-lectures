@@ -1,9 +1,9 @@
 ---
 title: "Tidy Data"
-date: "01-07-2020"
+date: "01-09-2020"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, echo = FALSE, message = FALSE}
@@ -241,18 +241,19 @@ some_data2 %>% mutate(diff1 = value - lag(value), diff2 = lead(value) - value)
 ### Conditional mutation
 
 ```{r}
-flights %>% transmute(arr_delay,
+flights %>% transmute(
+  arr_delay = arr_delay,
   status = if_else(arr_delay > 0, "delayed", "on time")
 )
-flight_distances <- flights %>%
-  transmute(distance,
+(flight_distances <- flights %>%
+  transmute(
+    distance,
     distance_type = case_when(
       distance < 500 ~ "short",
       distance < 1000 ~ "mid",
       TRUE ~ "long"
     )
-  )
-flight_distances
+  ))
 ```
 
 ### `recode` values
@@ -263,6 +264,16 @@ flight_distances %>% mutate(distance_type = recode(distance_type,
   mid = "mid-distance",
   short = "short-distance"
 ))
+```
+
+```{r}
+some_data %>% mutate(
+  y = recode(x,
+    `1` = "one",
+    `3` = "three",
+    `4` = "four"
+  )
+)
 ```
 
 
@@ -279,7 +290,7 @@ flights %>% arrange(desc(dep_delay))
 ```{r}
 flights %>%
   group_by(tailnum) %>%
-  summarize()
+  summarize(n = n())
 flights %>%
   group_by(tailnum) %>%
   tally() # shorthand
@@ -308,12 +319,13 @@ flights %>%
   group_by(year, month, day) %>%
   summarize(flights = n()))
 
-(per_month <- per_day %>%
+(per_month <- per_day %>% 
   summarize(flights = sum(flights)))
 
 (per_year <- per_month %>%
   summarize(flights = sum(flights)))
 ```
+
 
 ## Other useful functions
 
@@ -342,7 +354,7 @@ flights %>% mutate_if(
 
 flights %>% filter_if(
   ~ is.numeric(.),
-  any_vars(. != 2013)
+  all_vars(. > 0)
 )
 ```
 
@@ -369,8 +381,8 @@ There are 4 types of joins.
 - `full_join(x, y)` includes all observations from x and y
 
 ```{r}
-df1 <- tibble(x = c(1, 2), y = 2:1)
-df2 <- tibble(x = c(1, 3), a = 10, b = "a")
+(df1 <- tibble(id = c(1, 2), v = 2:1))
+(df2 <- tibble(id = c(1, 3), a = 10, b = "a"))
 ```
 
 ```{r}
@@ -397,6 +409,9 @@ Using the datasets from R for Data Science to show that the same data could be o
 # make sure you have tidyr 1.0
 library(tidyr)
 ```
+
+`pivot_longer` is the replacement for `gather()` and `pivot_wider()` is the replacement for `spread()`.
+Both are designed to be simpler and can handle more cases than gather and spread.
 
 ### Privot longer
 
