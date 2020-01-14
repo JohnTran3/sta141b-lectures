@@ -1,0 +1,213 @@
+---
+title: "Special data types"
+date: "01-14-2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+Today, we will spend some time talking about some special data types in R.
+- factors
+- data and time
+
+
+## Factors
+
+
+When importing data to R, base R has a burning desire to turn character
+information into factor. See for example, `read.table`, and `read.csv`.
+
+```{r}
+# to illustrate the issue of `read.csv`, let's write a csv file out of the gapminder dataset
+library(gapminder)
+library(tidyverse)
+write_csv(gapminder, "gapminder.csv")
+```
+
+```{r}
+# base R function
+read.csv("gapminder.csv")
+```
+
+
+```{r}
+# readr function
+read_csv("gapminder.csv")
+```
+
+### Factor inspection
+```{r}
+levels(gapminder$continent)
+nlevels(gapminder$continent)
+class(gapminder$continent)
+```
+
+```{r}
+gapminder %>% count(continent)
+fct_count(gapminder$continent)
+```
+
+### Dropping unused levels
+
+
+The number of levels won't change even all the rows corresponding to specific factor level are dropped.
+```{r}
+h_countries <- c("Egypt", "Haiti", "Romania", "Thailand", "Venezuela")
+h_gap <- gapminder %>%
+  filter(country %in% h_countries)
+nlevels(h_gap$country)
+```
+
+```{r}
+h_gap$country <- h_gap$country %>%
+  fct_drop() %>%
+  levels()
+```
+
+```{r}
+h_gap <- h_gap %>% droplevels()
+```
+
+
+
+### Change order of the levels
+
+```{r}
+## default order is alphabetical
+gapminder$continent %>%
+  levels()
+
+## order by frequency
+gapminder$continent %>%
+  fct_infreq() %>%
+  levels()
+
+## backwards!
+gapminder$continent %>%
+  fct_infreq() %>%
+  fct_rev() %>%
+  levels()
+```
+
+Why?
+
+```{r}
+ggplot(gapminder) + geom_bar(aes(continent)) + coord_flip()
+```
+
+```{r}
+ggplot(gapminder) + geom_bar(aes(continent %>% fct_infreq() %>% fct_rev())) +
+  xlab("continent") + coord_flip()
+```
+
+
+```{r}
+# reorder factor according to values of another variable
+gap_asia_2007 <- gapminder %>% filter(year == 2007, continent == "Asia")
+ggplot(gap_asia_2007, aes(x = lifeExp, y = fct_reorder(country, lifeExp))) +
+  geom_point() + ylab("country")
+```
+
+
+### Change to any order
+
+```{r}
+h_gap$country %>% levels()
+h_gap$country %>%
+  fct_relevel("Romania", "Haiti") %>%
+  levels()
+```
+
+
+### Record levels
+
+```{r}
+i_gap <- gapminder %>%
+  filter(country %in% c("United States", "Sweden", "Australia")) %>%
+  droplevels()
+i_gap$country %>% levels()
+i_gap$country %>%
+  fct_recode("USA" = "United States", "Oz" = "Australia") %>%
+  levels()
+```
+
+
+## Date and time
+
+```{r}
+library(lubridate)
+today()
+now()  # in UTC (Coordinated Universal Time)
+```
+
+
+```{r}
+ymd("2017-01-31")
+mdy("January 31st, 2017")
+dmy("31-Jan-2017")
+```
+```{r}
+ymd_hms("2017-01-31 20:11:59")
+mdy_hm("01/31/2017 08:01")
+
+mdy_hm("01/31/2017 08:01", tz = "America/New_York")
+```
+
+```{r}
+# all the time zone names
+OlsonNames
+```
+
+```{r}
+(t1 <- mdy_hm("01/31/2017 08:01", tz = "America/New_York"))
+# convert timezone
+with_tz(t1, tzone = "America/Los_Angeles")
+# fix a timezone
+force_tz(t1, tzone = "America/Los_Angeles")
+```
+
+### From individual components
+```{r}
+library(nycflights13)
+flights %>% 
+  select(year, month, day, hour, minute)
+```
+
+```{r}
+(flights_dt <- flights %>% 
+  select(year, month, day, hour, minute) %>% 
+  mutate(
+    date = make_date(year, month, day),
+    time = make_datetime(year, month, day, hour, minute,)))
+```
+
+### Get components
+
+```{r}
+datetime <- ymd_hms("2016-07-08 12:34:56")
+
+year(datetime)
+month(datetime)
+month(datetime, label = TRUE)
+mday(datetime)
+yday(datetime)
+wday(datetime)
+wday(datetime, label = TRUE, abbr = FALSE)
+```
+
+
+```{r}
+flights_dt %>% 
+  mutate(wday = wday(time, label = TRUE)) %>% 
+  ggplot(aes(x = wday)) +
+    geom_bar()
+```
+
+
+
+# References
+
+https://r4ds.had.co.nz
+https://lubridate.tidyverse.org/
+https://forcats.tidyverse.org/
+
