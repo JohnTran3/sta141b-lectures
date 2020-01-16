@@ -2,8 +2,8 @@
 title: "Special data types"
 date: "01-14-2020"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 Today, we will spend some time talking about some special data types in R.
@@ -49,10 +49,15 @@ read_csv("flights.csv", col_types = "iiiddddddfccffddddT")
 # 3. use the rstudio import interface
 ```
 
+
 ### Factor inspection
+
+Let's consider the dataset `gss_cat`: A sample of categorical variables from the General Social survey
+
 ```{r}
 class(gss_cat$partyid)
 levels(gss_cat$partyid)
+fct_unique(gss_cat$partyid)
 nlevels(gss_cat$partyid)
 ```
 
@@ -60,6 +65,19 @@ nlevels(gss_cat$partyid)
 gss_cat %>% count(partyid)
 fct_count(gss_cat$partyid, sort = TRUE)
 ```
+
+### Combining factors
+
+
+```{r}
+fa <- factor("a")
+fb <- factor("b")
+fab <- factor(c("a", "b"))
+
+c(fa, fb, fab)  # not what you want!
+fct_c(fa, fb, fab)
+```
+
 
 ### Dropping unused levels
 
@@ -71,15 +89,14 @@ gss_cat2 <- gss_cat %>%
 nlevels(gss_cat2$partyid)
 ```
 
-
 ```{r}
-# drop a specific factor
+# drop unused levels of a specific factor
 gss_cat2$partyid <- gss_cat2$partyid %>% fct_drop()
 levels(gss_cat2$partyid)
 ```
 
 ```{r}
-# drop all the factors in a data frame
+# drop unused levels for all the factors in a data frame
 gss_cat2 <- gss_cat2 %>% droplevels()
 ```
 
@@ -130,7 +147,7 @@ gss_cat %>% mutate(partyid = partyid %>% fct_relevel("Strong republican", "Stron
 ```
 
 
-### Recode levelsx
+### Recode levels
 
 ```{r}
 gss_cat$partyid %>% levels()
@@ -140,6 +157,7 @@ gss_cat$partyid %>%
     "Independent,near dem" = "Ind,near dem"
   ) %>%
   levels()
+
 # if we need to modifly the data frame, then
 gss_cat %>% mutate(partyid = partyid %>%
   fct_recode(
@@ -151,7 +169,7 @@ gss_cat %>% mutate(partyid = partyid %>%
 ### Collapse levels
 
 ```{r}
-# collapse automatically
+# collapse small levels automatically
 gss_cat %>%
   mutate(partyid = partyid %>% fct_lump(5)) %>%
   ggplot() + geom_bar(aes(partyid))
@@ -169,7 +187,9 @@ gss_cat %>%
   )) %>%
   ggplot() + geom_bar(aes(partyid))
 ```
+
 Remark: there is a bug in forcats v0.4.0 such that the argument `group_other` in `fct_collapse` is malfunction.
+
 
 
 ## Date and time
@@ -180,6 +200,12 @@ today()
 now() # in UTC (Coordinated Universal Time)
 ```
 
+```{r}
+# internally, time is stored as the so called "unix time"
+# the number of seconds since 1970-01-01 00:00:00 UTC
+as.double(now())
+as_datetime(1579192970)
+```
 
 ```{r}
 ymd("2017-01-31")
@@ -190,20 +216,21 @@ dmy("31-Jan-2017")
 ymd_hms("2017-01-31 20:11:59")
 mdy_hm("01/31/2017 08:01")
 
-mdy_hm("01/31/2017 08:01", tz = "America/New_York")
+mdy_hm("01/31/2017 08:01", tz = "US/Eastern")
 ```
 
 ```{r}
-# all the time zone names
-OlsonNames
+# OlsonNames() prints all the time zones 
+# for the us time zones
+OlsonNames() %>% keep(~str_starts(., "US/"))
 ```
 
 ```{r}
-(t1 <- mdy_hm("01/31/2017 08:01", tz = "America/New_York"))
+(t1 <- mdy_hm("01/31/2017 08:01", tz = "US/Eastern"))
 # convert timezone
-with_tz(t1, tzone = "America/Los_Angeles")
+with_tz(t1, tzone = "US/Pacific")
 # fix a timezone
-force_tz(t1, tzone = "America/Los_Angeles")
+force_tz(t1, tzone = "US/Pacific")
 ```
 
 ### From individual components
@@ -244,6 +271,23 @@ flights_dt %>%
   mutate(wday = wday(time, label = TRUE)) %>%
   ggplot(aes(x = wday)) +
   geom_bar()
+```
+
+
+### Math on data and time
+
+```{r}
+nor <- ymd_hms("2018-01-01 01:30:00",tz="US/Eastern") 
+nor + minutes(90)
+nor + dminutes(90)
+
+gap <- ymd_hms("2018-03-11 01:30:00",tz="US/Eastern") 
+gap + minutes(90)
+gap + dminutes(90)
+
+leap <- ymd("2019-03-01")
+leap + years(1)
+leap + dyears(1)
 ```
 
 
