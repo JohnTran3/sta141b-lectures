@@ -7,8 +7,8 @@ output:
 ---
 
 Today, we will spend some time talking about some special data types in R.
-- factors
-- data and time
+- factors (categorial data)
+- date and time
 
 
 ## Factors
@@ -34,14 +34,14 @@ read.csv("flights.csv")
 
 
 ```{r, eval = FALSE}
-# readr function, character variables are imported as is
+# tidyverse function, character variables are imported as is
 read_csv("flights.csv")
 # there are several workarounds,
 # 1. we could use `mutate_if` to force the conversion
 read_csv("flights.csv") %>%
   mutate_if(is.character, as_factor)
 read_csv("flights.csv") %>%
-  mutate_if(~ is.character(.) && n_distinct(.) < 20, as_factor)
+  mutate_if(~ is.character(.) && n_distinct(.) < 50, as_factor)
 
 # 2. we could specify the column types
 read_csv("flights.csv", col_types = "iiiddddddfccffddddT")
@@ -63,7 +63,7 @@ nlevels(gss_cat$partyid)
 
 ```{r}
 gss_cat %>% count(partyid)
-fct_count(gss_cat$partyid, sort = TRUE)
+gss_cat$partyid %>% fct_count(sort = TRUE)
 ```
 
 ### Combining factors
@@ -92,6 +92,9 @@ nlevels(gss_cat2$partyid)
 ```{r}
 # drop unused levels of a specific factor
 gss_cat2$partyid <- gss_cat2$partyid %>% fct_drop()
+# equivalently
+gss_cat2 <- gss_cat2 %>% mutate(partyid = fct_drop(gss_cat2$partyid))
+
 levels(gss_cat2$partyid)
 ```
 
@@ -171,7 +174,7 @@ gss_cat %>% mutate(partyid = partyid %>%
 ```{r}
 # collapse small levels automatically
 gss_cat %>%
-  mutate(partyid = partyid %>% fct_lump(5)) %>%
+  mutate(partyid = partyid %>% fct_lump(4)) %>%
   ggplot() + geom_bar(aes(partyid))
 ```
 
@@ -197,7 +200,7 @@ Remark: there is a bug in forcats v0.4.0 such that the argument `group_other` in
 ```{r}
 library(lubridate)
 today()
-now() # in UTC (Coordinated Universal Time)
+now(tz = "UTC") # in UTC (Coordinated Universal Time)
 ```
 
 ```{r}
