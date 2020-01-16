@@ -17,34 +17,44 @@ Today, we will spend some time talking about some special data types in R.
 When importing data to R, base R has a burning desire to turn character
 information into factor. See for example, `read.table`, and `read.csv`.
 
-```{r}
-# to illustrate the issue of `read.csv`, let's write a csv file out of the gapminder dataset
-library(gapminder)
+```{r, message = FALSE}
 library(tidyverse)
-write_csv(gapminder, "gapminder.csv")
 ```
 
-```{r}
-# base R function
-read.csv("gapminder.csv")
+```{r, eval = FALSE}
+# to illustrate the issue of `read.csv`, let's write a csv file out of the gapminder dataset
+write_csv(gss_cat, "gss_cat.csv")
+```
+
+```{r, eval = FALSE}
+# base R function, character variables are automatically converted to factors
+read.csv("gss_cat.csv")
 ```
 
 
-```{r}
-# readr function
-read_csv("gapminder.csv")
+```{r, eval = FALSE}
+# readr function, character variables are imported as is
+read_csv("gss_cat.csv")
+# there are several workarounds,
+# 1. we could use `mutate_if` to force the conversion
+read_csv("gss_cat.csv") %>% mutate_if(is.character, as_factor)
+
+# 2. we could specify the column types
+read_csv("gss_cat.csv", col_types="dfdfffffd")
+
+# 3. use the rstudio import interface
 ```
 
 ### Factor inspection
 ```{r}
-levels(gapminder$continent)
-nlevels(gapminder$continent)
-class(gapminder$continent)
+class(gss_cat$partyid)
+levels(gss_cat$partyid)
+nlevels(gss_cat$partyid)
 ```
 
 ```{r}
-gapminder %>% count(continent)
-fct_count(gapminder$continent)
+gss_cat %>% count(partyid)
+fct_count(gss_cat$partyid, sort = TRUE)
 ```
 
 ### Dropping unused levels
@@ -52,84 +62,106 @@ fct_count(gapminder$continent)
 
 The number of levels won't change even all the rows corresponding to specific factor level are dropped.
 ```{r}
-h_countries <- c("Egypt", "Haiti", "Romania", "Thailand", "Venezuela")
-h_gap <- gapminder %>%
-  filter(country %in% h_countries)
-nlevels(h_gap$country)
+gss_cat2 <- gss_cat %>%
+  filter(partyid %in% c("Independent", "Strong democrat", "Strong republican"))
+nlevels(gss_cat2$partyid)
+```
+
+
+```{r}
+# drop a specific factor
+gss_cat2$partyid <- gss_cat2$partyid%>% fct_drop()
+levels(gss_cat2$partyid )
 ```
 
 ```{r}
-h_gap$country <- h_gap$country %>%
-  fct_drop() %>%
-  levels()
+# drop all the factors in a data frame
+gss_cat2 <- gss_cat2 %>% droplevels()
 ```
-
-```{r}
-h_gap <- h_gap %>% droplevels()
-```
-
-
 
 ### Change order of the levels
 
 ```{r}
-## default order is alphabetical
-gapminder$continent %>%
+gss_cat$partyid %>%
   levels()
 
 ## order by frequency
-gapminder$continent %>%
-  fct_infreq() %>%
-  levels()
+gss_cat %>% mutate(partyid = partyid %>% fct_infreq())
 
 ## backwards!
-gapminder$continent %>%
-  fct_infreq() %>%
-  fct_rev() %>%
-  levels()
+gss_cat %>% mutate(partyid = partyid %>% fct_infreq() %>% fct_rev())
 ```
 
 Why?
 
 ```{r}
-ggplot(gapminder) + geom_bar(aes(continent)) + coord_flip()
+ggplot(gss_cat) + geom_bar(aes(partyid)) + coord_flip()
 ```
 
 ```{r}
-ggplot(gapminder) + geom_bar(aes(continent %>% fct_infreq() %>% fct_rev())) +
-  xlab("continent") + coord_flip()
+ggplot(gss_cat) + geom_bar(aes(partyid %>% fct_infreq() %>% fct_rev())) +
+  xlab("partyid") + coord_flip()
 ```
 
 
 ```{r}
 # reorder factor according to values of another variable
-gap_asia_2007 <- gapminder %>% filter(year == 2007, continent == "Asia")
-ggplot(gap_asia_2007, aes(x = lifeExp, y = fct_reorder(country, lifeExp))) +
-  geom_point() + ylab("country")
+gss_cat %>%
+  group_by(partyid) %>%
+  summarize(mean_age = mean(age, na.rm = TRUE)) %>%
+  ggplot(aes(x = mean_age, y = fct_reorder(partyid, mean_age))) +
+  geom_point() + ylab("partyid")
 ```
 
 
 ### Change to any order
 
 ```{r}
-h_gap$country %>% levels()
-h_gap$country %>%
-  fct_relevel("Romania", "Haiti") %>%
-  levels()
+gss_cat$partyid %>% levels()
+gss_cat$partyid %>% fct_relevel("Strong republican", "Strong democrat") %>% levels()
+# use mutate verb to modifly the data frame
+gss_cat %>% mutate(partyid = partyid %>% fct_relevel("Strong republican", "Strong democrat"))
 ```
 
 
-### Record levels
+### Recode levelsx
 
 ```{r}
-i_gap <- gapminder %>%
-  filter(country %in% c("United States", "Sweden", "Australia")) %>%
-  droplevels()
-i_gap$country %>% levels()
-i_gap$country %>%
-  fct_recode("USA" = "United States", "Oz" = "Australia") %>%
+gss_cat$partyid %>% levels()
+gss_cat$partyid %>%
+  fct_recode(
+    "Independent,near rep" = "Ind,near rep",
+    "Independent,near dem" = "Ind,near dem") %>%
   levels()
+# if we need to modifly the data frame, then
+gss_cat %>% mutate(partyid = partyid %>%
+                     fct_recode(
+                       "Independent,near rep" = "Ind,near rep",
+                       "Independent,near dem" = "Ind,near dem")
+                   )
 ```
+
+### Collapse levels
+
+```{r}
+# collapse automatically
+gss_cat %>% 
+  mutate(partyid = partyid %>% fct_lump(5)) %>%
+  ggplot() + geom_bar(aes(partyid))
+```
+
+```{r}
+# collapse manually
+gss_cat %>% mutate(partyid = partyid %>% fct_collapse(
+    Missing = c("No answer", "Don't know"),
+    Rep = c("Strong republican", "Not str republican"),
+    Ind = c("Ind,near rep", "Independent", "Ind,near dem"),
+    Dem = c("Not str democrat", "Strong democrat"),
+    Other = c("Other party")
+  )) %>%
+  ggplot() + geom_bar(aes(partyid))
+```
+Remark: there is a bug in forcats v0.4.0 such that the argument `group_other` in `fct_collapse` is malfunction.
 
 
 ## Date and time
@@ -178,8 +210,10 @@ flights %>%
   select(year, month, day, hour, minute) %>% 
   mutate(
     date = make_date(year, month, day),
-    time = make_datetime(year, month, day, hour, minute,)))
+    time = make_datetime(year, month, day, hour, minute)))
 ```
+
+Remark: something was wrong above!
 
 ### Get components
 

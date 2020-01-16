@@ -413,7 +413,7 @@ library(tidyr)
 `pivot_longer` is the replacement for `gather()` and `pivot_wider()` is the replacement for `spread()`.
 Both are designed to be simpler and can handle more cases than gather and spread.
 
-### Privot longer
+### Pivot longer
 
 ```{r}
 relig_income %>%
@@ -433,7 +433,7 @@ billboard %>%
   )
 ```
 
-### Privot wider
+### Pivot wider
 
 ```{r}
 fish_encounters %>% pivot_wider(
