@@ -22,25 +22,29 @@ library(tidyverse)
 ```
 
 ```{r, eval = FALSE}
-# to illustrate the issue of `read.csv`, let's write a csv file out of the gapminder dataset
-write_csv(gss_cat, "gss_cat.csv")
+# to illustrate the issue of `read.csv`, let's write a csv file out of the flights dataset
+library(nycflights13)
+write_csv(flights %>% sample_n(100), "flights.csv")
 ```
 
 ```{r, eval = FALSE}
 # base R function, character variables are automatically converted to factors
-read.csv("gss_cat.csv")
+read.csv("flights.csv")
 ```
 
 
 ```{r, eval = FALSE}
 # readr function, character variables are imported as is
-read_csv("gss_cat.csv")
+read_csv("flights.csv")
 # there are several workarounds,
 # 1. we could use `mutate_if` to force the conversion
-read_csv("gss_cat.csv") %>% mutate_if(is.character, as_factor)
+read_csv("flights.csv") %>%
+  mutate_if(is.character, as_factor)
+read_csv("flights.csv") %>%
+  mutate_if(~ is.character(.) && n_distinct(.) < 20, as_factor)
 
 # 2. we could specify the column types
-read_csv("gss_cat.csv", col_types="dfdfffffd")
+read_csv("flights.csv", col_types = "iiiddddddfccffddddT")
 
 # 3. use the rstudio import interface
 ```
@@ -70,8 +74,8 @@ nlevels(gss_cat2$partyid)
 
 ```{r}
 # drop a specific factor
-gss_cat2$partyid <- gss_cat2$partyid%>% fct_drop()
-levels(gss_cat2$partyid )
+gss_cat2$partyid <- gss_cat2$partyid %>% fct_drop()
+levels(gss_cat2$partyid)
 ```
 
 ```{r}
@@ -118,7 +122,9 @@ gss_cat %>%
 
 ```{r}
 gss_cat$partyid %>% levels()
-gss_cat$partyid %>% fct_relevel("Strong republican", "Strong democrat") %>% levels()
+gss_cat$partyid %>%
+  fct_relevel("Strong republican", "Strong democrat") %>%
+  levels()
 # use mutate verb to modifly the data frame
 gss_cat %>% mutate(partyid = partyid %>% fct_relevel("Strong republican", "Strong democrat"))
 ```
@@ -131,28 +137,30 @@ gss_cat$partyid %>% levels()
 gss_cat$partyid %>%
   fct_recode(
     "Independent,near rep" = "Ind,near rep",
-    "Independent,near dem" = "Ind,near dem") %>%
+    "Independent,near dem" = "Ind,near dem"
+  ) %>%
   levels()
 # if we need to modifly the data frame, then
 gss_cat %>% mutate(partyid = partyid %>%
-                     fct_recode(
-                       "Independent,near rep" = "Ind,near rep",
-                       "Independent,near dem" = "Ind,near dem")
-                   )
+  fct_recode(
+    "Independent,near rep" = "Ind,near rep",
+    "Independent,near dem" = "Ind,near dem"
+  ))
 ```
 
 ### Collapse levels
 
 ```{r}
 # collapse automatically
-gss_cat %>% 
+gss_cat %>%
   mutate(partyid = partyid %>% fct_lump(5)) %>%
   ggplot() + geom_bar(aes(partyid))
 ```
 
 ```{r}
 # collapse manually
-gss_cat %>% mutate(partyid = partyid %>% fct_collapse(
+gss_cat %>%
+  mutate(partyid = partyid %>% fct_collapse(
     Missing = c("No answer", "Don't know"),
     Rep = c("Strong republican", "Not str republican"),
     Ind = c("Ind,near rep", "Independent", "Ind,near dem"),
@@ -169,7 +177,7 @@ Remark: there is a bug in forcats v0.4.0 such that the argument `group_other` in
 ```{r}
 library(lubridate)
 today()
-now()  # in UTC (Coordinated Universal Time)
+now() # in UTC (Coordinated Universal Time)
 ```
 
 
@@ -201,16 +209,17 @@ force_tz(t1, tzone = "America/Los_Angeles")
 ### From individual components
 ```{r}
 library(nycflights13)
-flights %>% 
+flights %>%
   select(year, month, day, hour, minute)
 ```
 
 ```{r}
-(flights_dt <- flights %>% 
-  select(year, month, day, hour, minute) %>% 
+(flights_dt <- flights %>%
+  select(year, month, day, hour, minute) %>%
   mutate(
     date = make_date(year, month, day),
-    time = make_datetime(year, month, day, hour, minute)))
+    time = make_datetime(year, month, day, hour, minute)
+  ))
 ```
 
 Remark: something was wrong above!
@@ -231,10 +240,10 @@ wday(datetime, label = TRUE, abbr = FALSE)
 
 
 ```{r}
-flights_dt %>% 
-  mutate(wday = wday(time, label = TRUE)) %>% 
+flights_dt %>%
+  mutate(wday = wday(time, label = TRUE)) %>%
   ggplot(aes(x = wday)) +
-    geom_bar()
+  geom_bar()
 ```
 
 
