@@ -1,7 +1,8 @@
 ---
 title: "Interactive visualization"
 output:
-  html_document: default
+  html_document:
+    df_print: paged
   pdf_document: default
 date: "01-21-2020"
 ---
@@ -131,7 +132,7 @@ mtcars %>%
 ## Error bar plot
 
 
-```{r}
+```{r, message = FALSE}
 mpg %>% 
   group_by(cyl) %>%
   summarize(mhwy = mean(hwy), se = sd(hwy)/sqrt(n())) %>%
@@ -142,7 +143,7 @@ mpg %>%
 
 ## Segments
 
-```{r}
+```{r, message = FALSE}
 mpg %>%
   group_by(model) %>%
   summarize(c = mean(cty), h = mean(hwy)) %>%
@@ -171,7 +172,7 @@ mpg %>%
 ## Histograms
 
 
-```{r}
+```{r, message = FALSE}
 mpg %>%
   plot_ly(x= ~hwy, color = ~factor(cyl)) %>% 
   add_histogram(histnorm = "", alpha = 0.7) %>%  # histnorm could be "", "probability", "density" and "probability density"
@@ -179,7 +180,7 @@ mpg %>%
 ```
 
 
-```{r}
+```{r, message = FALSE}
 # work with wide format directly
 relig_income %>% 
   mutate(religion = as_factor(religion)) %>%
@@ -192,11 +193,44 @@ relig_income %>%
 
 ## Bar plots
 
+```{r, message = FALSE}
+mpg %>%
+  mutate(cyl = as_factor(cyl)) %>% 
+  count(drv, cyl) %>%
+  plot_ly(x = ~drv, y = ~n, color = ~cyl) %>% 
+  add_bars() %>% 
+  layout(barmode = "stack")
+```
+
 ## Box plots
 
+```{r, message = FALSE}
+mpg %>%
+  mutate(cyl = as_factor(cyl)) %>% 
+  plot_ly(x = ~drv, y = ~hwy, color = ~cyl) %>% 
+  add_boxplot() %>% 
+  layout(boxmode = "group")
+```
 
 ## 3D charts
 
+```{r, message = FALSE}
+mpg %>%
+  mutate(cyl = as_factor(cyl)) %>%
+  plot_ly(x = ~cty, y = ~hwy, z = ~cyl) %>%
+  add_markers(color = ~cyl)
+```
+
+```{r, message = FALSE}
+x <- seq_len(nrow(volcano)) + 100
+y <- seq_len(ncol(volcano)) + 500
+plot_ly() %>% add_surface(x = ~x, y = ~y, z = ~volcano, colorscale = "Earth")
+```
+
+```{r}
+# heatmap
+plot_ly() %>% add_heatmap(x = ~x, y = ~y, z = ~volcano, colorscale = "Earth")
+```
 
 
 ## Arranging views
