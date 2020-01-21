@@ -1,0 +1,213 @@
+---
+title: "Interactive visualization"
+output:
+  html_document: default
+  pdf_document: default
+date: "01-21-2020"
+---
+
+```{r, message = FALSE}
+library(tidyverse)
+library(plotly)
+```
+
+# plotly vs ggplot2
+
+```{r}
+mpg %>%
+  ggplot(aes(displ, hwy, color = factor(cyl))) + geom_point() +
+  guides(color = guide_legend("cyl"))
+```
+
+```{r, message = FALSE}
+mpg %>% 
+  plot_ly(x = ~displ, y = ~hwy, color =  ~factor(cyl))
+```
+
+Cons:
+- Interactive 
+- Plotly handles multiple wide data columns (ggplot2 requies long format)
+- Plotly works for Python, Matlab, and Excel, among other languages
+- Easy layout customization
+- 3D charts
+
+Pros:
+- Doesn't work very well with pdf
+- Facet wrapping is a bit complicated compared with ggplot2
+- adding legend title is difficult
+
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point(data = mutate(mpg, cyl = NULL), color = "grey75") +
+  geom_point() +
+  facet_wrap(vars(cyl))
+```
+
+
+
+## `ggplotly` function for ggplot2 users
+
+```{r message=FALSE}
+p <- mpg %>%
+  mutate(cyl = as_factor(cyl)) %>%
+  ggplot(aes(displ, hwy, color = cyl)) + geom_point()
+ggplotly(p)
+```
+
+
+## We won't learn (much of)
+
+- ggplot2 (or should we?)
+
+- HTML, SVG, CSS, JavaScript
+
+- d3.js (R package r2d3)
+
+
+## Scatter plots + lines
+
+```{r message=FALSE}
+p <- economics %>%
+  sample_n(n()) %>%
+  plot_ly(x = ~date, y = ~psavert)
+p %>% add_paths()  # using the order of the data frame 
+p %>% add_lines() 
+```
+
+
+```{r}
+library(lubridate)
+econ <- economics %>%
+  mutate(yr = year(date), mnth = month(date))
+
+# One trace (more performant, but less interactive)
+econ %>%
+  group_by(yr) %>%
+  plot_ly(x = ~mnth, y = ~uempmed) %>%
+  add_lines(text = ~yr)
+
+# Multiple traces (less performant, but more interactive)
+plot_ly(econ, x = ~mnth, y = ~uempmed) %>%
+  add_lines(color = ~ordered(yr))
+```
+
+### Use Canvas rather then SVG for large dataset
+
+```{r}
+plot_ly(econ, x = ~mnth, y = ~uempmed) %>%
+  add_lines(color = ~ordered(yr)) %>%
+  toWebGL()
+```
+
+
+### Markers
+
+- alpha blending to see replicates
+
+```{r, message = FALSE}
+mpg %>% 
+  plot_ly(x = ~cty, y = ~hwy) %>% 
+  add_markers(alpha = 0.2)
+```
+
+
+- colors for grouping
+
+```{r, message = FALSE}
+mtcars %>% 
+  plot_ly(x = ~disp, y = ~mpg) %>% 
+  add_markers(color = ~factor(cyl))
+```
+
+- symbols
+
+```{r, message = FALSE}
+mtcars %>% 
+  plot_ly(x = ~disp, y = ~mpg) %>% 
+  add_markers(symbol = ~factor(cyl))
+```
+
+## Error bar plot
+
+
+```{r}
+mpg %>% 
+  group_by(cyl) %>%
+  summarize(mhwy = mean(hwy), se = sd(hwy)/sqrt(n())) %>%
+  plot_ly(x = ~mhwy, y = ~factor(cyl)) %>%
+  add_markers(error_x = ~list(value = se)) %>%
+  layout(xaxis = list(title = "mean hwy"), yaxis = list(title = "cyl"))
+```
+
+## Segments
+
+```{r}
+mpg %>%
+  group_by(model) %>%
+  summarize(c = mean(cty), h = mean(hwy)) %>%
+  mutate(model = forcats::fct_reorder(model, c)) %>%
+  plot_ly() %>%
+  add_segments(
+    x = ~c, y = ~model,
+    xend = ~h, yend = ~model, 
+    color = I("gray"), showlegend = FALSE
+  ) %>%
+  add_markers(
+    x = ~c, y = ~model, 
+    color = I("blue"), 
+    name = "mpg city"
+  ) %>%
+  add_markers(
+    x = ~h, y = ~model, 
+    color = I("red"),
+    name  = "mpg highway"
+  ) %>%
+  layout(xaxis = list(title = "Miles per gallon"))
+```
+
+
+
+## Histograms
+
+
+```{r}
+mpg %>%
+  plot_ly(x= ~hwy, color = ~factor(cyl)) %>% 
+  add_histogram(histnorm = "", alpha = 0.7) %>%  # histnorm could be "", "probability", "density" and "probability density"
+  layout(barmode = "overlay")  # barmode could be "overlay", "stack" and "group"
+```
+
+
+```{r}
+# work with wide format directly
+relig_income %>% 
+  mutate(religion = as_factor(religion)) %>%
+  plot_ly(y = ~religion) %>% 
+  add_bars(~`$10-20k`, name = "$10-20k") %>%
+  add_bars(~`$50-75k`, name = "$50-75k") %>%  
+  layout(xaxis = list(title = "income"))
+```
+
+
+## Bar plots
+
+## Box plots
+
+
+## 3D charts
+
+
+
+## Arranging views
+
+
+## Animating views
+
+
+
+
+# References
+
+Plotly official website: https://plot.ly/r/
+Carson Sievert, Interactive web-based data visualization with R, plotly, and shiny https://plotly-r.com/
