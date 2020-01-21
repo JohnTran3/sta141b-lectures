@@ -211,15 +211,15 @@ as_datetime(1579192970)
 ```
 
 ```{r}
-ymd("2017-01-31")
-mdy("January 31st, 2017")
-dmy("31-Jan-2017")
+ymd("2020-01-21")
+mdy("January 21st, 2020")
+dmy("21-Jan-2020")
 ```
 ```{r}
-ymd_hms("2017-01-31 20:11:59")
-mdy_hm("01/31/2017 08:01")
+ymd_hms("2020-01-21 20:11:59")
+mdy_hm("01/21/2020 08:01")
 
-mdy_hm("01/31/2017 08:01", tz = "US/Eastern")
+mdy_hm("01/21/2020 08:01", tz = "US/Eastern")
 ```
 
 ```{r}
@@ -229,7 +229,7 @@ OlsonNames() %>% keep(~str_starts(., "US/"))
 ```
 
 ```{r}
-(t1 <- mdy_hm("01/31/2017 08:01", tz = "US/Eastern"))
+(t1 <- mdy_hm("01/21/2020 08:01", tz = "US/Eastern"))
 # convert timezone
 with_tz(t1, tzone = "US/Pacific")
 # fix a timezone
@@ -257,15 +257,18 @@ Remark: something was wrong above!
 ### Get components
 
 ```{r}
-datetime <- ymd_hms("2016-07-08 12:34:56")
+dt <- ymd_hms("2016-07-08 12:34:56")
 
-year(datetime)
-month(datetime)
-month(datetime, label = TRUE)
-mday(datetime)
-yday(datetime)
-wday(datetime)
-wday(datetime, label = TRUE, abbr = FALSE)
+year(dt)
+month(dt)
+month(dt, label = TRUE)
+mday(dt)
+yday(dt)
+wday(dt)
+wday(dt, label = TRUE, abbr = FALSE)
+hour(dt)
+minute(dt)
+dst(dt)
 ```
 
 
@@ -280,24 +283,50 @@ flights_dt %>%
 ### Math on data and time
 
 ```{r}
-nor <- ymd_hms("2018-01-01 01:30:00",tz="US/Eastern") 
-nor + minutes(90)
-nor + dminutes(90)
+# a regular day
+nor <- ymd_hms("2018-01-01 01:30:00", tz = "US/Eastern") 
+nor + minutes(90)  # literal
+nor + dminutes(90)  # duration
 
-gap <- ymd_hms("2018-03-11 01:30:00",tz="US/Eastern") 
-gap + minutes(90)
-gap + dminutes(90)
+# day light saving
+gap <- ymd_hms("2018-03-11 01:30:00", tz = "US/Eastern") 
+gap + minutes(90)  # literal
+gap + dminutes(90)  # duration
 
+# leap year
 leap <- ymd("2019-03-01")
-leap + years(1)
-leap + dyears(1)
+leap + years(1)  # literal
+leap + dyears(1)  # duration
 ```
 
+
+```{r}
+t1 <- mdy_hm("01/21/2020 08:31", tz = "US/Eastern")
+t2 <- mdy_hm("01/21/2020 12:01", tz = "US/Pacific")
+t2 - t1
+```
+
+```{r}
+# rounding
+t1 <- mdy_hm("01/21/2020 08:31", tz = "US/Eastern")
+floor_date(t1, unit = "month")
+round_date(t1, unit = "month")
+ceiling_date(t1, unit = "month")
+```
+
+
+### Interval
+
+```{r}
+intvl <- interval(ymd("2019-12-01"), ymd("2020-01-21"))
+int_start(intvl)
+int_end(intvl)
+ymd("2019-12-31") %within% intvl
+```
 
 
 # References
 
-https://r4ds.had.co.nz
-https://lubridate.tidyverse.org/
-https://forcats.tidyverse.org/
-
+R for Data Science https://r4ds.had.co.nz
+Documentation of forcats https://forcats.tidyverse.org/
+Documentation of lubridate https://lubridate.tidyverse.org/
