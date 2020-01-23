@@ -1,0 +1,53 @@
+---
+title: "Diagrams"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+```{r setup}
+library(DiagrammeR)
+```
+
+## Graphvis
+
+`grViz` produces pdf-friendly graphs and it uses graphvis and DOT languauge behind the scene.
+See the documentation of DiagrammeR for more details.
+
+```{r, echo = FALSE}
+grViz("diagram1.gv")
+```
+
+
+## Mermaid
+
+
+```{r results="asis", echo = FALSE}
+# this is needed to fix a mermaid rendering bug
+cat("
+<style>
+.section {
+   opacity: 1;
+}
+</style>
+")
+```
+
+The function `mermaid` wraps the `mermaid.js` package and provides a number of
+interesting diagrams. Check https://mermaid-js.github.io/mermaid. 
+However, these graphs are not pdf-friendly.
+
+```{r, echo = FALSE}
+mermaid("diagram2.mmd")
+```
+
+
+```{r, echo = FALSE}
+mermaid("diagram3.mmd")
+```
+
+# Reference
+
+DiagrammeR: http://rich-iannone.github.io/DiagrammeR
+

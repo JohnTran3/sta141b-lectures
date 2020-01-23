@@ -21,6 +21,7 @@
 | 01-21 | [visualization](01-21/01-21-visualization.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-21/01-21-visualization.html) | |
 |  01-23| [maps](01-23/maps.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/maps.html) | |
 |       | [data table](01-23/datatable.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/datatable.html) | |
+|       | [diagram](01-23/diagram.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/diagram.html) | |
 
 ## Site
 
