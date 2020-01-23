@@ -1,0 +1,47 @@
+---
+title: "DataTable"
+date: "01-23-2020"
+---
+
+```{r, message = FALSE}
+library(tidyverse)
+library(DT)
+library(lubridate)
+```
+
+## DataTable
+
+The R package `DT` provides an R interface to the JavaScript library `DataTables`.
+
+```{r}
+datatable(iris)
+```
+
+Some helper functions
+
+
+```{r}
+(df <- tibble(
+  A = rnorm(10),
+  B = runif(10),
+  C = rpois(10, 1e5),
+  D = rpois(10, 1e5),
+  E = as_datetime(as.integer(runif(10, 1500000000, 1579000000)))
+))
+datatable(df) %>% 
+  formatRound("A", 3) %>% 
+  formatPercentage("B") %>% 
+  formatCurrency(c("C", "D")) %>% 
+  formatDate("E")
+```
+
+Remarks: the package `scales` has a lot of helper functions to format variables in general, though
+the functions are designed mainly for ggplot2.
+
+
+
+# Reference
+
+Documentation of DT https://rstudio.github.io/DT
+Documentation of scales https://scales.r-lib.org/
+

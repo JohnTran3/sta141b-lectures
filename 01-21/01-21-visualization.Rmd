@@ -1,9 +1,5 @@
 ---
 title: "Interactive visualization"
-output:
-  html_document:
-    df_print: paged
-  pdf_document: default
 date: "01-21-2020"
 ---
 
@@ -16,8 +12,8 @@ library(plotly)
 
 ```{r}
 mpg %>%
-  ggplot(aes(displ, hwy, color = factor(cyl))) + geom_point() +
-  guides(color = guide_legend("cyl"))
+  mutate(cyl = as_factor(cyl)) %>% 
+  ggplot(aes(displ, hwy, color = cyl)) + geom_point()
 ```
 
 ```{r, message = FALSE}
@@ -25,14 +21,14 @@ mpg %>%
   plot_ly(x = ~displ, y = ~hwy, color =  ~factor(cyl))
 ```
 
-Cons:
+Pros:
 - Interactive 
 - Plotly handles multiple wide data columns (ggplot2 requies long format)
 - Plotly works for Python, Matlab, and Excel, among other languages
 - Easy layout customization
 - 3D charts
 
-Pros:
+Cons:
 - Doesn't work very well with pdf
 - Facet wrapping is a bit complicated compared with ggplot2
 - adding legend title is difficult
@@ -73,7 +69,7 @@ p <- economics %>%
   sample_n(n()) %>%
   plot_ly(x = ~date, y = ~psavert)
 p %>% add_paths()  # using the order of the data frame 
-p %>% add_lines() 
+p %>% add_lines()
 ```
 
 
@@ -89,8 +85,10 @@ econ %>%
   add_lines(text = ~yr)
 
 # Multiple traces (less performant, but more interactive)
-plot_ly(econ, x = ~mnth, y = ~uempmed) %>%
-  add_lines(color = ~ordered(yr))
+econ %>% 
+  mutate(yr = ordered(yr)) %>% 
+  plot_ly(x = ~mnth, y = ~uempmed) %>%
+  add_lines(color = ~yr)
 ```
 
 ### Use Canvas rather then SVG for large dataset
@@ -141,7 +139,7 @@ mpg %>%
   layout(xaxis = list(title = "mean hwy"), yaxis = list(title = "cyl"))
 ```
 
-## Segments
+## Dumbbell Plot
 
 ```{r, message = FALSE}
 mpg %>%
@@ -179,16 +177,10 @@ mpg %>%
   layout(barmode = "overlay")  # barmode could be "overlay", "stack" and "group"
 ```
 
+```{r}
+names(relig_income) %>% paste0(collapse = "\n") %>% cat
+``` 
 
-```{r, message = FALSE}
-# work with wide format directly
-relig_income %>% 
-  mutate(religion = as_factor(religion)) %>%
-  plot_ly(y = ~religion) %>% 
-  add_bars(~`$10-20k`, name = "$10-20k") %>%
-  add_bars(~`$50-75k`, name = "$50-75k") %>%  
-  layout(xaxis = list(title = "income"))
-```
 
 
 ## Bar plots
@@ -202,6 +194,37 @@ mpg %>%
   layout(barmode = "stack")
 ```
 
+
+```{r, message = FALSE}
+# work with wide format directly
+relig_income %>% 
+  mutate(religion = as_factor(religion)) %>%
+  plot_ly(y = ~religion) %>% 
+  add_bars(~`<$10k`, name = "<$10k") %>%
+  add_bars(~`$10-20k`, name = "$10-20k") %>%
+  add_bars(~`$20-30k`, name = "$20-30k") %>%
+  add_bars(~`$30-40k`, name = "$30-40k") %>%
+  add_bars(~`$40-50k`, name = "$40-50k") %>%
+  add_bars(~`$50-75k`, name = "$50-75k") %>%
+  add_bars(~`$75-100k`, name = "$75-100k") %>%
+  add_bars(~`$100-150k`, name = "$100-150k") %>%
+  add_bars(~`>150k`, name = ">150k") %>%
+  add_bars(~`Don't know/refused`, name = "Don't know/refused") %>%
+  layout(xaxis = list(title = "count"), barmode = "stack")
+```
+
+```{r, message = FALSE}
+# may be easier with `pivot_longer`?
+relig_income %>% 
+  mutate(religion = as_factor(religion)) %>%
+  pivot_longer(-religion, names_to = "income", values_to = "count") %>%
+  mutate(income = fct_inorder(income)) %>% 
+  plot_ly(x = ~count, y = ~religion, color = ~income) %>% 
+  add_bars() %>%
+  layout(barmode = "stack")
+```
+
+
 ## Box plots
 
 ```{r, message = FALSE}
@@ -212,7 +235,81 @@ mpg %>%
   layout(boxmode = "group")
 ```
 
-## 3D charts
+## Sunburst
+
+```{r, message = FALSE}
+library(gapminder)
+gapminder2007 <- gapminder %>%
+  filter(year == 2007)
+gapminder2007 %>% 
+  select(children = country, parents = continent, pop = pop) %>%
+  bind_rows(
+    gapminder2007 %>%
+      group_by(continent) %>%
+      summarize() %>% 
+      transmute(children = continent, parents = "World", pop = 0)
+  ) %>%
+  add_row(children = "World", parents = "", pop = 0) %>% 
+  plot_ly(labels = ~children, parents = ~parents, values = ~pop, type = "sunburst")
+```
+
+## Map
+
+While plotly has map plotting feature, we will use a more popular map library `leaflet`.
+
+```{r}
+library(leaflet)
+leaflet() %>% setView(lng = -121.7405, lat = 38.5449, zoom = 13) %>% 
+  addTiles()
+```
+
+
+```{r}
+quakes %>% 
+  filter(mag > quantile(mag, 0.95)) %>% 
+  leaflet() %>%
+  addProviderTiles(providers$Wikimedia) %>% 
+  addMarkers(~long, ~lat, label = ~mag)
+```
+
+### Choropleths
+
+To draw a choropleth, we first need the map data. There is a package `tigris` to download us map data from census.
+
+```{r, message = FALSE}
+library(leaflet)
+library(tigris)
+states <- states(cb = TRUE)  # lowest resolution us map
+class(states)
+```
+
+```{r, message = FALSE}
+starbucks <- read_csv("starbucks.csv")
+(starbucks <- starbucks %>%
+  count(Province) %>%
+  rename(state = Province, total = n))
+```
+
+
+```{r}
+states_starbucks <- states %>% 
+  geo_join(starbucks, "STUSPS", "state") %>%
+  subset(!is.na(total))
+pal <- colorNumeric("Greens", domain=states_starbucks$total)
+```
+
+```{r, message = FALSE}
+states_starbucks %>%
+  leaflet() %>%
+  setView(lng = -100, lat = 40, zoom = 4) %>% 
+  addProviderTiles(providers$Wikimedia) %>% 
+  addPolygons(fillColor = ~pal(total), fillOpacity = 0.7, weight = 1, smoothFactor = 0.2) %>% 
+  addLegend(pal = pal, values = states_starbucks$total, position = "bottomright", title = "Starbucks")
+```
+
+
+
+## 3D charts and its family
 
 ```{r, message = FALSE}
 mpg %>%
@@ -224,21 +321,50 @@ mpg %>%
 ```{r, message = FALSE}
 x <- seq_len(nrow(volcano)) + 100
 y <- seq_len(ncol(volcano)) + 500
-plot_ly() %>% add_surface(x = ~x, y = ~y, z = ~volcano, colorscale = "Earth")
+plot_ly(x = ~x, y = ~y, z = ~volcano) %>% 
+  add_surface(colorscale = "Earth")
 ```
 
 ```{r}
 # heatmap
-plot_ly() %>% add_heatmap(x = ~x, y = ~y, z = ~volcano, colorscale = "Earth")
+plot_ly(x = ~x, y = ~y, z = ~volcano) %>% 
+  add_heatmap(colorscale = "Earth")
 ```
 
+```{r}
+plot_ly(x = ~x, y = ~y, z = ~volcano) %>% 
+  add_contour(colorscale = "Earth")
+```
 
-## Arranging views
 
 
 ## Animating views
 
+```{r}
+df <- tibble(
+  x = c(1,2,1), 
+  y = c(1,2,1), 
+  t = c(1,2,3)
+)
 
+df %>%
+  plot_ly(x = ~x, y = ~y, frame = ~t, showlegend = F)
+```
+
+
+```{r, message = FALSE}
+library(gapminder)
+(p <- gapminder %>%
+  plot_ly(x = ~lifeExp, y = ~gdpPercap, size = ~pop, color = ~continent, frame = ~year) %>%
+  layout(yaxis = list(type = "log" )))
+```
+
+
+
+## A more powerful (therefore difficult to master) graphic library `r2d3`
+
+`r2d3` is an R binding to the famous javascript library `d3.js`. Visit https://github.com/d3/d3/wiki/Gallery to see
+some of the things that `d3.js` is able to create.
 
 
 # References

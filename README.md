@@ -19,6 +19,7 @@
 | 01-09 - 01-14 | [tidy data](01-09/01-09-tidy-data.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-09/01-09-tidy-data.html) | [pdf](01-09/01-09-tidy-data.pdf) |
 | 01-16 | [special data](01-16/01-16-special-data.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-16/01-16-special-data.html) | [pdf](01-16/01-16-special-data.pdf) |
 | 01-21 | [visualization](01-21/01-21-visualization.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-21/01-21-visualization.html) | |
+| 01-23 | [visualization (2)](01-23/datatable.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-23/datatable.html) | |
 
 ## Site
 
