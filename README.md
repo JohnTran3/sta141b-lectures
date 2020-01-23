@@ -15,12 +15,12 @@
 
 | Date  | Note                                         | HTML                                  | PDF                                 |
 | ----  | ----                                         | ----                                  | ---                                 |
-| 01-07 | [introduction](01-07/01-07-introduction.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-07/01-07-introduction.html) | [pdf](01-07/01-07-introduction.pdf) |
-| 01-09 - 01-14 | [tidy data](01-09/01-09-tidy-data.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-09/01-09-tidy-data.html) | [pdf](01-09/01-09-tidy-data.pdf) |
-| 01-16 | [special data](01-16/01-16-special-data.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-16/01-16-special-data.html) | [pdf](01-16/01-16-special-data.pdf) |
-| 01-21 | [visualization](01-21/01-21-visualization.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-21/01-21-visualization.html) | |
-| 01-23 | [data table](01-23/datatable.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-23/datatable.html) | |
-|        | [maps](01-23/maps.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-23/maps.html) | |
+| 01-07 | [introduction](01-07/01-07-introduction.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-07/01-07-introduction.html) | [pdf](01-07/01-07-introduction.pdf) |
+| 01-09 - 01-14 | [tidy data](01-09/01-09-tidy-data.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-09/01-09-tidy-data.html) | [pdf](01-09/01-09-tidy-data.pdf) |
+| 01-16 | [special data](01-16/01-16-special-data.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-16/01-16-special-data.html) | [pdf](01-16/01-16-special-data.pdf) |
+| 01-21 | [visualization](01-21/01-21-visualization.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-21/01-21-visualization.html) | |
+|  01-23| [maps](01-23/maps.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/maps.html) | |
+|       | [data table](01-23/datatable.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/datatable.html) | |
 
 ## Site
 
