@@ -20,7 +20,7 @@
 | 01-16 | [special data](01-16/01-16-special-data.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-16/01-16-special-data.html) | [pdf](01-16/01-16-special-data.pdf) |
 | 01-21 | [visualization](01-21/01-21-visualization.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-21/01-21-visualization.html) | |
 | 01-23 | [data table](01-23/datatable.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-23/datatable.html) | |
-|        | [data table](01-23/map.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-23/map.html) | |
+|        | [maps](01-23/maps.Rmd) | [html](https://cdn.statically.io/gh/UCDavis-STA-141B-Winter-2020/sta141b-lectures/master/01-23/maps.html) | |
 
 ## Site
 
