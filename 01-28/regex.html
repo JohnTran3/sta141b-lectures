@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -330,6 +329,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -366,7 +366,16 @@ summary {
 </div>
 
 
+<div id="admin-stuff" class="section level1">
+<h1>Admin Stuff</h1>
+<ul>
+<li>assignment 2 is due today</li>
+<li>introduce <code>styler</code></li>
+</ul>
 <pre class="r"><code>library(tidyverse)</code></pre>
+</div>
+<div id="regular-expression" class="section level1">
+<h1>Regular Expression</h1>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>A regular expression, <code>regex</code> or <code>regexp</code> is a sequence of characters that define a search pattern.</p>
@@ -375,6 +384,7 @@ summary {
 </div>
 <div id="basic-concepts" class="section level2">
 <h2>Basic concepts</h2>
+<p>We will use <code>https://regex101.com/</code> to illustrate the following. (Choose the Python engine to best mimic ICU standard)</p>
 <ul>
 <li><p>Boolean “or” - <code>gray|grey</code> can match <code>gray</code> or <code>grey</code></p></li>
 <li><p>Grouping - Parentheses are used to define the scope and precedence of the operators - <code>gr(a|e)y</code> can match <code>gray</code> and <code>grey</code>.</p></li>
@@ -445,22 +455,21 @@ summary {
 <li><code>[^abc]</code> matches any character other than “a”, “b”, or “c”</li>
 <li><code>[^\]]</code> matches any <code>]</code> character which is not <code>]</code>.</li>
 </ul></li>
-<li><p>Special characters - see <a href="https://github.com/rstudio/cheatsheets/blob/master/strings.pdf" class="uri">https://github.com/rstudio/cheatsheets/blob/master/strings.pdf</a></p>
-<p>Honable mentions</p>
-<ul>
-<li><code>\n</code> matches a new line</li>
-<li><code>\s</code> mathces a space or a tab</li>
-</ul></li>
+<li><p>Special characters</p>
+<p>Honable mentions | Pattern | matches| |—-|—| |<code>\.</code>| <code>.</code>| |<code>\!</code>| <code>!</code>| |<code>\?</code>| <code>?</code>| |<code>\\</code>| <code>\</code>| |<code>\(</code>| <code>(</code>| |<code>\{</code>| <code>{</code>| |<code>\}</code>| <code>}</code>| |<code>\[</code>| <code>[</code>| |<code>\]</code>| <code>]</code>| |<code>\n</code>| a new line| |<code>\s</code>| a space or a tab| |<code>\S</code>| not a space nor a tab| |<code>\d</code>| a digit| |<code>\D</code>| a non digit| |<code>\w</code>| a word character (includes for example CJK chars)| |<code>\W</code>| a non word character| |<code>\b</code> | word boundaries| ||</p></li>
 </ul>
 </div>
 <div id="escaping-characters" class="section level2">
 <h2>Escaping characters</h2>
-<p>Two characters need to be specially treated in double quotes.</p>
+<p>In R, these two characters need to be specially treated in double quotes.</p>
 <ul>
 <li><code>&quot;\\&quot;</code> means a single backslash</li>
 <li><code>&quot;\&quot;&quot;</code> means a double quote</li>
 </ul>
 </div>
+</div>
+<div id="package-stringr" class="section level1">
+<h1>Package <code>stringr</code></h1>
 <div id="manage-strings" class="section level2">
 <h2>Manage Strings</h2>
 <pre class="r"><code>fruit &lt;- c(&quot;apple&quot;, &quot;banana&quot;, &quot;pear&quot;, &quot;pinapple&quot;)
@@ -804,6 +813,7 @@ str_detect(strings, &quot;a.b&quot;)</code></pre>
 calculus_url &lt;- &quot;https://en.wikipedia.org/wiki/Calculus&quot;
 calculus &lt;- read_lines(calculus_url) %&gt;% 
   str_c(collapse = &quot;\n&quot;)</code></pre>
+<p>We want to extract all words from the document.</p>
 </div>
 <div id="more-advanced-topics-of-regex" class="section level2">
 <h2>More advanced topics of regex</h2>
@@ -814,6 +824,7 @@ calculus &lt;- read_lines(calculus_url) %&gt;%
 <li>Online regex tester <a href="https://regex101.com/" class="uri">https://regex101.com/</a></li>
 <li>R for Data Science <a href="https://r4ds.had.co.nz/strings.html" class="uri">https://r4ds.had.co.nz/strings.html</a></li>
 </ul>
+</div>
 </div>
 
 

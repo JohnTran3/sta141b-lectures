@@ -6,9 +6,15 @@ output:
 ---
 
 
+# Admin Stuff
+- assignment 2 is due today
+- introduce `styler`
+
 ```{r, message = FALSE}
 library(tidyverse)
 ```
+
+# Regular Expression
 
 ## Introduction
 
@@ -22,6 +28,8 @@ We again prefer the tidyverse packages over base functions.
 
 
 ## Basic concepts
+
+We will use `https://regex101.com/` to illustrate the following. (Choose the Python engine to best mimic ICU standard)
 
 - Boolean "or" - `gray|grey` can match `gray` or `grey`
 
@@ -70,19 +78,40 @@ We again prefer the tidyverse packages over base functions.
     - `[^abc]` matches any character other than "a", "b", or "c"
     - `[^\]]` matches any `]` character which is not `]`.
   
-- Special characters - see https://github.com/rstudio/cheatsheets/blob/master/strings.pdf
+- Special characters
   
   Honable mentions
-    - `\n` matches a new line
-    - `\s` mathces a space or a tab
-
+  | Pattern | matches|
+  |----|---|
+  |`\.`| `.`|
+  |`\!`| `!`|
+  |`\?`| `?`|
+  |`\\`| `\`|
+  |`\(`| `(`|
+  |`\{`| `{`|
+  |`\}`| `}`|
+  |`\[`| `[`|
+  |`\]`| `]`|
+  |`\n`| a new line|
+  |`\s`| a space or a tab|
+  |`\S`| not a space nor a tab|
+  |`\d`| a digit|
+  |`\D`| a non digit|
+  |`\w`| a word character (includes for example CJK chars)|
+  |`\W`| a non word character|
+  |`\b` | word boundaries|
+  ||
+  
+  
 ## Escaping characters
 
-Two characters need to be specially treated in double quotes.
+In R, these two characters need to be specially treated in double quotes.
 
   - `"\\"` means a single backslash
   - `"\""` means a double quote
 
+
+# Package `stringr`
 
 ## Manage Strings
 
@@ -333,6 +362,9 @@ calculus_url <- "https://en.wikipedia.org/wiki/Calculus"
 calculus <- read_lines(calculus_url) %>% 
   str_c(collapse = "\n")
 ```
+
+We want to extract all words from the document.
+
 
 
 ## More advanced topics of regex
