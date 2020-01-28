@@ -22,16 +22,11 @@ grViz("diagram1.gv")
 
 ## Mermaid
 
-
-```{r results="asis", echo = FALSE}
-# this is needed to fix a mermaid rendering bug
-cat("
-<style>
+```{css}
+/* to fix a rendering bug of mermaid */
 .section {
    opacity: 1;
 }
-</style>
-")
 ```
 
 The function `mermaid` wraps the `mermaid.js` package and provides a number of
