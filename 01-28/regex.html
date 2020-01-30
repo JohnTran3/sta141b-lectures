@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 
 <meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -329,7 +330,6 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
-  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -745,7 +745,6 @@ str_split_fixed(fruits, &quot; and &quot;, 3)</code></pre>
 <pre><code>##      [,1]         [,2]      [,3]               
 ## [1,] &quot;apples&quot;     &quot;oranges&quot; &quot;pears and bananas&quot;
 ## [2,] &quot;pineapples&quot; &quot;mangos&quot;  &quot;guavas&quot;</code></pre>
-<p>{</p>
 </div>
 <div id="glue-string" class="section level2">
 <h2>Glue String</h2>
@@ -817,12 +816,253 @@ str_detect(strings, &quot;a.b&quot;)</code></pre>
 <pre class="r"><code># we need some string
 calculus_url &lt;- &quot;https://en.wikipedia.org/wiki/Calculus&quot;
 calculus &lt;- read_lines(calculus_url) %&gt;%
-  str_c(collapse = &quot;\n&quot;)</code></pre>
-<p>We want to extract all words from the document.</p>
+  str_flatten()</code></pre>
+<pre class="r"><code>calculus %&gt;%
+  str_extract_all(&quot;&lt;p&gt;.*?&lt;/p&gt;&quot;) %&gt;%
+  unlist() %&gt;%
+  str_remove_all(&quot;&lt;/?\\w+[^&gt;]*&gt;&quot;) %&gt;%
+  str_extract_all(&quot;[a-zA-Z]+&quot;) %&gt;%
+  unlist() %&gt;%
+  str_to_lower() %&gt;%
+  tibble(word = .) %&gt;%
+  count(word) %&gt;%
+  arrange(desc(n))</code></pre>
+<pre><code>## # A tibble: 1,140 x 2
+##    word         n
+##    &lt;chr&gt;    &lt;int&gt;
+##  1 the        424
+##  2 of         290
+##  3 a          162
+##  4 and        156
+##  5 is         133
+##  6 to         126
+##  7 in         121
+##  8 calculus    87
+##  9 function    64
+## 10 as          52
+## # … with 1,130 more rows</code></pre>
 </div>
 <div id="more-advanced-topics-of-regex" class="section level2">
 <h2>More advanced topics of regex</h2>
+<p>I assume that you are now comfortable with the basic regex. Let’s talk about some more advanced topics.</p>
+<ul>
+<li><p>non-capturing groups</p>
+<p>a capturing group could be created by using a pair of parentheses <code>(&lt;regex&gt;)</code> and a non-captureing group can be created by using <code>(?:&lt;regex&gt;)</code>.</p></li>
+</ul>
+<pre class="r"><code># with captureing groups
+str_match(&quot;12mb&quot;, &quot;([0-9]+)([a-z]+)&quot;)</code></pre>
+<pre><code>##      [,1]   [,2] [,3]
+## [1,] &quot;12mb&quot; &quot;12&quot; &quot;mb&quot;</code></pre>
+<pre class="r"><code># with non-capturing groups
+str_match(&quot;12mb&quot;, &quot;(?:[0-9]+)(?:[a-z]+)&quot;)</code></pre>
+<pre><code>##      [,1]  
+## [1,] &quot;12mb&quot;</code></pre>
+<ul>
+<li><p>atomic groups</p>
+<p>an atomic group prevents the regex engine from backtracking back into the group</p></li>
+</ul>
+<pre class="r"><code>strings &lt;- c(&quot;abc&quot;, &quot;abcc&quot;)
+str_extract(strings, &quot;a(?&gt;bc|b)c&quot;)</code></pre>
+<pre><code>## [1] NA     &quot;abcc&quot;</code></pre>
+<ul>
+<li><p>lazy quantifier</p>
+<table>
+<thead>
+<tr class="header">
+<th>quantifier</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>??</td>
+<td>zero or one occurrence, lazy</td>
+</tr>
+<tr class="even">
+<td>*?</td>
+<td>zero or more occurrences, lazy</td>
+</tr>
+<tr class="odd">
+<td>+?</td>
+<td>one or more occurrences, lazy</td>
+</tr>
+<tr class="even">
+<td>{n,}</td>
+<td><code>n</code> or more times, lazy</td>
+</tr>
+<tr class="odd">
+<td>{m, n}</td>
+<td><code>m</code> or more times but not more than <code>n</code>, lazy</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+<pre class="r"><code>strings &lt;- c(&quot;abc&quot;, &quot;acb&quot;)
+# it is greedy
+str_extract(strings, &quot;ab?c?&quot;)</code></pre>
+<pre><code>## [1] &quot;abc&quot; &quot;ac&quot;</code></pre>
+<pre class="r"><code># it is lazy
+str_extract(strings, &quot;ab??c?&quot;)</code></pre>
+<pre><code>## [1] &quot;a&quot;  &quot;ac&quot;</code></pre>
+<pre class="r"><code>strings &lt;- &quot;acbcbbc&quot;
+# it is greedy, longest match
+str_extract(strings, &quot;a.*c&quot;)</code></pre>
+<pre><code>## [1] &quot;acbcbbc&quot;</code></pre>
+<pre class="r"><code># it is lazy, shortest match
+str_extract(strings, &quot;a.*?c&quot;)</code></pre>
+<pre><code>## [1] &quot;ac&quot;</code></pre>
+<pre class="r"><code>strings &lt;- &quot;acbcbbc&quot;
+# it is greedy, longest match
+str_extract(strings, &quot;a.+c&quot;)</code></pre>
+<pre><code>## [1] &quot;acbcbbc&quot;</code></pre>
+<pre class="r"><code># it is lazy, shortest match
+str_extract(strings, &quot;a.+?c&quot;)</code></pre>
+<pre><code>## [1] &quot;acbc&quot;</code></pre>
+<pre class="r"><code>strings &lt;- &quot;acbcbbc&quot;
+str_extract(strings, &quot;a.{2,}c&quot;)</code></pre>
+<pre><code>## [1] &quot;acbcbbc&quot;</code></pre>
+<pre class="r"><code>str_extract(strings, &quot;a.{2,}?c&quot;)</code></pre>
+<pre><code>## [1] &quot;acbc&quot;</code></pre>
+<ul>
+<li><p>Possessive quantifier (does not backtrack)</p>
+<table>
+<thead>
+<tr class="header">
+<th>quantifier</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>?+</td>
+<td>zero or one occurrence, posessive</td>
+</tr>
+<tr class="even">
+<td>*+</td>
+<td>zero or more occurrences, posessive</td>
+</tr>
+<tr class="odd">
+<td>++</td>
+<td>one or more occurrences, posessive</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+<pre class="r"><code>strings &lt;- c(&quot;apple&quot;, &quot;pineapple&quot;, &quot;pinepineapple&quot;)
+str_extract(strings, &quot;(pine)?pineapple&quot;)</code></pre>
+<pre><code>## [1] NA              &quot;pineapple&quot;     &quot;pinepineapple&quot;</code></pre>
+<pre class="r"><code>str_extract(strings, &quot;(pine)?+pineapple&quot;)</code></pre>
+<pre><code>## [1] NA              NA              &quot;pinepineapple&quot;</code></pre>
+<pre class="r"><code>str_extract(strings, &quot;(pine)*pineapple&quot;)</code></pre>
+<pre><code>## [1] NA              &quot;pineapple&quot;     &quot;pinepineapple&quot;</code></pre>
+<pre class="r"><code>str_extract(strings, &quot;(pine)*+pineapple&quot;)</code></pre>
+<pre><code>## [1] NA NA NA</code></pre>
+<ul>
+<li><p>back reference</p>
+<p>back reference is used to reference a previous matched group</p></li>
+</ul>
+<pre class="r"><code>str_match(&quot;:abc:&quot;, &quot;(:)[a-z]+\\1&quot;)</code></pre>
+<pre><code>##      [,1]    [,2]
+## [1,] &quot;:abc:&quot; &quot;:&quot;</code></pre>
+<ul>
+<li>look ahead
+<ul>
+<li>positive look ahead</li>
+</ul></li>
+</ul>
+<pre class="r"><code># it matches only the second `t` because the second `t` is followed by `s`
+str_locate_all(&quot;streets&quot;, &quot;t(?=s)&quot;)</code></pre>
+<pre><code>## [[1]]
+##      start end
+## [1,]     6   6</code></pre>
+<ul>
+<li>negative look ahead</li>
+</ul>
+<pre class="r"><code># it matches only the first `t` because the second `t` is followed by `s`
+str_locate_all(&quot;streets&quot;, &quot;t(?!s)&quot;)</code></pre>
+<pre><code>## [[1]]
+##      start end
+## [1,]     2   2</code></pre>
+<ul>
+<li><p>look behind</p>
+<ul>
+<li>positive look behind</li>
+</ul></li>
+</ul>
+<pre class="r"><code># it matches only the first `t` because the second `t` follows `s`
+str_locate_all(&quot;streets&quot;, &quot;(?&lt;=s)t&quot;)</code></pre>
+<pre><code>## [[1]]
+##      start end
+## [1,]     2   2</code></pre>
+<ul>
+<li>negative look behind</li>
+</ul>
+<pre class="r"><code># it matches only the second `t` because the first `t` follows `s`
+str_locate_all(&quot;streets&quot;, &quot;(?&lt;!s)t&quot;)</code></pre>
+<pre><code>## [[1]]
+##      start end
+## [1,]     6   6</code></pre>
+<pre class="r"><code># it also works if the look behind pattern is a (bounded) regex
+# (base R functions do not support regex in look behind pattern)
+str_locate_all(&quot;twisty streets&quot;, &quot;(?&lt;![se]{1,100})t&quot;)</code></pre>
+<pre><code>## [[1]]
+##      start end
+## [1,]     1   1</code></pre>
+<ul>
+<li>recursion</li>
+</ul>
+<p>We try to find the highest level of paranthesse in <code>((((x))))</code>, <code>((x)((y))(z))</code> <code>(x) (y)</code></p>
+<pre class="r"><code># what doesn&#39;t work
+strings &lt;- c(&quot;((((x))))&quot;, &quot;((x) ((y)) (z))&quot;, &quot;(x) (y)&quot;)
+str_extract_all(strings, &quot;\\([^(]*\\)&quot;)</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;(x))))&quot;
+## 
+## [[2]]
+## [1] &quot;(x)&quot;  &quot;(y))&quot; &quot;(z))&quot;
+## 
+## [[3]]
+## [1] &quot;(x)&quot; &quot;(y)&quot;</code></pre>
+<pre class="r"><code>str_extract_all(strings, &quot;\\([^(]*?\\)&quot;)</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;(x)&quot;
+## 
+## [[2]]
+## [1] &quot;(x)&quot; &quot;(y)&quot; &quot;(z)&quot;
+## 
+## [[3]]
+## [1] &quot;(x)&quot; &quot;(y)&quot;</code></pre>
+<pre class="r"><code># how about back reference the entire group? no, it doesnt work
+str_extract_all(strings, &quot;(\\((?:\\1*|[^)]*?)+\\))&quot;)</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;((((x)&quot;
+## 
+## [[2]]
+## [1] &quot;((x)&quot; &quot;((y)&quot; &quot;(z)&quot; 
+## 
+## [[3]]
+## [1] &quot;(x)&quot; &quot;(y)&quot;</code></pre>
+<p><code>stringr</code>’s function doesn’t support recusions, we will need to use base R functions (which are difficult to use and slower). Luckily, there is <code>rematch2</code> which provides nice wrapping functions to base R functions.</p>
+<pre class="r"><code>library(rematch2)
+re_match_all(strings, &quot;\\((?:(?0)*|[^)]*?)+\\)&quot;) %&gt;%
+  pull(.match)</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;((((x))))&quot;
+## 
+## [[2]]
+## [1] &quot;((x) ((y)) (z))&quot;
+## 
+## [[3]]
+## [1] &quot;(x)&quot; &quot;(y)&quot;</code></pre>
 </div>
+</div>
+<div id="three-games-to-learn-regex" class="section level1">
+<h1>Three games to learn regex</h1>
+<ul>
+<li><a href="https://regexcrossword.com/" class="uri">https://regexcrossword.com/</a></li>
+<li><a href="http://play.inginf.units.it" class="uri">http://play.inginf.units.it</a></li>
+<li><a href="https://alf.nu/RegexGolf" class="uri">https://alf.nu/RegexGolf</a></li>
+</ul>
 <div id="reference" class="section level2">
 <h2>Reference</h2>
 <ul>

@@ -1,8 +1,8 @@
 ---
 title: "Regular Expression"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 
@@ -297,7 +297,7 @@ str_split(fruits, " and ", n = 3, simplify = TRUE)
 # a shorthand for str_split(...n, simplify = TRUE)
 str_split_fixed(fruits, " and ", 3)
 ```
-{
+
 
 ## Glue String
 
@@ -364,14 +364,186 @@ str_match_all("abaa\na", regex("^A+", ignore_case = TRUE, multiline = TRUE))
 # we need some string
 calculus_url <- "https://en.wikipedia.org/wiki/Calculus"
 calculus <- read_lines(calculus_url) %>%
-  str_c(collapse = "\n")
+  str_flatten()
 ```
 
-We want to extract all words from the document.
-
+```{r}
+calculus %>%
+  str_extract_all("<p>.*?</p>") %>%
+  unlist() %>%
+  str_remove_all("</?\\w+[^>]*>") %>%
+  str_extract_all("[a-zA-Z]+") %>%
+  unlist() %>%
+  str_to_lower() %>%
+  tibble(word = .) %>%
+  count(word) %>%
+  arrange(desc(n))
+```
 
 
 ## More advanced topics of regex
+
+I assume that you are now comfortable with the basic regex. Let's talk about some more advanced topics.
+
+
+- non-capturing groups
+
+  a capturing group could be created by using a pair of parentheses `(<regex>)` and a non-captureing group can be created by using `(?:<regex>)`.
+
+```{r}
+# with captureing groups
+str_match("12mb", "([0-9]+)([a-z]+)")
+# with non-capturing groups
+str_match("12mb", "(?:[0-9]+)(?:[a-z]+)")
+```
+
+- atomic groups
+
+  an atomic group prevents the regex engine from backtracking back into the group
+  
+```{r}
+strings <- c("abc", "abcc")
+str_extract(strings, "a(?>bc|b)c")
+```
+
+
+- lazy quantifier
+
+  |quantifier||
+  |----|----|
+  |??   | zero or one occurrence, lazy|
+  |*?   | zero or more occurrences, lazy|
+  |+?   | one or more occurrences, lazy|
+  |{n,}  |`n` or more times, lazy|
+  |{m, n}  |`m` or more times but not more than `n`, lazy|
+
+
+```{r}
+strings <- c("abc", "acb")
+# it is greedy
+str_extract(strings, "ab?c?")
+# it is lazy
+str_extract(strings, "ab??c?")
+```
+
+```{r}
+strings <- "acbcbbc"
+# it is greedy, longest match
+str_extract(strings, "a.*c")
+# it is lazy, shortest match
+str_extract(strings, "a.*?c")
+```
+
+```{r}
+strings <- "acbcbbc"
+# it is greedy, longest match
+str_extract(strings, "a.+c")
+# it is lazy, shortest match
+str_extract(strings, "a.+?c")
+```
+
+```{r}
+strings <- "acbcbbc"
+str_extract(strings, "a.{2,}c")
+str_extract(strings, "a.{2,}?c")
+```
+
+- Possessive quantifier (does not backtrack)
+
+  |quantifier||
+  |----|----|
+  |?+   | zero or one occurrence, posessive|
+  |*+   | zero or more occurrences, posessive| 
+  |++   | one or more occurrences, posessive| 
+
+
+```{r}
+strings <- c("apple", "pineapple", "pinepineapple")
+str_extract(strings, "(pine)?pineapple")
+str_extract(strings, "(pine)?+pineapple")
+
+str_extract(strings, "(pine)*pineapple")
+str_extract(strings, "(pine)*+pineapple")
+```
+
+
+
+- back reference
+
+  back reference is used to reference a previous matched group
+  
+```{r}
+str_match(":abc:", "(:)[a-z]+\\1")
+```
+
+
+
+- look ahead
+  - positive look ahead
+
+```{r}
+# it matches only the second `t` because the second `t` is followed by `s`
+str_locate_all("streets", "t(?=s)")
+```
+  
+- negative look ahead
+
+```{r}
+# it matches only the first `t` because the second `t` is followed by `s`
+str_locate_all("streets", "t(?!s)")
+```
+
+- look behind
+
+  - positive look behind
+  
+```{r}
+# it matches only the first `t` because the second `t` follows `s`
+str_locate_all("streets", "(?<=s)t")
+```
+  
+  
+  - negative look behind  
+  
+```{r}
+# it matches only the second `t` because the first `t` follows `s`
+str_locate_all("streets", "(?<!s)t")
+```
+
+```{r}
+# it also works if the look behind pattern is a (bounded) regex
+# (base R functions do not support regex in look behind pattern)
+str_locate_all("twisty streets", "(?<![se]{1,100})t")
+```
+
+- recursion
+
+
+We try to find the highest level of paranthesse in `((((x))))`, `((x)((y))(z))` `(x) (y)`
+
+```{r}
+# what doesn't work
+strings <- c("((((x))))", "((x) ((y)) (z))", "(x) (y)")
+str_extract_all(strings, "\\([^(]*\\)")
+str_extract_all(strings, "\\([^(]*?\\)")
+# how about back reference the entire group? no, it doesnt work
+str_extract_all(strings, "(\\((?:\\1*|[^)]*?)+\\))")
+```
+
+`stringr`'s function doesn't support recusions, we will need to use base R functions (which are difficult to use and slower). Luckily, there is `rematch2` which provides nice wrapping functions to base R functions.
+
+```{r}
+library(rematch2)
+re_match_all(strings, "\\((?:(?0)*|[^)]*?)+\\)") %>%
+  pull(.match)
+```
+
+
+# Three games to learn regex
+
+- https://regexcrossword.com/
+- http://play.inginf.units.it
+- https://alf.nu/RegexGolf
 
 
 ## Reference
