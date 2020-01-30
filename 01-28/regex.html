@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -330,6 +329,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -1042,7 +1042,7 @@ str_extract_all(strings, &quot;(\\((?:\\1*|[^)]*?)+\\))&quot;)</code></pre>
 ## 
 ## [[3]]
 ## [1] &quot;(x)&quot; &quot;(y)&quot;</code></pre>
-<p><code>stringr</code>’s function doesn’t support recusions, we will need to use base R functions (which are difficult to use and slower). Luckily, there is <code>rematch2</code> which provides nice wrapping functions to base R functions.</p>
+<p><code>stringr</code>’s functions don’t support recusions, we will need to use base R functions (which are difficult to use and slower). Luckily, there is <code>rematch2</code> which provides nice wrapping functions to base R functions (still, it is slower).</p>
 <pre class="r"><code>library(rematch2)
 re_match_all(strings, &quot;\\((?:(?0)*|[^)]*?)+\\)&quot;) %&gt;%
   pull(.match)</code></pre>
@@ -1059,9 +1059,9 @@ re_match_all(strings, &quot;\\((?:(?0)*|[^)]*?)+\\)&quot;) %&gt;%
 <div id="three-games-to-learn-regex" class="section level1">
 <h1>Three games to learn regex</h1>
 <ul>
-<li><a href="https://regexcrossword.com/" class="uri">https://regexcrossword.com/</a></li>
 <li><a href="http://play.inginf.units.it" class="uri">http://play.inginf.units.it</a></li>
 <li><a href="https://alf.nu/RegexGolf" class="uri">https://alf.nu/RegexGolf</a></li>
+<li><a href="https://regexcrossword.com/" class="uri">https://regexcrossword.com/</a></li>
 </ul>
 <div id="reference" class="section level2">
 <h2>Reference</h2>

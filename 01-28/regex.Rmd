@@ -1,8 +1,8 @@
 ---
 title: "Regular Expression"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 
@@ -466,8 +466,6 @@ str_extract(strings, "(pine)*pineapple")
 str_extract(strings, "(pine)*+pineapple")
 ```
 
-
-
 - back reference
 
   back reference is used to reference a previous matched group
@@ -530,7 +528,7 @@ str_extract_all(strings, "\\([^(]*?\\)")
 str_extract_all(strings, "(\\((?:\\1*|[^)]*?)+\\))")
 ```
 
-`stringr`'s function doesn't support recusions, we will need to use base R functions (which are difficult to use and slower). Luckily, there is `rematch2` which provides nice wrapping functions to base R functions.
+`stringr`'s functions don't support recusions, we will need to use base R functions (which are difficult to use and slower). Luckily, there is `rematch2` which provides nice wrapping functions to base R functions (still, it is slower).
 
 ```{r}
 library(rematch2)
@@ -541,9 +539,9 @@ re_match_all(strings, "\\((?:(?0)*|[^)]*?)+\\)") %>%
 
 # Three games to learn regex
 
-- https://regexcrossword.com/
 - http://play.inginf.units.it
 - https://alf.nu/RegexGolf
+- https://regexcrossword.com/
 
 
 ## Reference
