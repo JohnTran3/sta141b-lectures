@@ -448,6 +448,7 @@ summary {
 <li><code>[a-z]</code> specifies a range which matches any lowercase letter from “a” to “z”.</li>
 <li><code>[a-zA-Z0-9]</code> matches all alphanumerics</li>
 <li><code>[\[\]]</code> matches <code>[</code> or <code>]</code></li>
+<li><code>[\]</code> matches <code>\</code> ??</li>
 </ul></li>
 <li><p>Bracket expression <code>[^...]</code> matches a single character that is not contained within the brackets</p>
 <p>Examples:</p>
@@ -619,6 +620,27 @@ phone &lt;- &quot;([2-9][0-9]{2})[- .]([0-9]{3})[- .]([0-9]{4})&quot;
 str_extract(strings, phone)</code></pre>
 <pre><code>## [1] &quot;219 733 8965&quot; &quot;329-293-8753&quot; NA             &quot;239 923 8115&quot; &quot;579-499-7527&quot;
 ## [6] NA             &quot;543.355.3679&quot;</code></pre>
+<pre class="r"><code>str_extract_all(strings, phone)</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;219 733 8965&quot;
+## 
+## [[2]]
+## [1] &quot;329-293-8753&quot;
+## 
+## [[3]]
+## character(0)
+## 
+## [[4]]
+## [1] &quot;239 923 8115&quot; &quot;842 566 4692&quot;
+## 
+## [[5]]
+## [1] &quot;579-499-7527&quot;
+## 
+## [[6]]
+## character(0)
+## 
+## [[7]]
+## [1] &quot;543.355.3679&quot;</code></pre>
 <pre class="r"><code># with subgroups
 str_match(strings, phone)</code></pre>
 <pre><code>##      [,1]           [,2]  [,3]  [,4]  
@@ -659,7 +681,8 @@ str_match(strings, phone)</code></pre>
 </div>
 <div id="mutate-strings" class="section level2">
 <h2>Mutate Strings</h2>
-<pre class="r"><code>str_sub(fruit, 1, 5) &lt;- &quot;APPLE&quot;
+<pre class="r"><code>fruit &lt;- c(&quot;apple&quot;, &quot;banana&quot;, &quot;pear&quot;, &quot;pinapple&quot;)
+str_sub(fruit, 1, 5) &lt;- &quot;APPLE&quot;
 fruit</code></pre>
 <pre><code>## [1] &quot;APPLE&quot;    &quot;APPLEa&quot;   &quot;APPLE&quot;    &quot;APPLEple&quot;</code></pre>
 <pre class="r"><code>fruits &lt;- c(&quot;one apple&quot;, &quot;two pears&quot;, &quot;three bananas&quot;)
@@ -667,8 +690,8 @@ fruit</code></pre>
 str_replace(fruits, &quot;[aeiou]&quot;, &quot;-&quot;)</code></pre>
 <pre><code>## [1] &quot;-ne apple&quot;     &quot;tw- pears&quot;     &quot;thr-e bananas&quot;</code></pre>
 <pre class="r"><code># change all a, e, i, o and u to -
-str_replace(fruits, &quot;[aeiou]&quot;, &quot;-&quot;)</code></pre>
-<pre><code>## [1] &quot;-ne apple&quot;     &quot;tw- pears&quot;     &quot;thr-e bananas&quot;</code></pre>
+str_replace_all(fruits, &quot;[aeiou]&quot;, &quot;-&quot;)</code></pre>
+<pre><code>## [1] &quot;-n- -ppl-&quot;     &quot;tw- p--rs&quot;     &quot;thr-- b-n-n-s&quot;</code></pre>
 <pre class="r"><code># apply a function to the matches
 str_replace_all(fruits, &quot;[aeiou]&quot;, toupper)</code></pre>
 <pre><code>## [1] &quot;OnE ApplE&quot;     &quot;twO pEArs&quot;     &quot;thrEE bAnAnAs&quot;</code></pre>
@@ -678,6 +701,28 @@ str_replace_all(fruits, &quot;[aeiou]&quot;, &quot;&quot;)</code></pre>
 <pre class="r"><code>str_remove_all(fruits, &quot;[aeiou]&quot;)</code></pre>
 <pre><code>## [1] &quot;n ppl&quot;    &quot;tw prs&quot;   &quot;thr bnns&quot;</code></pre>
 <p>References of the form <code>\1</code>, <code>\2</code>, etc will be replaced with the contents of the respective matched group</p>
+<pre class="r"><code>fruits &lt;- c(&quot;one apple&quot;, &quot;two pears&quot;, &quot;three bananas&quot;)
+str_match_all(fruits, &quot;([aeiou])&quot;)</code></pre>
+<pre><code>## [[1]]
+##      [,1] [,2]
+## [1,] &quot;o&quot;  &quot;o&quot; 
+## [2,] &quot;e&quot;  &quot;e&quot; 
+## [3,] &quot;a&quot;  &quot;a&quot; 
+## [4,] &quot;e&quot;  &quot;e&quot; 
+## 
+## [[2]]
+##      [,1] [,2]
+## [1,] &quot;o&quot;  &quot;o&quot; 
+## [2,] &quot;e&quot;  &quot;e&quot; 
+## [3,] &quot;a&quot;  &quot;a&quot; 
+## 
+## [[3]]
+##      [,1] [,2]
+## [1,] &quot;e&quot;  &quot;e&quot; 
+## [2,] &quot;e&quot;  &quot;e&quot; 
+## [3,] &quot;a&quot;  &quot;a&quot; 
+## [4,] &quot;a&quot;  &quot;a&quot; 
+## [5,] &quot;a&quot;  &quot;a&quot;</code></pre>
 <pre class="r"><code>str_replace_all(fruits, &quot;([aeiou])&quot;, &quot;[\\1]&quot;)</code></pre>
 <pre><code>## [1] &quot;[o]n[e] [a]ppl[e]&quot;       &quot;tw[o] p[e][a]rs&quot;        
 ## [3] &quot;thr[e][e] b[a]n[a]n[a]s&quot;</code></pre>
@@ -689,7 +734,19 @@ str_replace_all(fruits, &quot;[aeiou]&quot;, &quot;&quot;)</code></pre>
 
 phone &lt;- &quot;([2-9][0-9]{2})[- .]([0-9]{3})[- .]([0-9]{4})&quot;
 
-str_replace_all(strings, phone, &quot;(\\1)-\\2-\\3&quot;)</code></pre>
+str_match_all(strings, phone)</code></pre>
+<pre><code>## [[1]]
+##      [,1]           [,2]  [,3]  [,4]  
+## [1,] &quot;219 733 8965&quot; &quot;219&quot; &quot;733&quot; &quot;8965&quot;
+## 
+## [[2]]
+##      [,1]           [,2]  [,3]  [,4]  
+## [1,] &quot;579-499-7527&quot; &quot;579&quot; &quot;499&quot; &quot;7527&quot;
+## 
+## [[3]]
+##      [,1]           [,2]  [,3]  [,4]  
+## [1,] &quot;543.355.3679&quot; &quot;543&quot; &quot;355&quot; &quot;3679&quot;</code></pre>
+<pre class="r"><code>str_replace_all(strings, phone, &quot;(\\1)-\\2-\\3&quot;)</code></pre>
 <pre><code>## [1] &quot;Work: (219)-733-8965&quot;   &quot;Mobile: (579)-499-7527&quot; &quot;Home: (543)-355-3679&quot;</code></pre>
 <pre class="r"><code># apply replacement mutliple times
 str_replace_all(&quot;foobar&quot;, c(&quot;foo&quot; = &quot;hello&quot;, &quot;bar&quot; = &quot;world&quot;))</code></pre>
@@ -740,8 +797,8 @@ str_split(fruits, &quot; and &quot;)</code></pre>
 <pre><code>##      [,1]         [,2]      [,3]               
 ## [1,] &quot;apples&quot;     &quot;oranges&quot; &quot;pears and bananas&quot;
 ## [2,] &quot;pineapples&quot; &quot;mangos&quot;  &quot;guavas&quot;</code></pre>
-<pre class="r"><code># a shorthand for str_split(...n, simplify = TRUE)
-str_split_fixed(fruits, &quot; and &quot;, 3)</code></pre>
+<pre class="r"><code># a shorthand for str_split(..., n, simplify = TRUE)
+str_split_fixed(fruits, &quot; and &quot;, n = 3)</code></pre>
 <pre><code>##      [,1]         [,2]      [,3]               
 ## [1,] &quot;apples&quot;     &quot;oranges&quot; &quot;pears and bananas&quot;
 ## [2,] &quot;pineapples&quot; &quot;mangos&quot;  &quot;guavas&quot;</code></pre>
@@ -794,18 +851,16 @@ str_detect(strings, &quot;a.b&quot;)</code></pre>
 <pre><code>## [1] FALSE  TRUE</code></pre>
 <pre class="r"><code>str_detect(strings, fixed(&quot;A.B&quot;, ignore_case = TRUE))</code></pre>
 <pre><code>## [1] FALSE  TRUE</code></pre>
-<pre class="r"><code>str_match_all(&quot;abaa\na&quot;, &quot;a+&quot;)</code></pre>
+<pre class="r"><code>str_match_all(&quot;abaa\na&quot;, &quot;^a&quot;)</code></pre>
 <pre><code>## [[1]]
 ##      [,1]
-## [1,] &quot;a&quot; 
-## [2,] &quot;aa&quot;
-## [3,] &quot;a&quot;</code></pre>
-<pre class="r"><code>str_match_all(&quot;abaa\na&quot;, regex(&quot;^a+&quot;, multiline = TRUE))</code></pre>
+## [1,] &quot;a&quot;</code></pre>
+<pre class="r"><code>str_match_all(&quot;abaa\na&quot;, regex(&quot;^a&quot;, multiline = TRUE))</code></pre>
 <pre><code>## [[1]]
 ##      [,1]
 ## [1,] &quot;a&quot; 
 ## [2,] &quot;a&quot;</code></pre>
-<pre class="r"><code>str_match_all(&quot;abaa\na&quot;, regex(&quot;^A+&quot;, ignore_case = TRUE, multiline = TRUE))</code></pre>
+<pre class="r"><code>str_match_all(&quot;abaa\na&quot;, regex(&quot;^A&quot;, ignore_case = TRUE, multiline = TRUE))</code></pre>
 <pre><code>## [[1]]
 ##      [,1]
 ## [1,] &quot;a&quot; 

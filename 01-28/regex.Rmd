@@ -1,8 +1,8 @@
 ---
 title: "Regular Expression"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 
@@ -70,6 +70,7 @@ We will use `https://regex101.com/` to illustrate the following. (Choose the Pyt
     from "a" to "z".
     - `[a-zA-Z0-9]` matches all alphanumerics
     - `[\[\]]` matches `[` or `]`
+    - `[\]` matches `\` ??
   
 - Bracket expression `[^...]` matches a single character that is not contained within the brackets
     
@@ -209,6 +210,8 @@ phone <- "([2-9][0-9]{2})[- .]([0-9]{3})[- .]([0-9]{4})"
 
 # only the matched pattern
 str_extract(strings, phone)
+str_extract_all(strings, phone)
+
 # with subgroups
 str_match(strings, phone)
 str_match_all(strings, phone)
@@ -218,6 +221,7 @@ str_match_all(strings, phone)
 ## Mutate Strings
 
 ```{r}
+fruit <- c("apple", "banana", "pear", "pinapple")
 str_sub(fruit, 1, 5) <- "APPLE"
 fruit
 ```
@@ -227,7 +231,7 @@ fruits <- c("one apple", "two pears", "three bananas")
 # change the first a, e, i, o and u to -
 str_replace(fruits, "[aeiou]", "-")
 # change all a, e, i, o and u to -
-str_replace(fruits, "[aeiou]", "-")
+str_replace_all(fruits, "[aeiou]", "-")
 # apply a function to the matches
 str_replace_all(fruits, "[aeiou]", toupper)
 # remove all a, e, i, o and u
@@ -239,6 +243,8 @@ str_remove_all(fruits, "[aeiou]")
 References of the form `\1`, `\2`, etc will be replaced with the contents of the respective matched group
 
 ```{r}
+fruits <- c("one apple", "two pears", "three bananas")
+str_match_all(fruits, "([aeiou])")
 str_replace_all(fruits, "([aeiou])", "[\\1]")
 ```
 
@@ -252,6 +258,7 @@ strings <- c(
 
 phone <- "([2-9][0-9]{2})[- .]([0-9]{3})[- .]([0-9]{4})"
 
+str_match_all(strings, phone)
 str_replace_all(strings, phone, "(\\1)-\\2-\\3")
 ```
 
@@ -294,8 +301,8 @@ str_split(fruits, " and ")
 str_split(fruits, " and ", simplify = TRUE)
 str_split(fruits, " and ", n = 2)
 str_split(fruits, " and ", n = 3, simplify = TRUE)
-# a shorthand for str_split(...n, simplify = TRUE)
-str_split_fixed(fruits, " and ", 3)
+# a shorthand for str_split(..., n, simplify = TRUE)
+str_split_fixed(fruits, " and ", n = 3)
 ```
 
 
@@ -307,6 +314,7 @@ age <- c(23, 17)
 # get variables from globals
 str_glue("{name} is {age}")
 ```
+
 ```{r}
 # get variables from arguments
 str_glue("{name} is {age}", name = "Anna", age = 43)
@@ -352,9 +360,9 @@ str_detect(strings, fixed("A.B", ignore_case = TRUE))
 ```
 
 ```{r}
-str_match_all("abaa\na", "a+")
-str_match_all("abaa\na", regex("^a+", multiline = TRUE))
-str_match_all("abaa\na", regex("^A+", ignore_case = TRUE, multiline = TRUE))
+str_match_all("abaa\na", "^a")
+str_match_all("abaa\na", regex("^a", multiline = TRUE))
+str_match_all("abaa\na", regex("^A", ignore_case = TRUE, multiline = TRUE))
 ```
 
 
