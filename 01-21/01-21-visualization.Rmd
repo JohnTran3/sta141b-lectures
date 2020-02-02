@@ -12,13 +12,13 @@ library(plotly)
 
 ```{r}
 mpg %>%
-  mutate(cyl = as_factor(cyl)) %>% 
+  mutate(cyl = as_factor(cyl)) %>%
   ggplot(aes(displ, hwy, color = cyl)) + geom_point()
 ```
 
 ```{r, message = FALSE}
-mpg %>% 
-  plot_ly(x = ~displ, y = ~hwy, color =  ~factor(cyl))
+mpg %>%
+  plot_ly(x = ~displ, y = ~hwy, color = ~ factor(cyl))
 ```
 
 Pros:
@@ -35,7 +35,7 @@ Cons:
 
 
 ```{r}
-ggplot(mpg, aes(displ, hwy)) + 
+ggplot(mpg, aes(displ, hwy)) +
   geom_point(data = mutate(mpg, cyl = NULL), color = "grey75") +
   geom_point() +
   facet_wrap(vars(cyl))
@@ -68,7 +68,7 @@ ggplotly(p)
 p <- economics %>%
   sample_n(n()) %>%
   plot_ly(x = ~date, y = ~psavert)
-p %>% add_paths()  # using the order of the data frame 
+p %>% add_paths() # using the order of the data frame
 p %>% add_lines()
 ```
 
@@ -85,8 +85,8 @@ econ %>%
   add_lines(text = ~yr)
 
 # Multiple traces (less performant, but more interactive)
-econ %>% 
-  mutate(yr = ordered(yr)) %>% 
+econ %>%
+  mutate(yr = ordered(yr)) %>%
   plot_ly(x = ~mnth, y = ~uempmed) %>%
   add_lines(color = ~yr)
 ```
@@ -95,7 +95,7 @@ econ %>%
 
 ```{r}
 plot_ly(econ, x = ~mnth, y = ~uempmed) %>%
-  add_lines(color = ~ordered(yr)) %>%
+  add_lines(color = ~ ordered(yr)) %>%
   toWebGL()
 ```
 
@@ -105,8 +105,8 @@ plot_ly(econ, x = ~mnth, y = ~uempmed) %>%
 - alpha blending to see replicates
 
 ```{r, message = FALSE}
-mpg %>% 
-  plot_ly(x = ~cty, y = ~hwy) %>% 
+mpg %>%
+  plot_ly(x = ~cty, y = ~hwy) %>%
   add_markers(alpha = 0.2)
 ```
 
@@ -114,28 +114,28 @@ mpg %>%
 - colors for grouping
 
 ```{r, message = FALSE}
-mtcars %>% 
-  plot_ly(x = ~disp, y = ~mpg) %>% 
-  add_markers(color = ~factor(cyl))
+mtcars %>%
+  plot_ly(x = ~disp, y = ~mpg) %>%
+  add_markers(color = ~ factor(cyl))
 ```
 
 - symbols
 
 ```{r, message = FALSE}
-mtcars %>% 
-  plot_ly(x = ~disp, y = ~mpg) %>% 
-  add_markers(symbol = ~factor(cyl))
+mtcars %>%
+  plot_ly(x = ~disp, y = ~mpg) %>%
+  add_markers(symbol = ~ factor(cyl))
 ```
 
 ## Error bar plot
 
 
 ```{r, message = FALSE}
-mpg %>% 
+mpg %>%
   group_by(cyl) %>%
-  summarize(mhwy = mean(hwy), se = sd(hwy)/sqrt(n())) %>%
-  plot_ly(x = ~mhwy, y = ~factor(cyl)) %>%
-  add_markers(error_x = ~list(value = se)) %>%
+  summarize(mhwy = mean(hwy), se = sd(hwy) / sqrt(n())) %>%
+  plot_ly(x = ~mhwy, y = ~ factor(cyl)) %>%
+  add_markers(error_x = ~ list(value = se)) %>%
   layout(xaxis = list(title = "mean hwy"), yaxis = list(title = "cyl"))
 ```
 
@@ -149,18 +149,18 @@ mpg %>%
   plot_ly() %>%
   add_segments(
     x = ~c, y = ~model,
-    xend = ~h, yend = ~model, 
+    xend = ~h, yend = ~model,
     color = I("gray"), showlegend = FALSE
   ) %>%
   add_markers(
-    x = ~c, y = ~model, 
-    color = I("blue"), 
+    x = ~c, y = ~model,
+    color = I("blue"),
     name = "mpg city"
   ) %>%
   add_markers(
-    x = ~h, y = ~model, 
+    x = ~h, y = ~model,
     color = I("red"),
-    name  = "mpg highway"
+    name = "mpg highway"
   ) %>%
   layout(xaxis = list(title = "Miles per gallon"))
 ```
@@ -172,13 +172,15 @@ mpg %>%
 
 ```{r, message = FALSE}
 mpg %>%
-  plot_ly(x= ~hwy, color = ~factor(cyl)) %>% 
-  add_histogram(histnorm = "", alpha = 0.7) %>%  # histnorm could be "", "probability", "density" and "probability density"
-  layout(barmode = "overlay")  # barmode could be "overlay", "stack" and "group"
+  plot_ly(x = ~hwy, color = ~ factor(cyl)) %>%
+  add_histogram(histnorm = "", alpha = 0.7) %>% # histnorm could be "", "probability", "density" and "probability density"
+  layout(barmode = "overlay") # barmode could be "overlay", "stack" and "group"
 ```
 
 ```{r}
-names(relig_income) %>% paste0(collapse = "\n") %>% cat
+names(relig_income) %>%
+  paste0(collapse = "\n") %>%
+  cat()
 ``` 
 
 
@@ -187,19 +189,19 @@ names(relig_income) %>% paste0(collapse = "\n") %>% cat
 
 ```{r, message = FALSE}
 mpg %>%
-  mutate(cyl = as_factor(cyl)) %>% 
+  mutate(cyl = as_factor(cyl)) %>%
   count(drv, cyl) %>%
-  plot_ly(x = ~drv, y = ~n, color = ~cyl) %>% 
-  add_bars() %>% 
+  plot_ly(x = ~drv, y = ~n, color = ~cyl) %>%
+  add_bars() %>%
   layout(barmode = "stack")
 ```
 
 
 ```{r, message = FALSE}
 # work with wide format directly
-relig_income %>% 
+relig_income %>%
   mutate(religion = as_factor(religion)) %>%
-  plot_ly(y = ~religion) %>% 
+  plot_ly(y = ~religion) %>%
   add_bars(~`<$10k`, name = "<$10k") %>%
   add_bars(~`$10-20k`, name = "$10-20k") %>%
   add_bars(~`$20-30k`, name = "$20-30k") %>%
@@ -215,11 +217,11 @@ relig_income %>%
 
 ```{r, message = FALSE}
 # may be easier with `pivot_longer`?
-relig_income %>% 
+relig_income %>%
   mutate(religion = as_factor(religion)) %>%
   pivot_longer(-religion, names_to = "income", values_to = "count") %>%
-  mutate(income = fct_inorder(income)) %>% 
-  plot_ly(x = ~count, y = ~religion, color = ~income) %>% 
+  mutate(income = fct_inorder(income)) %>%
+  plot_ly(x = ~count, y = ~religion, color = ~income) %>%
   add_bars() %>%
   layout(barmode = "stack")
 ```
@@ -229,28 +231,37 @@ relig_income %>%
 
 ```{r, message = FALSE}
 mpg %>%
-  mutate(cyl = as_factor(cyl)) %>% 
-  plot_ly(x = ~drv, y = ~hwy, color = ~cyl) %>% 
-  add_boxplot() %>% 
+  mutate(cyl = as_factor(cyl)) %>%
+  plot_ly(x = ~drv, y = ~hwy, color = ~cyl) %>%
+  add_boxplot() %>%
   layout(boxmode = "group")
 ```
 
 ## Sunburst
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 library(gapminder)
 gapminder2007 <- gapminder %>%
-  filter(year == 2007)
-gapminder2007 %>% 
-  select(children = country, parents = continent, pop = pop) %>%
-  bind_rows(
-    gapminder2007 %>%
-      group_by(continent) %>%
-      summarize() %>% 
-      transmute(children = continent, parents = "World", pop = 0)
-  ) %>%
-  add_row(children = "World", parents = "", pop = 0) %>% 
-  plot_ly(labels = ~children, parents = ~parents, values = ~pop, type = "sunburst")
+  filter(year == 2007) %>%
+  mutate(pop = as.double(pop))
+bind_rows(
+  gapminder2007 %>%
+    select(children = country, parents = continent, pop = pop),
+  gapminder2007 %>%
+    group_by(continent) %>%
+    summarize(pop = sum(pop)) %>%
+    transmute(children = continent, parents = "World", pop = pop),
+  gapminder2007 %>%
+    summarize(pop = sum(pop)) %>%
+    transmute(children = "World", parents = "", pop = pop)
+) %>%
+  plot_ly(
+    ids = ~children, 
+    labels = ~children, 
+    parents = ~parents, 
+    values = ~pop, 
+    type = "sunburst", 
+    branchvalues = "total")
 ```
 
 
@@ -266,18 +277,18 @@ mpg %>%
 ```{r, message = FALSE}
 x <- seq_len(nrow(volcano)) + 100
 y <- seq_len(ncol(volcano)) + 500
-plot_ly(x = ~x, y = ~y, z = ~volcano) %>% 
+plot_ly(x = ~x, y = ~y, z = ~volcano) %>%
   add_surface(colorscale = "Earth")
 ```
 
 ```{r}
 # heatmap
-plot_ly(x = ~x, y = ~y, z = ~volcano) %>% 
+plot_ly(x = ~x, y = ~y, z = ~volcano) %>%
   add_heatmap(colorscale = "Earth")
 ```
 
 ```{r}
-plot_ly(x = ~x, y = ~y, z = ~volcano) %>% 
+plot_ly(x = ~x, y = ~y, z = ~volcano) %>%
   add_contour(colorscale = "Earth")
 ```
 
@@ -286,9 +297,9 @@ plot_ly(x = ~x, y = ~y, z = ~volcano) %>%
 
 ```{r}
 df <- tibble(
-  x = c(1,2,1), 
-  y = c(1,2,1), 
-  t = c(1,2,3)
+  x = c(1, 2, 1),
+  y = c(1, 2, 1),
+  t = c(1, 2, 3)
 )
 
 df %>%
