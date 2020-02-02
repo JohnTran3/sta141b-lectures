@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 
 <meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -329,7 +330,6 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
-  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -871,9 +871,9 @@ str_detect(strings, &quot;a.b&quot;)</code></pre>
 <pre class="r"><code># we need some string
 calculus_url &lt;- &quot;https://en.wikipedia.org/wiki/Calculus&quot;
 calculus &lt;- read_lines(calculus_url) %&gt;%
-  str_flatten()</code></pre>
+  str_c(collapse = &quot;\n&quot;)</code></pre>
 <pre class="r"><code>calculus %&gt;%
-  str_extract_all(&quot;&lt;p&gt;.*?&lt;/p&gt;&quot;) %&gt;%
+  str_extract_all(&quot;&lt;p&gt;(.|\\n)*?&lt;/p&gt;&quot;) %&gt;%  # . doesn&#39;t match new lines
   unlist() %&gt;%
   str_remove_all(&quot;&lt;/?\\w+[^&gt;]*&gt;&quot;) %&gt;%
   str_extract_all(&quot;[a-zA-Z]+&quot;) %&gt;%
@@ -979,7 +979,7 @@ str_extract(strings, &quot;a.{2,}c&quot;)</code></pre>
 <pre class="r"><code>str_extract(strings, &quot;a.{2,}?c&quot;)</code></pre>
 <pre><code>## [1] &quot;acbc&quot;</code></pre>
 <ul>
-<li><p>Possessive quantifier (does not backtrack)</p>
+<li><p>[skip] Possessive quantifier (does not backtrack)</p>
 <table>
 <thead>
 <tr class="header">
@@ -1064,7 +1064,7 @@ str_locate_all(&quot;twisty streets&quot;, &quot;(?&lt;![se]{1,100})t&quot;)</co
 ##      start end
 ## [1,]     1   1</code></pre>
 <ul>
-<li>recursion</li>
+<li>[skip] recursion</li>
 </ul>
 <p>We try to find the highest level of paranthesse in <code>((((x))))</code>, <code>((x)((y))(z))</code> <code>(x) (y)</code></p>
 <pre class="r"><code># what doesn&#39;t work

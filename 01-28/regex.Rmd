@@ -372,12 +372,12 @@ str_match_all("abaa\na", regex("^A", ignore_case = TRUE, multiline = TRUE))
 # we need some string
 calculus_url <- "https://en.wikipedia.org/wiki/Calculus"
 calculus <- read_lines(calculus_url) %>%
-  str_flatten()
+  str_c(collapse = "\n")
 ```
 
 ```{r}
 calculus %>%
-  str_extract_all("<p>.*?</p>") %>%
+  str_extract_all("<p>(.|\\n)*?</p>") %>%  # . doesn't match new lines
   unlist() %>%
   str_remove_all("</?\\w+[^>]*>") %>%
   str_extract_all("[a-zA-Z]+") %>%
@@ -456,7 +456,7 @@ str_extract(strings, "a.{2,}c")
 str_extract(strings, "a.{2,}?c")
 ```
 
-- Possessive quantifier (does not backtrack)
+- [skip] Possessive quantifier (does not backtrack)
 
   |quantifier||
   |----|----|
@@ -522,7 +522,7 @@ str_locate_all("streets", "(?<!s)t")
 str_locate_all("twisty streets", "(?<![se]{1,100})t")
 ```
 
-- recursion
+- [skip] recursion
 
 
 We try to find the highest level of paranthesse in `((((x))))`, `((x)((y))(z))` `(x) (y)`
