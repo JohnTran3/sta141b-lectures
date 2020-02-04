@@ -76,7 +76,7 @@ We will use `https://regex101.com/` to illustrate the following. (Choose the Pyt
     
   Examples:
     - `[^abc]` matches any character other than "a", "b", or "c"
-    - `[^\]]` matches any `]` character which is not `]`.
+    - `[^\]]` matches any character which is not `]`.
   
 - Special characters
   

@@ -1,0 +1,3 @@
+[submodule "02-04/shiny.rstudio.com-tutorial"]
+	path = 02-04/shiny.rstudio.com-tutorial
+	url = https://github.com/rstudio-education/shiny.rstudio.com-tutorial

@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -330,6 +329,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -454,7 +454,7 @@ summary {
 <p>Examples:</p>
 <ul>
 <li><code>[^abc]</code> matches any character other than “a”, “b”, or “c”</li>
-<li><code>[^\]]</code> matches any <code>]</code> character which is not <code>]</code>.</li>
+<li><code>[^\]]</code> matches any character which is not <code>]</code>.</li>
 </ul></li>
 <li><p>Special characters</p>
 <p>Honable mentions | Pattern | matches| |—-|—| |<code>\.</code>| <code>.</code>| |<code>\!</code>| <code>!</code>| |<code>\?</code>| <code>?</code>| |<code>\\</code>| <code>\</code>| |<code>\(</code>| <code>(</code>| |<code>\{</code>| <code>{</code>| |<code>\}</code>| <code>}</code>| |<code>\[</code>| <code>[</code>| |<code>\]</code>| <code>]</code>| |<code>\n</code>| a new line| |<code>\s</code>| a space or a tab| |<code>\S</code>| not a space nor a tab| |<code>\d</code>| a digit| |<code>\D</code>| a non digit| |<code>\w</code>| a word character (includes for example CJK chars)| |<code>\W</code>| a non word character| |<code>\b</code> | word boundaries|</p></li>
