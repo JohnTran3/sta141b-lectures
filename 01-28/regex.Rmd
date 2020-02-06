@@ -377,7 +377,7 @@ calculus <- read_lines(calculus_url) %>%
 
 ```{r}
 calculus %>%
-  str_extract_all("<p>(.|\\n)*?</p>") %>%  # . doesn't match new lines
+  str_extract_all("<p>.*?</p>") %>%  # . doesn't match new lines
   unlist() %>%
   str_remove_all("</?\\w+[^>]*>") %>%
   str_extract_all("[a-zA-Z]+") %>%
@@ -402,7 +402,7 @@ I assume that you are now comfortable with the basic regex. Let's talk about som
 # with captureing groups
 str_match("12mb", "([0-9]+)([a-z]+)")
 # with non-capturing groups
-str_match("12mb", "(?:[0-9]+)(?:[a-z]+)")
+str_match(c("12mb", "12MB"), "(?:[0-9]+)(?:[a-z]+|[A-Z]+)")
 ```
 
 - atomic groups
@@ -422,8 +422,8 @@ str_extract(strings, "a(?>bc|b)c")
   |??   | zero or one occurrence, lazy|
   |*?   | zero or more occurrences, lazy|
   |+?   | one or more occurrences, lazy|
-  |{n,}  |`n` or more times, lazy|
-  |{m, n}  |`m` or more times but not more than `n`, lazy|
+  |{n,}?  |`n` or more times, lazy|
+  |{m, n}?  |`m` or more times but not more than `n`, lazy|
 
 
 ```{r}
@@ -477,9 +477,11 @@ str_extract(strings, "(pine)*+pineapple")
 - back reference
 
   back reference is used to reference a previous matched group
+  `\1`, `\2`, `\3` etc..
   
 ```{r}
-str_match(":abc:", "(:)[a-z]+\\1")
+strings <- c(":abc:", "?foo?", "*bar*")
+str_match(strings, "(.)[a-z]+\\1")
 ```
 
 

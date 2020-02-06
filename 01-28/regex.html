@@ -873,7 +873,7 @@ calculus_url &lt;- &quot;https://en.wikipedia.org/wiki/Calculus&quot;
 calculus &lt;- read_lines(calculus_url) %&gt;%
   str_c(collapse = &quot;\n&quot;)</code></pre>
 <pre class="r"><code>calculus %&gt;%
-  str_extract_all(&quot;&lt;p&gt;(.|\\n)*?&lt;/p&gt;&quot;) %&gt;%  # . doesn&#39;t match new lines
+  str_extract_all(&quot;&lt;p&gt;.*?&lt;/p&gt;&quot;) %&gt;%  # . doesn&#39;t match new lines
   unlist() %&gt;%
   str_remove_all(&quot;&lt;/?\\w+[^&gt;]*&gt;&quot;) %&gt;%
   str_extract_all(&quot;[a-zA-Z]+&quot;) %&gt;%
@@ -882,20 +882,8 @@ calculus &lt;- read_lines(calculus_url) %&gt;%
   tibble(word = .) %&gt;%
   count(word) %&gt;%
   arrange(desc(n))</code></pre>
-<pre><code>## # A tibble: 1,140 x 2
-##    word         n
-##    &lt;chr&gt;    &lt;int&gt;
-##  1 the        424
-##  2 of         290
-##  3 a          162
-##  4 and        156
-##  5 is         133
-##  6 to         126
-##  7 in         121
-##  8 calculus    87
-##  9 function    64
-## 10 as          52
-## # … with 1,130 more rows</code></pre>
+<pre><code>## # A tibble: 0 x 2
+## # … with 2 variables: word &lt;chr&gt;, n &lt;int&gt;</code></pre>
 </div>
 <div id="more-advanced-topics-of-regex" class="section level2">
 <h2>More advanced topics of regex</h2>
@@ -909,9 +897,10 @@ str_match(&quot;12mb&quot;, &quot;([0-9]+)([a-z]+)&quot;)</code></pre>
 <pre><code>##      [,1]   [,2] [,3]
 ## [1,] &quot;12mb&quot; &quot;12&quot; &quot;mb&quot;</code></pre>
 <pre class="r"><code># with non-capturing groups
-str_match(&quot;12mb&quot;, &quot;(?:[0-9]+)(?:[a-z]+)&quot;)</code></pre>
+str_match(c(&quot;12mb&quot;, &quot;12MB&quot;), &quot;(?:[0-9]+)(?:[a-z]+|[A-Z]+)&quot;)</code></pre>
 <pre><code>##      [,1]  
-## [1,] &quot;12mb&quot;</code></pre>
+## [1,] &quot;12mb&quot;
+## [2,] &quot;12MB&quot;</code></pre>
 <ul>
 <li><p>atomic groups</p>
 <p>an atomic group prevents the regex engine from backtracking back into the group</p></li>
@@ -942,11 +931,11 @@ str_extract(strings, &quot;a(?&gt;bc|b)c&quot;)</code></pre>
 <td>one or more occurrences, lazy</td>
 </tr>
 <tr class="even">
-<td>{n,}</td>
+<td>{n,}?</td>
 <td><code>n</code> or more times, lazy</td>
 </tr>
 <tr class="odd">
-<td>{m, n}</td>
+<td>{m, n}?</td>
 <td><code>m</code> or more times but not more than <code>n</code>, lazy</td>
 </tr>
 </tbody>
@@ -1014,11 +1003,14 @@ str_extract(strings, &quot;(pine)?pineapple&quot;)</code></pre>
 <pre><code>## [1] NA NA NA</code></pre>
 <ul>
 <li><p>back reference</p>
-<p>back reference is used to reference a previous matched group</p></li>
+<p>back reference is used to reference a previous matched group <code>\1</code>, <code>\2</code>, <code>\3</code> etc..</p></li>
 </ul>
-<pre class="r"><code>str_match(&quot;:abc:&quot;, &quot;(:)[a-z]+\\1&quot;)</code></pre>
+<pre class="r"><code>strings &lt;- c(&quot;:abc:&quot;, &quot;?foo?&quot;, &quot;*bar*&quot;)
+str_match(strings, &quot;(.)[a-z]+\\1&quot;)</code></pre>
 <pre><code>##      [,1]    [,2]
-## [1,] &quot;:abc:&quot; &quot;:&quot;</code></pre>
+## [1,] &quot;:abc:&quot; &quot;:&quot; 
+## [2,] &quot;?foo?&quot; &quot;?&quot; 
+## [3,] &quot;*bar*&quot; &quot;*&quot;</code></pre>
 <ul>
 <li>look ahead
 <ul>
