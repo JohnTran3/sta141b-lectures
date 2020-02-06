@@ -82,8 +82,15 @@ We are going to use the tutorial in https://github.com/rstudio-education/shiny.r
 
 ## Reactivity
 
+Reactivity maybe the most challenging part of learning shiny!
+
 - `reactive()`
 - `observe` and `observeEvent()`
 - `eventReactive()`
 - `isolate()`
 - `reactiveVal()` and `reactiveValues`
+
+
+## Basic HTML elements
+
+https://www.learn-html.org/en/Basic_Elements
