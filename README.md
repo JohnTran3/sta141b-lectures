@@ -73,7 +73,7 @@ Learn how to ask a question. Asking a question is an art, [stackoverflow.com](ht
 
 ## Group Project
 
-Each group will be 3 to 4 people. Details of project will be announced later.
+See [project.md](project.md).
 
 ## Resources
 
