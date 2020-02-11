@@ -1,0 +1,358 @@
+---
+title: "Database and SQL"
+output: pdf_document
+date: "02-11-2020"
+---
+
+```{r, message = FALSE}
+library(tidyverse)
+library(DBI)
+```
+
+What is a database? It is what google says
+
+> a structured set of data held in a computer, especially one that is accessible in various ways.
+
+A relational database is a type of database that stores and provides access to data points that are related to one another. Relation databases are administrated by a Relational Database Management System (RDMBS). The data in RDBMS is stored in database objects called tables. A table is a collection of related data entries and it consists of columns and rows.
+
+There are many RDMBS.
+- MySQL (owned by Oracle)
+- PostgreSQL (open source)
+- SQL Server (microsoft)
+- SQLite (open source, single file)
+
+What is SQL? Structured Query Language (or SQL) is a standard language for accessing and manipulating relational databaes.
+However, each RDMBS may have their own extension of the SQL language and their implmentation may vary too.
+
+
+## Connect to a sqlite databse
+
+We are going to use a popular database called Sakila https://www.jooq.org/sakila.
+
+The Sakila database is a nicely normalised schema modelling a DVD rental store, featuring things like films, actors, film-actor relationships, and a central inventory table that connects films, stores, and rentals.
+
+You could either download the file from lectures repo or from the dropbox link https://www.dropbox.com/s/7hmifspoj4jzsk1/sakila.sqlite?dl=0
+
+The file format is `.sqlite` which is one of the very common relational database formats, espeically for simple problems.
+
+```{r}
+sakila <- dbConnect(RSQLite::SQLite(), dbname = "sakila.sqlite")
+sakila %>% dbListTables()
+```
+
+
+## How not to use SQL?
+
+`dplyr` provides an excellent interface for users without any SQL background to query databases.
+
+```{r}
+# number of rental transactions
+sakila %>% 
+  tbl("rental") %>% 
+  count() %>% 
+  collect()
+```
+
+`sakila %>% tbl("rental")` creates a virtual table rather loading the whole table into memory.
+
+```{r}
+sakila %>% 
+  tbl("rental") %>% 
+  class()
+```
+
+```{r}
+sakila %>% 
+  tbl("rental") %>%
+  colnames()
+```
+
+
+## Sakila queris
+
+https://datamastery.gitlab.io/exercises/sakila-queries.html
+
+- Which actors have the first name Scarlett?
+
+```{r}
+sakila %>%
+  tbl("actor") %>%
+  filter(str_to_lower(first_name) == str_to_lower("Scarlett")) %>%
+  collect()
+```
+
+Suppose we want to make the result a bit more beautiful.
+
+```{r}
+sakila %>%
+  tbl("actor") %>%
+  filter(str_to_lower(first_name) == str_to_lower("Scarlett")) %>%
+  collect() %>% 
+  mutate(first_name = str_to_title(first_name), last_name = str_to_title(last_name))
+```
+
+- Which actors have the last name Johansson?
+
+```{r}
+sakila %>%
+  tbl("actor") %>%
+  filter(str_to_lower(last_name) == "johansson") %>%
+  collect()
+```
+
+- How many distinct actors last names are there?
+
+```{r}
+sakila %>%
+  tbl("actor") %>%
+  summarize(n = n_distinct(last_name)) %>%
+  collect()
+```
+
+- Which last names are not repeated?
+
+```{r}
+sakila %>%
+  tbl("actor") %>%
+  group_by(last_name) %>%
+  count() %>%
+  filter(n == 1) %>%
+  collect()
+```
+
+- Which last names appear more than once?
+
+```{r}
+sakila %>%
+  tbl("actor") %>%
+  group_by(last_name) %>%
+  count() %>%
+  filter(n > 1) %>%
+  collect()
+```
+
+
+- Which actor has appeared in the most films?
+
+```{r}
+sakila %>%
+  tbl("film_actor") %>%
+  group_by(actor_id) %>%
+  count() %>%
+  arrange(desc(n)) %>%
+  head(1) %>%
+  left_join(tbl(sakila, "actor"), by = 'actor_id') %>%
+  collect()
+```
+
+- What is that average running time of all the films in the sakila DB?
+
+```{r}
+sakila %>%
+  tbl("film") %>%
+  summarize(m = mean(length)) %>%
+  collect()
+```
+
+- What is the average running time of films by category?
+
+```{r}
+sakila %>%
+  tbl("film") %>%
+  left_join(tbl(sakila, "film_category"), by = "film_id") %>%
+  group_by(category_id) %>%
+  summarize(mean_length = mean(length)) %>%
+  left_join(tbl(sakila, "category"), by = "category_id") %>%
+  select(name, mean_length)
+```
+
+- Is 'Unforgiven Zoolander' available for rent from Store 1?
+
+```{r}
+uz <- sakila %>%
+  tbl("film") %>%
+  filter(str_to_lower(title) == str_to_lower('Unforgiven Zoolander')) %>%
+  select(film_id)
+all_inventories_of_store1 <- sakila %>%
+  tbl("inventory") %>%
+  filter(store_id == 1) %>% 
+  select(film_id, inventory_id, store_id)
+not_yet_returned <- sakila %>%
+  tbl("rental") %>%
+  filter(is.na(return_date)) %>%
+  select(inventory_id)
+uz %>% 
+  left_join(all_inventories_of_store1) %>% 
+  anti_join(not_yet_returned) %>% 
+  count() %>%
+  collect()
+```
+
+## SQL
+
+We just see some example queries of a relational database. Beind the scene, we are using a language called SQL. For example, in the last query, the SQL used is
+
+```{r}
+uz %>% 
+  left_join(all_inventories_of_store1) %>% 
+  anti_join(not_yet_returned) %>% 
+  count() %>% 
+  show_query()
+```
+
+Why learning SQL when there is dplyr?
+
+- SQL is everywhere (used in python, php, etc..)
+- Job interviews
+
+
+First we will need to connect to the database, 
+
+In R,
+```{r}
+sakila <- dbConnect(RSQLite::SQLite(), dbname = "sakila.sqlite")
+sakila %>% dbGetQuery("SELECT COUNT() AS `n` FROM `rental`")
+```
+
+We could also make SQL query by sql block. In here, we are using the connection `sakila`.
+The result will be printed directly.
+```{sql connection = sakila}
+SELECT COUNT() AS `n` FROM `rental`;
+```
+
+We could store the output to `rental_count`
+
+```{sql eval=FALSE, connection=sakila, output.var = "rental_count"}
+SELECT COUNT() AS `n` FROM `rental`;
+```
+
+```{r, eval = FALSE}
+rental_count
+```
+
+
+For comparsion, in Python, we use
+```{python, eval = FALSE}
+import sqlite3
+sakila = sqlite3.connect('sakila.sqlite.sqlite')
+c = sakila.cursor()
+c.execute("SELECT COUNT() AS `n` FROM `rental`")
+c.fetchall()
+```
+
+It is not stricly neccsaary to use backticks to quote identifiers and use upper cased keywords.
+```{sql connection = sakila}
+select count() as n from rental;
+```
+However, it is a good pratice to use backticks to quote identifiers because some databases, for example, postgresql would otherwise convert the upper case identifiers to lower case identifiers
+
+
+### SELECT
+
+The SELECT statement is pretty much the `select()` function in `dplyr`.
+
+```{sql connection = sakila}
+SELECT `last_name` FROM `actor`;
+```
+
+```{sql connection = sakila}
+SELECT LOWER(`last_name`) as `family_name` FROM `actor`;
+```
+
+```{sql connection = sakila}
+SELECT * FROM `actor`;
+```
+
+```{sql connection = sakila}
+SELECT `rental_id`, `last_update` FROM `rental`;
+```
+
+
+### ORDER BY Clause
+
+It is equivalent to `arrange()` in `dplyr``
+
+```{sql connection = sakila}
+SELECT * FROM `actor` ORDER BY `LAST_NAME`;
+```
+
+
+### DISTINCT
+
+DISTINCT operator to remove duplicates from a result set. It is equivalent to `distinct()` function in `dplyr`.
+
+```{sql connection = sakila}
+SELECT DISTINCT `last_name` FROM `actor`;
+```
+
+```{r}
+sakila %>%
+  tbl("actor") %>% 
+  distinct(last_name)
+```
+
+### LIMIT
+
+```{sql connection = sakila}
+SELECT * FROM `actor` LIMIT 2;
+```
+
+```{r}
+sakila %>%
+  tbl("actor") %>% 
+  head(2)
+```
+
+### WHERE
+
+It is equivalent to `filter()` in `dplyr`.
+
+Normally, strings are quoted in single quotes.
+
+```{sql connection = sakila}
+SELECT * FROM `film` WHERE `rating` == 'PG' AND `length` > 90;
+```
+
+
+```{r}
+sakila %>%
+  tbl("film") %>%
+  filter(rating == "PG" && length > 90)
+```
+
+The IN and LIKE operators
+
+```{sql connection = sakila}
+-- sqlite LIKE operator is case insensitive in default
+-- you could make it case sensitive by using
+PRAGMA case_sensitive_like = false;
+```
+
+```{sql connection = sakila}
+SELECT * FROM `film` WHERE `rating` IN ('PG', 'PG-13') AND `title` LIKE "%car%";
+```
+
+### CASE
+
+Similar to `case_when()` in `dplyr`.
+
+```{sql connection = sakila}
+SELECT 
+  film_id, 
+  title, 
+  CASE 
+    WHEN length < 60 THEN 'short'
+    WHEN length < 90 THEN 'mid'
+    ELSE 'long'
+  END length
+FROM `film`;
+```
+
+### JOIN operations
+
+
+
+
+# Reference
+
+- SQL Tutorial https://www.sqltutorial.org/
