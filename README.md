@@ -23,7 +23,8 @@
 |       | [data table](01-23/datatable.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/datatable.html) | |
 |       | [diagram](01-23/diagram.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/diagram.html) | |
 | 01-28, 01-30 | [regex](01-28/regex.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-28/regex.html) | [pdf](01-28/regex.pdf)|
-| 02-04 | [shiny](02-04/shiny.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/02-04/shiny.html) | |
+| 02-04, 02-06 | [shiny](02-04/shiny.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/02-04/shiny.html) | |
+| 02-11 | [sql](02-11/sql.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/02-11/sql.html) | [pdf](02-11/sql.pdf)|
 
 
 ## Site
