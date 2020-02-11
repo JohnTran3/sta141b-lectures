@@ -397,21 +397,21 @@ sakila %&gt;% dbListTables()</code></pre>
 <h2>How not to use SQL?</h2>
 <p><code>dplyr</code> provides an excellent interface for users without any SQL background to query databases.</p>
 <pre class="r"><code># number of rental transactions
-sakila %&gt;% 
-  tbl(&quot;rental&quot;) %&gt;% 
-  count() %&gt;% 
+sakila %&gt;%
+  tbl(&quot;rental&quot;) %&gt;%
+  count() %&gt;%
   collect()</code></pre>
 <pre><code>## # A tibble: 1 x 1
 ##       n
 ##   &lt;int&gt;
 ## 1 16044</code></pre>
 <p><code>sakila %&gt;% tbl(&quot;rental&quot;)</code> creates a virtual table rather loading the whole table into memory.</p>
-<pre class="r"><code>sakila %&gt;% 
-  tbl(&quot;rental&quot;) %&gt;% 
+<pre class="r"><code>sakila %&gt;%
+  tbl(&quot;rental&quot;) %&gt;%
   class()</code></pre>
 <pre><code>## [1] &quot;tbl_SQLiteConnection&quot; &quot;tbl_dbi&quot;              &quot;tbl_sql&quot;             
 ## [4] &quot;tbl_lazy&quot;             &quot;tbl&quot;</code></pre>
-<pre class="r"><code>sakila %&gt;% 
+<pre class="r"><code>sakila %&gt;%
   tbl(&quot;rental&quot;) %&gt;%
   colnames()</code></pre>
 <pre><code>## [1] &quot;rental_id&quot;    &quot;rental_date&quot;  &quot;inventory_id&quot; &quot;customer_id&quot;  &quot;return_date&quot; 
@@ -436,7 +436,7 @@ sakila %&gt;%
 <pre class="r"><code>sakila %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
   filter(str_to_lower(first_name) == str_to_lower(&quot;Scarlett&quot;)) %&gt;%
-  collect() %&gt;% 
+  collect() %&gt;%
   mutate(first_name = str_to_title(first_name), last_name = str_to_title(last_name))</code></pre>
 <pre><code>## # A tibble: 2 x 4
 ##   actor_id first_name last_name last_update        
@@ -524,7 +524,7 @@ sakila %&gt;%
   count() %&gt;%
   arrange(desc(n)) %&gt;%
   head(1) %&gt;%
-  left_join(tbl(sakila, &quot;actor&quot;), by = &#39;actor_id&#39;) %&gt;%
+  left_join(tbl(sakila, &quot;actor&quot;), by = &quot;actor_id&quot;) %&gt;%
   collect()</code></pre>
 <pre><code>## # A tibble: 1 x 5
 ## # Groups:   actor_id [1]
@@ -576,19 +576,19 @@ sakila %&gt;%
 </ul>
 <pre class="r"><code>uz &lt;- sakila %&gt;%
   tbl(&quot;film&quot;) %&gt;%
-  filter(str_to_lower(title) == str_to_lower(&#39;Unforgiven Zoolander&#39;)) %&gt;%
+  filter(str_to_lower(title) == str_to_lower(&quot;Unforgiven Zoolander&quot;)) %&gt;%
   select(film_id)
 all_inventories_of_store1 &lt;- sakila %&gt;%
   tbl(&quot;inventory&quot;) %&gt;%
-  filter(store_id == 1) %&gt;% 
+  filter(store_id == 1) %&gt;%
   select(film_id, inventory_id, store_id)
 not_yet_returned &lt;- sakila %&gt;%
   tbl(&quot;rental&quot;) %&gt;%
   filter(is.na(return_date)) %&gt;%
   select(inventory_id)
-uz %&gt;% 
-  left_join(all_inventories_of_store1) %&gt;% 
-  anti_join(not_yet_returned) %&gt;% 
+uz %&gt;%
+  inner_join(all_inventories_of_store1) %&gt;%
+  anti_join(not_yet_returned) %&gt;%
   count() %&gt;%
   collect()</code></pre>
 <pre><code>## Joining, by = &quot;film_id&quot;</code></pre>
@@ -601,10 +601,10 @@ uz %&gt;%
 <div id="sql" class="section level2">
 <h2>SQL</h2>
 <p>We just see some example queries of a relational database. Beind the scene, we are using a language called SQL. For example, in the last query, the SQL used is</p>
-<pre class="r"><code>uz %&gt;% 
-  left_join(all_inventories_of_store1) %&gt;% 
-  anti_join(not_yet_returned) %&gt;% 
-  count() %&gt;% 
+<pre class="r"><code>uz %&gt;%
+  left_join(all_inventories_of_store1) %&gt;%
+  anti_join(not_yet_returned) %&gt;%
+  count() %&gt;%
   show_query()</code></pre>
 <pre><code>## Joining, by = &quot;film_id&quot;</code></pre>
 <pre><code>## Joining, by = &quot;inventory_id&quot;</code></pre>
@@ -628,6 +628,7 @@ uz %&gt;%
 <p>Why learning SQL when there is dplyr?</p>
 <ul>
 <li>SQL is everywhere (used in python, php, etc..)</li>
+<li>dplyr magics only read, desnot write</li>
 <li>Job interviews</li>
 </ul>
 <p>First we will need to connect to the database,</p>
@@ -902,7 +903,7 @@ c.fetchall()</code></pre>
 </div>
 <div id="order-by-clause" class="section level3">
 <h3>ORDER BY Clause</h3>
-<p>It is equivalent to <code>arrange()</code> in `dplyr``</p>
+<p>It is equivalent to <code>arrange()</code> in <code>dplyr</code></p>
 <pre class="sql"><code>SELECT * FROM `actor` ORDER BY `LAST_NAME`;</code></pre>
 <div class="knitsql-table">
 <table>
@@ -1027,7 +1028,7 @@ c.fetchall()</code></pre>
 </table>
 </div>
 <pre class="r"><code>sakila %&gt;%
-  tbl(&quot;actor&quot;) %&gt;% 
+  tbl(&quot;actor&quot;) %&gt;%
   distinct(last_name)</code></pre>
 <pre><code>## # Source:   lazy query [?? x 1]
 ## # Database: sqlite 3.30.1
@@ -1077,7 +1078,7 @@ c.fetchall()</code></pre>
 </table>
 </div>
 <pre class="r"><code>sakila %&gt;%
-  tbl(&quot;actor&quot;) %&gt;% 
+  tbl(&quot;actor&quot;) %&gt;%
   head(2)</code></pre>
 <pre><code>## # Source:   lazy query [?? x 4]
 ## # Database: sqlite 3.30.1
