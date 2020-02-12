@@ -373,17 +373,23 @@ library(DBI)</code></pre>
 <blockquote>
 <p>a structured set of data held in a computer, especially one that is accessible in various ways.</p>
 </blockquote>
-<p>A relational database is a type of database that stores and provides access to data points that are related to one another. Relation databases are administrated by a Relational Database Management System (RDMBS). The data in RDBMS is stored in database objects called tables. A table is a collection of related data entries and it consists of columns and rows.</p>
-<p>There are many RDMBS. - MySQL (owned by Oracle) - PostgreSQL (open source) - SQL Server (microsoft) - SQLite (open source, single file)</p>
+<p>A relational database is a type of database that stores and provides access to data points that are related to one another. Relation databases are administrated by a Relational Database Management System (RDBMS). The data in RDBMS is stored in database objects called tables. A table is a collection of related data entries and it consists of columns and rows.</p>
+<p>There are many RDBMS - MySQL (owned by Oracle) - PostgreSQL (open source) - SQL Server (microsoft) - SQLite (open source, single file)</p>
 <p>What is SQL? Structured Query Language (or SQL) is a standard language for accessing and manipulating relational databaes. However, each RDMBS may have their own extension of the SQL language and their implmentation may vary too.</p>
-<div id="connect-to-a-sqlite-databse" class="section level2">
-<h2>Connect to a sqlite databse</h2>
+<div id="connect-to-a-databse" class="section level2">
+<h2>Connect to a databse</h2>
 <p>We are going to use a popular database called Sakila <a href="https://www.jooq.org/sakila" class="uri">https://www.jooq.org/sakila</a>.</p>
 <p>The Sakila database is a nicely normalised schema modelling a DVD rental store, featuring things like films, actors, film-actor relationships, and a central inventory table that connects films, stores, and rentals.</p>
-<p>You could either download the file from lectures repo or from the dropbox link <a href="https://www.dropbox.com/s/7hmifspoj4jzsk1/sakila.sqlite?dl=0" class="uri">https://www.dropbox.com/s/7hmifspoj4jzsk1/sakila.sqlite?dl=0</a></p>
+<p>In the following, we are going to use both <code>sqlite</code> and <code>postgresql</code>.</p>
+<div id="sqlite" class="section level3">
+<h3>SQLite</h3>
+<p>The database is called <code>sakila.sqlite</code>. You could either git clone from lectures repo or download using the code</p>
+<pre class="r"><code>if (!file.exists(&quot;sakila.sqlite&quot;)) {
+  download.file(&quot;https://github.com/UCDavis-STA-141B-Winter-2020/sta141b-lectures/raw/master/02-11/sakila.sqlite&quot;, destfile = &quot;sakila.sqlite&quot;)
+}</code></pre>
 <p>The file format is <code>.sqlite</code> which is one of the very common relational database formats, espeically for simple problems.</p>
-<pre class="r"><code>sakila &lt;- dbConnect(RSQLite::SQLite(), dbname = &quot;sakila.sqlite&quot;)
-sakila %&gt;% dbListTables()</code></pre>
+<pre class="r"><code>sakila_lite &lt;- dbConnect(RSQLite::SQLite(), dbname = &quot;sakila.sqlite&quot;)
+sakila_lite %&gt;% dbListTables()</code></pre>
 <pre><code>##  [1] &quot;actor&quot;                  &quot;address&quot;                &quot;category&quot;              
 ##  [4] &quot;city&quot;                   &quot;country&quot;                &quot;customer&quot;              
 ##  [7] &quot;customer_list&quot;          &quot;film&quot;                   &quot;film_actor&quot;            
@@ -393,11 +399,21 @@ sakila %&gt;% dbListTables()</code></pre>
 ## [19] &quot;sqlite_sequence&quot;        &quot;staff&quot;                  &quot;staff_list&quot;            
 ## [22] &quot;store&quot;</code></pre>
 </div>
+<div id="postgresql" class="section level3">
+<h3>Postgresql</h3>
+<p>I have also uploaded the Sakila database to a postgres server owned by the department. (You’ll need to either on the campus or over vpn to connect to it)</p>
+<pre class="r"><code>sakila_psql &lt;- dbConnect(RPostgres::Postgres(),
+  dbname = &quot;sakila&quot;,
+  user = &quot;psqluser&quot;, password = &quot;secret&quot;, host = &quot;alan.ucdavis.edu&quot;
+)
+sakila_psql %&gt;% dbListTables()</code></pre>
+</div>
+</div>
 <div id="how-not-to-use-sql" class="section level2">
 <h2>How not to use SQL?</h2>
 <p><code>dplyr</code> provides an excellent interface for users without any SQL background to query databases.</p>
 <pre class="r"><code># number of rental transactions
-sakila %&gt;%
+sakila_lite %&gt;%
   tbl(&quot;rental&quot;) %&gt;%
   count() %&gt;%
   collect()</code></pre>
@@ -405,25 +421,25 @@ sakila %&gt;%
 ##       n
 ##   &lt;int&gt;
 ## 1 16044</code></pre>
-<p><code>sakila %&gt;% tbl(&quot;rental&quot;)</code> creates a virtual table rather loading the whole table into memory.</p>
-<pre class="r"><code>sakila %&gt;%
+<p><code>sakila_lite %&gt;% tbl(&quot;rental&quot;)</code> creates a virtual table rather loading the whole table into memory.</p>
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;rental&quot;) %&gt;%
   class()</code></pre>
 <pre><code>## [1] &quot;tbl_SQLiteConnection&quot; &quot;tbl_dbi&quot;              &quot;tbl_sql&quot;             
 ## [4] &quot;tbl_lazy&quot;             &quot;tbl&quot;</code></pre>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;rental&quot;) %&gt;%
   colnames()</code></pre>
 <pre><code>## [1] &quot;rental_id&quot;    &quot;rental_date&quot;  &quot;inventory_id&quot; &quot;customer_id&quot;  &quot;return_date&quot; 
 ## [6] &quot;staff_id&quot;     &quot;last_update&quot;</code></pre>
 </div>
-<div id="sakila-queris" class="section level2">
-<h2>Sakila queris</h2>
+<div id="sakila-queries" class="section level2">
+<h2>Sakila queries</h2>
 <p><a href="https://datamastery.gitlab.io/exercises/sakila-queries.html" class="uri">https://datamastery.gitlab.io/exercises/sakila-queries.html</a></p>
 <ul>
 <li>Which actors have the first name Scarlett?</li>
 </ul>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
   filter(str_to_lower(first_name) == str_to_lower(&quot;Scarlett&quot;)) %&gt;%
   collect()</code></pre>
@@ -433,7 +449,7 @@ sakila %&gt;%
 ## 1       81 SCARLETT   DAMON     2019-04-11 18:11:48
 ## 2      124 SCARLETT   BENING    2019-04-11 18:11:48</code></pre>
 <p>Suppose we want to make the result a bit more beautiful.</p>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
   filter(str_to_lower(first_name) == str_to_lower(&quot;Scarlett&quot;)) %&gt;%
   collect() %&gt;%
@@ -446,7 +462,7 @@ sakila %&gt;%
 <ul>
 <li>Which actors have the last name Johansson?</li>
 </ul>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
   filter(str_to_lower(last_name) == &quot;johansson&quot;) %&gt;%
   collect()</code></pre>
@@ -459,7 +475,7 @@ sakila %&gt;%
 <ul>
 <li>How many distinct actors last names are there?</li>
 </ul>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
   summarize(n = n_distinct(last_name)) %&gt;%
   collect()</code></pre>
@@ -470,14 +486,12 @@ sakila %&gt;%
 <ul>
 <li>Which last names are not repeated?</li>
 </ul>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
-  group_by(last_name) %&gt;%
-  count() %&gt;%
+  count(last_name) %&gt;%
   filter(n == 1) %&gt;%
   collect()</code></pre>
 <pre><code>## # A tibble: 66 x 2
-## # Groups:   last_name [66]
 ##    last_name     n
 ##    &lt;chr&gt;     &lt;int&gt;
 ##  1 ASTAIRE       1
@@ -494,14 +508,12 @@ sakila %&gt;%
 <ul>
 <li>Which last names appear more than once?</li>
 </ul>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
-  group_by(last_name) %&gt;%
-  count() %&gt;%
+  count(last_name) %&gt;%
   filter(n &gt; 1) %&gt;%
   collect()</code></pre>
 <pre><code>## # A tibble: 55 x 2
-## # Groups:   last_name [55]
 ##    last_name     n
 ##    &lt;chr&gt;     &lt;int&gt;
 ##  1 AKROYD        3
@@ -518,23 +530,21 @@ sakila %&gt;%
 <ul>
 <li>Which actor has appeared in the most films?</li>
 </ul>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;film_actor&quot;) %&gt;%
-  group_by(actor_id) %&gt;%
-  count() %&gt;%
+  count(actor_id) %&gt;%
   arrange(desc(n)) %&gt;%
   head(1) %&gt;%
-  left_join(tbl(sakila, &quot;actor&quot;), by = &quot;actor_id&quot;) %&gt;%
+  inner_join(tbl(sakila_lite, &quot;actor&quot;), by = &quot;actor_id&quot;) %&gt;%
   collect()</code></pre>
 <pre><code>## # A tibble: 1 x 5
-## # Groups:   actor_id [1]
 ##   actor_id     n first_name last_name last_update        
 ##      &lt;int&gt; &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;              
 ## 1      107    42 GINA       DEGENERES 2019-04-11 18:11:48</code></pre>
 <ul>
 <li>What is that average running time of all the films in the sakila DB?</li>
 </ul>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;film&quot;) %&gt;%
   summarize(m = mean(length)) %&gt;%
   collect()</code></pre>
@@ -548,16 +558,15 @@ sakila %&gt;%
 <ul>
 <li>What is the average running time of films by category?</li>
 </ul>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;film&quot;) %&gt;%
-  left_join(tbl(sakila, &quot;film_category&quot;), by = &quot;film_id&quot;) %&gt;%
+  left_join(tbl(sakila_lite, &quot;film_category&quot;), by = &quot;film_id&quot;) %&gt;%
   group_by(category_id) %&gt;%
   summarize(mean_length = mean(length)) %&gt;%
-  left_join(tbl(sakila, &quot;category&quot;), by = &quot;category_id&quot;) %&gt;%
-  select(name, mean_length)</code></pre>
-<pre><code>## # Source:   lazy query [?? x 2]
-## # Database: sqlite 3.30.1
-## #   [/Users/Randy/Dropbox/Winter2020/STA141B/sta141b-lectures/02-11/sakila.sqlite]
+  left_join(tbl(sakila_lite, &quot;category&quot;), by = &quot;category_id&quot;) %&gt;%
+  select(name, mean_length) %&gt;%
+  collect()</code></pre>
+<pre><code>## # A tibble: 16 x 2
 ##    name        mean_length
 ##    &lt;chr&gt;             &lt;dbl&gt;
 ##  1 Action             112.
@@ -570,28 +579,32 @@ sakila %&gt;%
 ##  8 Family             115.
 ##  9 Foreign            122.
 ## 10 Games              128.
-## # … with more rows</code></pre>
+## 11 Horror             112.
+## 12 Music              114.
+## 13 New                111.
+## 14 Sci-Fi             108.
+## 15 Sports             128.
+## 16 Travel             113.</code></pre>
 <ul>
 <li>Is ‘Unforgiven Zoolander’ available for rent from Store 1?</li>
 </ul>
-<pre class="r"><code>uz &lt;- sakila %&gt;%
+<pre class="r"><code>uz &lt;- sakila_lite %&gt;%
   tbl(&quot;film&quot;) %&gt;%
   filter(str_to_lower(title) == str_to_lower(&quot;Unforgiven Zoolander&quot;)) %&gt;%
   select(film_id)
-all_inventories_of_store1 &lt;- sakila %&gt;%
+all_inventories_of_store1 &lt;- sakila_lite %&gt;%
   tbl(&quot;inventory&quot;) %&gt;%
   filter(store_id == 1) %&gt;%
   select(film_id, inventory_id, store_id)
-not_yet_returned &lt;- sakila %&gt;%
+not_yet_returned &lt;- sakila_lite %&gt;%
   tbl(&quot;rental&quot;) %&gt;%
   filter(is.na(return_date)) %&gt;%
   select(inventory_id)
 uz %&gt;%
-  inner_join(all_inventories_of_store1) %&gt;%
+  inner_join(all_inventories_of_store1, by = &quot;film_id&quot;) %&gt;%
   anti_join(not_yet_returned) %&gt;%
   count() %&gt;%
   collect()</code></pre>
-<pre><code>## Joining, by = &quot;film_id&quot;</code></pre>
 <pre><code>## Joining, by = &quot;inventory_id&quot;</code></pre>
 <pre><code>## # A tibble: 1 x 1
 ##       n
@@ -633,11 +646,12 @@ uz %&gt;%
 </ul>
 <p>First we will need to connect to the database,</p>
 <p>In R,</p>
-<pre class="r"><code>sakila &lt;- dbConnect(RSQLite::SQLite(), dbname = &quot;sakila.sqlite&quot;)
-sakila %&gt;% dbGetQuery(&quot;SELECT COUNT() AS `n` FROM `rental`&quot;)</code></pre>
+<pre class="r"><code>sakila_lite &lt;- dbConnect(RSQLite::SQLite(), dbname = &quot;sakila.sqlite&quot;)
+sakila_lite %&gt;%
+  dbGetQuery(&quot;SELECT COUNT() AS `n` FROM `rental`&quot;)</code></pre>
 <pre><code>##       n
 ## 1 16044</code></pre>
-<p>We could also make SQL query by sql block. In here, we are using the connection <code>sakila</code>. The result will be printed directly.</p>
+<p>We could also make SQL query by sql block. In here, we are using the connection <code>sakila_lite</code>. The result will be printed directly.</p>
 <pre class="sql"><code>SELECT COUNT() AS `n` FROM `rental`;</code></pre>
 <div class="knitsql-table">
 <table>
@@ -657,14 +671,16 @@ sakila %&gt;% dbGetQuery(&quot;SELECT COUNT() AS `n` FROM `rental`&quot;)</code>
 <p>We could store the output to <code>rental_count</code></p>
 <pre class="sql"><code>SELECT COUNT() AS `n` FROM `rental`;</code></pre>
 <pre class="r"><code>rental_count</code></pre>
+<pre><code>##       n
+## 1 16044</code></pre>
 <p>For comparsion, in Python, we use</p>
 <pre class="python"><code>import sqlite3
-sakila = sqlite3.connect(&#39;sakila.sqlite.sqlite&#39;)
+sakila_lite = sqlite3.connect(&#39;sakila.sqlite&#39;)
 c = sakila.cursor()
 c.execute(&quot;SELECT COUNT() AS `n` FROM `rental`&quot;)
 c.fetchall()</code></pre>
 <p>It is not stricly neccsaary to use backticks to quote identifiers and use upper cased keywords.</p>
-<pre class="sql"><code>select count() as n from rental;</code></pre>
+<pre class="sql"><code>select count() as `n` from `actor`;</code></pre>
 <div class="knitsql-table">
 <table>
 <caption>1 records</caption>
@@ -675,7 +691,7 @@ c.fetchall()</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">16044</td>
+<td align="left">200</td>
 </tr>
 </tbody>
 </table>
@@ -727,7 +743,7 @@ c.fetchall()</code></pre>
 </tbody>
 </table>
 </div>
-<pre class="sql"><code>SELECT LOWER(`last_name`) as `family_name` FROM `actor`;</code></pre>
+<pre class="sql"><code>SELECT LOWER(`last_name`) AS `family_name` FROM `actor`;</code></pre>
 <div class="knitsql-table">
 <table>
 <caption>Displaying records 1 - 10</caption>
@@ -770,6 +786,26 @@ c.fetchall()</code></pre>
 </tbody>
 </table>
 </div>
+<p>FOr comparision,</p>
+<pre class="r"><code>sakila_lite %&gt;%
+  tbl(&quot;actor&quot;) %&gt;%
+  transmute(family_name = str_to_lower(last_name))</code></pre>
+<pre><code>## # Source:   lazy query [?? x 1]
+## # Database: sqlite 3.30.1
+## #   [/Users/Randy/Dropbox/Winter2020/STA141B/sta141b-lectures/02-11/sakila.sqlite]
+##    family_name
+##    &lt;chr&gt;      
+##  1 akroyd     
+##  2 akroyd     
+##  3 akroyd     
+##  4 allen      
+##  5 allen      
+##  6 allen      
+##  7 astaire    
+##  8 bacall     
+##  9 bailey     
+## 10 bailey     
+## # … with more rows</code></pre>
 <pre class="sql"><code>SELECT * FROM `actor`;</code></pre>
 <div class="knitsql-table">
 <table>
@@ -1027,7 +1063,7 @@ c.fetchall()</code></pre>
 </tbody>
 </table>
 </div>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
   distinct(last_name)</code></pre>
 <pre><code>## # Source:   lazy query [?? x 1]
@@ -1077,7 +1113,7 @@ c.fetchall()</code></pre>
 </tbody>
 </table>
 </div>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
   head(2)</code></pre>
 <pre><code>## # Source:   lazy query [?? x 4]
@@ -1267,7 +1303,7 @@ c.fetchall()</code></pre>
 </tbody>
 </table>
 </div>
-<pre class="r"><code>sakila %&gt;%
+<pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;film&quot;) %&gt;%
   filter(rating == &quot;PG&quot; &amp;&amp; length &gt; 90)</code></pre>
 <pre><code>## # Source:   lazy query [?? x 13]
@@ -1393,6 +1429,186 @@ PRAGMA case_sensitive_like = false;</code></pre>
 </table>
 </div>
 </div>
+<div id="sql-interpolation" class="section level3">
+<h3>SQL interpolation</h3>
+<pre class="r"><code>rating &lt;- &quot;PG&quot;
+x &lt;- 90</code></pre>
+<pre class="sql"><code>SELECT * FROM `film` WHERE `rating` == ?rating AND `length` &gt; ?x;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th align="right">film_id</th>
+<th align="left">title</th>
+<th align="left">description</th>
+<th align="left">release_year</th>
+<th align="right">language_id</th>
+<th align="right">original_language_id</th>
+<th align="right">rental_duration</th>
+<th align="right">rental_rate</th>
+<th align="right">length</th>
+<th align="right">replacement_cost</th>
+<th align="left">rating</th>
+<th align="left">special_features</th>
+<th align="left">last_update</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">6</td>
+<td align="left">AGENT TRUMAN</td>
+<td align="left">A Intrepid Panorama of a Robot And a Boy who must Escape a Sumo Wrestler in Ancient China</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">3</td>
+<td align="right">2.99</td>
+<td align="right">169</td>
+<td align="right">17.99</td>
+<td align="left">PG</td>
+<td align="left">Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
+</tr>
+<tr class="even">
+<td align="right">12</td>
+<td align="left">ALASKA PHANTOM</td>
+<td align="left">A Fanciful Saga of a Hunter And a Pastry Chef who must Vanquish a Boy in Australia</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">6</td>
+<td align="right">0.99</td>
+<td align="right">136</td>
+<td align="right">22.99</td>
+<td align="left">PG</td>
+<td align="left">Commentaries,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
+</tr>
+<tr class="odd">
+<td align="right">13</td>
+<td align="left">ALI FOREVER</td>
+<td align="left">A Action-Packed Drama of a Dentist And a Crocodile who must Battle a Feminist in The Canadian Rockies</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">4</td>
+<td align="right">4.99</td>
+<td align="right">150</td>
+<td align="right">21.99</td>
+<td align="left">PG</td>
+<td align="left">Deleted Scenes,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
+</tr>
+<tr class="even">
+<td align="right">19</td>
+<td align="left">AMADEUS HOLY</td>
+<td align="left">A Emotional Display of a Pioneer And a Technical Writer who must Battle a Man in A Baloon</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">6</td>
+<td align="right">0.99</td>
+<td align="right">113</td>
+<td align="right">20.99</td>
+<td align="left">PG</td>
+<td align="left">Commentaries,Deleted Scenes,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
+</tr>
+<tr class="odd">
+<td align="right">37</td>
+<td align="left">ARIZONA BANG</td>
+<td align="left">A Brilliant Panorama of a Mad Scientist And a Mad Cow who must Meet a Pioneer in A Monastery</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">3</td>
+<td align="right">2.99</td>
+<td align="right">121</td>
+<td align="right">28.99</td>
+<td align="left">PG</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
+</tr>
+<tr class="even">
+<td align="right">41</td>
+<td align="left">ARSENIC INDEPENDENCE</td>
+<td align="left">A Fanciful Documentary of a Mad Cow And a Womanizer who must Find a Dentist in Berlin</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">4</td>
+<td align="right">0.99</td>
+<td align="right">137</td>
+<td align="right">17.99</td>
+<td align="left">PG</td>
+<td align="left">Trailers,Deleted Scenes,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
+</tr>
+<tr class="odd">
+<td align="right">65</td>
+<td align="left">BEHAVIOR RUNAWAY</td>
+<td align="left">A Unbelieveable Drama of a Student And a Husband who must Outrace a Sumo Wrestler in Berlin</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">3</td>
+<td align="right">4.99</td>
+<td align="right">100</td>
+<td align="right">20.99</td>
+<td align="left">PG</td>
+<td align="left">Trailers,Deleted Scenes,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
+</tr>
+<tr class="even">
+<td align="right">72</td>
+<td align="left">BILL OTHERS</td>
+<td align="left">A Stunning Saga of a Mad Scientist And a Forensic Psychologist who must Challenge a Squirrel in A MySQL Convention</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">6</td>
+<td align="right">2.99</td>
+<td align="right">93</td>
+<td align="right">12.99</td>
+<td align="left">PG</td>
+<td align="left">Trailers,Commentaries</td>
+<td align="left">2019-04-11 18:11:48</td>
+</tr>
+<tr class="odd">
+<td align="right">74</td>
+<td align="left">BIRCH ANTITRUST</td>
+<td align="left">A Fanciful Panorama of a Husband And a Pioneer who must Outgun a Dog in A Baloon</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">4</td>
+<td align="right">4.99</td>
+<td align="right">162</td>
+<td align="right">18.99</td>
+<td align="left">PG</td>
+<td align="left">Trailers,Commentaries,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
+</tr>
+<tr class="even">
+<td align="right">84</td>
+<td align="left">BOILED DARES</td>
+<td align="left">A Awe-Inspiring Story of a Waitress And a Dog who must Discover a Dentist in Ancient Japan</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">7</td>
+<td align="right">4.99</td>
+<td align="right">102</td>
+<td align="right">13.99</td>
+<td align="left">PG</td>
+<td align="left">Trailers,Commentaries</td>
+<td align="left">2019-04-11 18:11:48</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="case" class="section level3">
 <h3>CASE</h3>
 <p>Similar to <code>case_when()</code> in <code>dplyr</code>.</p>
@@ -1472,6 +1688,107 @@ FROM `film`;</code></pre>
 </div>
 <div id="join-operations" class="section level3">
 <h3>JOIN operations</h3>
+<ul>
+<li>Inner Join</li>
+</ul>
+<pre class="sql"><code>SELECT fa.`actor_id`, `last_name`, `first_name` FROM `film_actor` fa JOIN `actor` a ON fa.`actor_id` = a.`actor_id`</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th align="right">actor_id</th>
+<th align="left">last_name</th>
+<th align="left">first_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">GUINESS</td>
+<td align="left">PENELOPE</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">GUINESS</td>
+<td align="left">PENELOPE</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">GUINESS</td>
+<td align="left">PENELOPE</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">GUINESS</td>
+<td align="left">PENELOPE</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">GUINESS</td>
+<td align="left">PENELOPE</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">GUINESS</td>
+<td align="left">PENELOPE</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">GUINESS</td>
+<td align="left">PENELOPE</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">GUINESS</td>
+<td align="left">PENELOPE</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">GUINESS</td>
+<td align="left">PENELOPE</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">GUINESS</td>
+<td align="left">PENELOPE</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><p>Left Join</p></li>
+<li><p>Full Join</p></li>
+<li><p>Semi Join</p></li>
+<li><p>Anti Join</p></li>
+</ul>
+</div>
+<div id="aggregate-functions" class="section level3">
+<h3>Aggregate Functions</h3>
+<ul>
+<li>AVG – calculate the average value of a set.</li>
+<li>COUNT – return the number of items in a set.</li>
+<li>SUM – return the sum all or distinct items of a set.</li>
+<li>MAX – find the maximum value in a set.</li>
+<li>MIN – find the minimum value in a set.</li>
+</ul>
+</div>
+<div id="group-by" class="section level3">
+<h3>Group By</h3>
+</div>
+<div id="set-operators" class="section level3">
+<h3>SET Operators</h3>
+</div>
+<div id="subquery" class="section level3">
+<h3>Subquery</h3>
+</div>
+<div id="data-manipulation-language-dml-statements" class="section level3">
+<h3>Data Manipulation Language (DML) Statements</h3>
+<ul>
+<li>INSERT – insert one or more rows into a table.</li>
+<li>UPDATE – update existing data in a table.</li>
+<li>DELETE – delete data from a table permanently.</li>
+</ul>
 </div>
 </div>
 <div id="reference" class="section level1">
