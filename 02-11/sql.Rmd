@@ -1,6 +1,7 @@
 ---
 title: "Database and SQL"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 date: "02-11-2020"
@@ -332,6 +333,10 @@ It is equivalent to `arrange()` in `dplyr`
 SELECT * FROM "actor" ORDER BY "last_name";
 ```
 
+```{sql connection = sakila_lite}
+SELECT * FROM "actor" ORDER BY "last_name" DESC;
+```
+
 
 ### DISTINCT
 
@@ -363,12 +368,14 @@ sakila_lite %>%
 
 It is equivalent to `filter()` in `dplyr`.
 
+- SQLite (and MySQL) allows double qoutes to quote string values but it is actually not the SQL standard.
 In SQL standard, strings are quoted in single quotes.
 
-```{sql connection = sakila_lite}
-SELECT * FROM "film" WHERE "rating" == 'PG' AND "length" > 90;
-```
+- In SQL standard, we should use `=` for comparison, but not `==`.
 
+```{sql connection = sakila_lite}
+SELECT * FROM "film" WHERE "rating" = 'PG' AND "length" > 90;
+```
 
 ```{r}
 sakila_lite %>%
@@ -376,17 +383,36 @@ sakila_lite %>%
   filter(rating == "PG" && length > 90)
 ```
 
-The IN operator
+- The `IN` operator
 
 ```{sql connection = sakila_lite}
 SELECT * FROM "film" WHERE "rating" IN ('PG', 'PG-13');
 ```
 
-The LIKE operator
+```{r}
+sakila_lite %>%
+  tbl("film") %>%
+  filter(rating %in% c("PG", "PG-13"))
+```
+
+- The `LIKE` operator
 
 ```{sql connection = sakila_lite}
-SELECT * FROM "film" WHERE "rating" IN ('PG', 'PG-13');
+SELECT "title" FROM "film" WHERE "title" LIKE '%victory%';
 ```
+
+Remark: in SQLite, the `LIKE` operator is case insensitive. However, it is not the case for other DBs.
+
+
+```{sql connection = sakila_psql, eval = FALSE}
+SELECT "title" FROM "film" WHERE "title" LIKE '%victory%';
+```
+
+In Postgres, there is a `ILIKE` (case insensitive `LIKE`) operator
+```{sql connection = sakila_psql, eval = FALSE}
+SELECT "title" FROM "film" WHERE "title" ILIKE '%victory%';
+```
+
 
 ### SQL interpolation
 
@@ -418,23 +444,74 @@ FROM "film";
 
 ### JOIN operations
 
-- Inner Join
+
+- Inner Join - selects records that have matching values in both tables.
 
 ```{sql connection = sakila_lite}
-SELECT fa."actor_id", "last_name", "first_name" FROM "film_actor" fa JOIN "actor" a ON fa."actor_id" = a."actor_id"
+SELECT a."inventory_id", b."customer_id"
+  FROM "inventory" a
+  JOIN "rental" b ON a."inventory_id" = b."inventory_id"
+  ORDER BY a."inventory_id"
 ```
 
-- Left Join
+We could also join a more sophisticated subquery.
+
+```{sql connection = sakila_lite}
+SELECT a."inventory_id", b."customer_id"
+  FROM "inventory" a 
+  JOIN (
+    SELECT * FROM "rental" WHERE "return_date" IS NULL
+  ) b ON a."inventory_id" = b."inventory_id"
+  ORDER BY a."inventory_id"
+```
 
 
-- Full Join
+- Left Join - returns all records from the left table, and the matched records from the right table
+
+```{sql connection = sakila_lite}
+SELECT a."inventory_id", b."customer_id"
+  FROM "inventory" a 
+  LEFT JOIN (
+    SELECT * FROM "rental" WHERE "return_date" IS NULL
+  ) b ON a."inventory_id" = b."inventory_id"
+  ORDER BY a."inventory_id"
+```
+
+- Full Join - returns all records when there is a match in left or right table records.
+
+SQLite doesn't support full join.
+
+```{sql connection = sakila_lite, eval = FALSE}
+SELECT a."inventory_id", b."customer_id"
+  FROM "inventory" a 
+  FULL JOIN (
+    SELECT * FROM "rental" WHERE "return_date" IS NULL
+  ) b ON a."inventory_id" = b."inventory_id"
+  ORDER BY a."inventory_id"
+```
+
+- Semi Join - return all records in the left table which has a match in the right table.
+
+```{sql connection = sakila_lite}
+SELECT "inventory_id"
+  FROM "inventory" i
+  WHERE EXISTS (
+    SELECT * FROM "rental" r
+      WHERE r."inventory_id" = i."inventory_id" AND "return_date" IS NULL
+  )
+```
 
 
-- Semi Join
+- Anti Join - remove all records in the left table which has a match in the right table.
 
-
-- Anti Join
-
+```{sql connection = sakila_lite}
+SELECT "inventory_id"
+  FROM "inventory" i
+  WHERE NOT EXISTS (
+    SELECT * FROM "rental" r
+      WHERE r."inventory_id" = i."inventory_id" AND "return_date" IS NULL
+  )
+```
 
 
 ### Aggregate Functions
@@ -445,17 +522,53 @@ SELECT fa."actor_id", "last_name", "first_name" FROM "film_actor" fa JOIN "actor
 - MAX – find the maximum value in a set.
 - MIN – find the minimum value in a set.
 
+```{sql connection = sakila_lite}
+SELECT AVG("length") as "avg_length" FROM "film"
+```
+
+
 ### Group By
 
+```{sql connection = sakila_lite}
+SELECT "rating", "rental_duration", AVG("length") AS "avg_length" 
+  FROM "film" GROUP BY "rating";
+```
 
+```{sql connection = sakila_lite}
+SELECT "rating", "rental_duration", AVG("length") AS "avg_length" 
+  FROM "film" GROUP BY "rating", "rental_duration";
+```
 
 ### SET Operators
 
+- UNION and UNION ALL – combine result set of two or more queries into a single result set using the UNION and UNION ALL operators.
+- INTERSECT  – return the intersection of two or more queries using the INTERSECT operator.
+- EXCEPT – subtract a result set from another result set using the EXCEPT operator
 
+```{sql connection = sakila_lite}
+SELECT "film_id" FROM "film" where "film_id" <= 3
+UNION
+SELECT "film_id" FROM "film" where "film_id" <= 4
+```
+`UNION ALL` doesn't remove duplications
 
-### Subquery
+```{sql connection = sakila_lite}
+SELECT "film_id" FROM "film" where "film_id" <= 3
+UNION ALL
+SELECT "film_id" FROM "film" where "film_id" <= 4
+```
 
+```{sql connection = sakila_lite}
+SELECT "film_id" FROM "film" where "film_id" <= 5
+INTERSECT
+SELECT "film_id" FROM "film" where "film_id" >= 2;
+```
 
+```{sql connection = sakila_lite}
+SELECT "film_id" FROM "film" where "film_id" <= 5
+EXCEPT
+SELECT "film_id" FROM "film" where "film_id" >= 4;
+```
 
 ### Data Manipulation Language (DML) Statements
 
