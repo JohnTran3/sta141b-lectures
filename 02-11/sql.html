@@ -1726,7 +1726,7 @@ sakila_lite %&gt;%
 <pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
   filter(str_to_lower(first_name) == str_to_lower(&quot;Scarlett&quot;)) %&gt;%
-  collect() %&gt;%
+  collect() %&gt;% 
   mutate(first_name = str_to_title(first_name), last_name = str_to_title(last_name))</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
@@ -1939,7 +1939,7 @@ c.fetchall()</code></pre>
 <pre class="sql"><code>-- MySQL style
 SELECT COUNT() AS `n` from `actor`;</code></pre>
 <pre class="sql"><code>-- The standard way
-SELECT COUNT() AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
+SELECT COUNT(*) AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
 <div id="select" class="section level3">
 <h3>SELECT</h3>
 <p>The SELECT statement is pretty much the <code>select()</code> function in <code>dplyr</code>.</p>
@@ -2032,10 +2032,11 @@ SELECT COUNT() AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
 <p>For comparision,</p>
 <pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;actor&quot;) %&gt;%
-  transmute(family_name = str_to_lower(last_name))</code></pre>
+  transmute(family_name = str_to_lower(last_name)) %&gt;%
+  collect()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["family_name"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"akroyd"},{"1":"akroyd"},{"1":"akroyd"},{"1":"allen"},{"1":"allen"},{"1":"allen"},{"1":"astaire"},{"1":"bacall"},{"1":"bailey"},{"1":"bailey"},{"1":"bale"},{"1":"ball"},{"1":"barrymore"},{"1":"basinger"},{"1":"bening"},{"1":"bening"},{"1":"bergen"},{"1":"bergman"},{"1":"berry"},{"1":"berry"},{"1":"berry"},{"1":"birch"},{"1":"bloom"},{"1":"bolger"},{"1":"bolger"},{"1":"bridges"},{"1":"brody"},{"1":"brody"},{"1":"bullock"},{"1":"cage"},{"1":"cage"},{"1":"carrey"},{"1":"chaplin"},{"1":"chase"},{"1":"chase"},{"1":"close"},{"1":"costner"},{"1":"crawford"},{"1":"crawford"},{"1":"cronyn"},{"1":"cronyn"},{"1":"crowe"},{"1":"cruise"},{"1":"cruz"},{"1":"damon"},{"1":"davis"},{"1":"davis"},{"1":"davis"},{"1":"day-lewis"},{"1":"dean"},{"1":"dean"},{"1":"dee"},{"1":"dee"},{"1":"degeneres"},{"1":"degeneres"},{"1":"degeneres"},{"1":"dench"},{"1":"dench"},{"1":"depp"},{"1":"depp"},{"1":"dern"},{"1":"dreyfuss"},{"1":"dukakis"},{"1":"dukakis"},{"1":"dunst"},{"1":"fawcett"},{"1":"fawcett"},{"1":"gable"},{"1":"garland"},{"1":"garland"},{"1":"garland"},{"1":"gibson"},{"1":"goldberg"},{"1":"gooding"},{"1":"gooding"},{"1":"grant"},{"1":"guiness"},{"1":"guiness"},{"1":"guiness"},{"1":"hackman"},{"1":"hackman"},{"1":"harris"},{"1":"harris"},{"1":"harris"},{"1":"hawke"},{"1":"heston"},{"1":"hoffman"},{"1":"hoffman"},{"1":"hoffman"},{"1":"hope"},{"1":"hopkins"},{"1":"hopkins"},{"1":"hopkins"},{"1":"hopper"},{"1":"hopper"},{"1":"hudson"},{"1":"hunt"},{"1":"hurt"},{"1":"jackman"},{"1":"jackman"},{"1":"johansson"},{"1":"johansson"},{"1":"johansson"},{"1":"jolie"},{"1":"jovovich"},{"1":"keitel"},{"1":"keitel"},{"1":"keitel"},{"1":"kilmer"},{"1":"kilmer"},{"1":"kilmer"},{"1":"kilmer"},{"1":"kilmer"},{"1":"leigh"},{"1":"lollobrigida"},{"1":"malden"},{"1":"mansfield"},{"1":"marx"},{"1":"mcconaughey"},{"1":"mcconaughey"},{"1":"mcdormand"},{"1":"mckellen"},{"1":"mckellen"},{"1":"mcqueen"},{"1":"mcqueen"},{"1":"miranda"},{"1":"monroe"},{"1":"monroe"},{"1":"mostel"},{"1":"mostel"},{"1":"neeson"},{"1":"neeson"},{"1":"nicholson"},{"1":"nolte"},{"1":"nolte"},{"1":"nolte"},{"1":"nolte"},{"1":"olivier"},{"1":"olivier"},{"1":"paltrow"},{"1":"paltrow"},{"1":"peck"},{"1":"peck"},{"1":"peck"},{"1":"penn"},{"1":"penn"},{"1":"pesci"},{"1":"pfeiffer"},{"1":"phoenix"},{"1":"pinkett"},{"1":"pitt"},{"1":"posey"},{"1":"presley"},{"1":"reynolds"},{"1":"ryder"},{"1":"silverstone"},{"1":"silverstone"},{"1":"sinatra"},{"1":"sobieski"},{"1":"stallone"},{"1":"streep"},{"1":"streep"},{"1":"suvari"},{"1":"swank"},{"1":"tandy"},{"1":"tandy"},{"1":"tautou"},{"1":"temple"},{"1":"temple"},{"1":"temple"},{"1":"temple"},{"1":"tomei"},{"1":"torn"},{"1":"torn"},{"1":"torn"},{"1":"tracy"},{"1":"tracy"},{"1":"voight"},{"1":"wahlberg"},{"1":"wahlberg"},{"1":"walken"},{"1":"wayne"},{"1":"west"},{"1":"west"},{"1":"williams"},{"1":"williams"},{"1":"williams"},{"1":"willis"},{"1":"willis"},{"1":"willis"},{"1":"wilson"},{"1":"winslet"},{"1":"winslet"},{"1":"witherspoon"},{"1":"wood"},{"1":"wood"},{"1":"wray"},{"1":"zellweger"},{"1":"zellweger"},{"1":"zellweger"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["family_name"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"akroyd"},{"1":"akroyd"},{"1":"akroyd"},{"1":"allen"},{"1":"allen"},{"1":"allen"},{"1":"astaire"},{"1":"bacall"},{"1":"bailey"},{"1":"bailey"},{"1":"bale"},{"1":"ball"},{"1":"barrymore"},{"1":"basinger"},{"1":"bening"},{"1":"bening"},{"1":"bergen"},{"1":"bergman"},{"1":"berry"},{"1":"berry"},{"1":"berry"},{"1":"birch"},{"1":"bloom"},{"1":"bolger"},{"1":"bolger"},{"1":"bridges"},{"1":"brody"},{"1":"brody"},{"1":"bullock"},{"1":"cage"},{"1":"cage"},{"1":"carrey"},{"1":"chaplin"},{"1":"chase"},{"1":"chase"},{"1":"close"},{"1":"costner"},{"1":"crawford"},{"1":"crawford"},{"1":"cronyn"},{"1":"cronyn"},{"1":"crowe"},{"1":"cruise"},{"1":"cruz"},{"1":"damon"},{"1":"davis"},{"1":"davis"},{"1":"davis"},{"1":"day-lewis"},{"1":"dean"},{"1":"dean"},{"1":"dee"},{"1":"dee"},{"1":"degeneres"},{"1":"degeneres"},{"1":"degeneres"},{"1":"dench"},{"1":"dench"},{"1":"depp"},{"1":"depp"},{"1":"dern"},{"1":"dreyfuss"},{"1":"dukakis"},{"1":"dukakis"},{"1":"dunst"},{"1":"fawcett"},{"1":"fawcett"},{"1":"gable"},{"1":"garland"},{"1":"garland"},{"1":"garland"},{"1":"gibson"},{"1":"goldberg"},{"1":"gooding"},{"1":"gooding"},{"1":"grant"},{"1":"guiness"},{"1":"guiness"},{"1":"guiness"},{"1":"hackman"},{"1":"hackman"},{"1":"harris"},{"1":"harris"},{"1":"harris"},{"1":"hawke"},{"1":"heston"},{"1":"hoffman"},{"1":"hoffman"},{"1":"hoffman"},{"1":"hope"},{"1":"hopkins"},{"1":"hopkins"},{"1":"hopkins"},{"1":"hopper"},{"1":"hopper"},{"1":"hudson"},{"1":"hunt"},{"1":"hurt"},{"1":"jackman"},{"1":"jackman"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <pre class="sql"><code>SELECT * FROM &quot;actor&quot;;</code></pre>
@@ -2426,13 +2427,19 @@ SELECT COUNT() AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
 <li><p>SQLite (and MySQL) allows double qoutes to quote string values but it is actually not the SQL standard. In SQL standard, strings are quoted in single quotes.</p></li>
 <li><p>In SQL standard, we should use <code>=</code> for comparison, but not <code>==</code>.</p></li>
 </ul>
-<pre class="sql"><code>SELECT * FROM &quot;film&quot; WHERE &quot;rating&quot; = &#39;PG&#39; AND &quot;length&quot; &gt; 90;</code></pre>
+<pre class="r"><code>sakila_lite %&gt;% tbl(&quot;film&quot;) %&gt;% distinct(rating)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["rating"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"PG"},{"1":"G"},{"1":"NC-17"},{"1":"PG-13"},{"1":"R"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="sql"><code>SELECT * FROM &quot;film&quot; WHERE &quot;rating&quot; = &#39;PG&#39; AND &quot;length&quot; = 90;</code></pre>
 <div class="knitsql-table">
 <table>
-<caption>Displaying records 1 - 10</caption>
+<caption>1 records</caption>
 <thead>
 <tr class="header">
-<th align="right">film_id</th>
+<th align="left">film_id</th>
 <th align="left">title</th>
 <th align="left">description</th>
 <th align="left">release_year</th>
@@ -2449,153 +2456,18 @@ SELECT COUNT() AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">6</td>
-<td align="left">AGENT TRUMAN</td>
-<td align="left">A Intrepid Panorama of a Robot And a Boy who must Escape a Sumo Wrestler in Ancient China</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">3</td>
-<td align="right">2.99</td>
-<td align="right">169</td>
-<td align="right">17.99</td>
-<td align="left">PG</td>
-<td align="left">Deleted Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="even">
-<td align="right">12</td>
-<td align="left">ALASKA PHANTOM</td>
-<td align="left">A Fanciful Saga of a Hunter And a Pastry Chef who must Vanquish a Boy in Australia</td>
+<td align="left">776</td>
+<td align="left">SECRET GROUNDHOG</td>
+<td align="left">A Astounding Story of a Cat And a Database Administrator who must Build a Technical Writer in New Orleans</td>
 <td align="left">2006</td>
 <td align="right">1</td>
 <td align="right">NA</td>
 <td align="right">6</td>
-<td align="right">0.99</td>
-<td align="right">136</td>
-<td align="right">22.99</td>
+<td align="right">4.99</td>
+<td align="right">90</td>
+<td align="right">11.99</td>
 <td align="left">PG</td>
 <td align="left">Commentaries,Deleted Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="odd">
-<td align="right">13</td>
-<td align="left">ALI FOREVER</td>
-<td align="left">A Action-Packed Drama of a Dentist And a Crocodile who must Battle a Feminist in The Canadian Rockies</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">4</td>
-<td align="right">4.99</td>
-<td align="right">150</td>
-<td align="right">21.99</td>
-<td align="left">PG</td>
-<td align="left">Deleted Scenes,Behind the Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="even">
-<td align="right">19</td>
-<td align="left">AMADEUS HOLY</td>
-<td align="left">A Emotional Display of a Pioneer And a Technical Writer who must Battle a Man in A Baloon</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">6</td>
-<td align="right">0.99</td>
-<td align="right">113</td>
-<td align="right">20.99</td>
-<td align="left">PG</td>
-<td align="left">Commentaries,Deleted Scenes,Behind the Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="odd">
-<td align="right">37</td>
-<td align="left">ARIZONA BANG</td>
-<td align="left">A Brilliant Panorama of a Mad Scientist And a Mad Cow who must Meet a Pioneer in A Monastery</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">3</td>
-<td align="right">2.99</td>
-<td align="right">121</td>
-<td align="right">28.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Deleted Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="even">
-<td align="right">41</td>
-<td align="left">ARSENIC INDEPENDENCE</td>
-<td align="left">A Fanciful Documentary of a Mad Cow And a Womanizer who must Find a Dentist in Berlin</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">4</td>
-<td align="right">0.99</td>
-<td align="right">137</td>
-<td align="right">17.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Deleted Scenes,Behind the Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="odd">
-<td align="right">65</td>
-<td align="left">BEHAVIOR RUNAWAY</td>
-<td align="left">A Unbelieveable Drama of a Student And a Husband who must Outrace a Sumo Wrestler in Berlin</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">3</td>
-<td align="right">4.99</td>
-<td align="right">100</td>
-<td align="right">20.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Deleted Scenes,Behind the Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="even">
-<td align="right">72</td>
-<td align="left">BILL OTHERS</td>
-<td align="left">A Stunning Saga of a Mad Scientist And a Forensic Psychologist who must Challenge a Squirrel in A MySQL Convention</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">6</td>
-<td align="right">2.99</td>
-<td align="right">93</td>
-<td align="right">12.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Commentaries</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="odd">
-<td align="right">74</td>
-<td align="left">BIRCH ANTITRUST</td>
-<td align="left">A Fanciful Panorama of a Husband And a Pioneer who must Outgun a Dog in A Baloon</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">4</td>
-<td align="right">4.99</td>
-<td align="right">162</td>
-<td align="right">18.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Commentaries,Deleted Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="even">
-<td align="right">84</td>
-<td align="left">BOILED DARES</td>
-<td align="left">A Awe-Inspiring Story of a Waitress And a Dog who must Discover a Dentist in Ancient Japan</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">7</td>
-<td align="right">4.99</td>
-<td align="right">102</td>
-<td align="right">13.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Commentaries</td>
 <td align="left">2019-04-11 18:11:48</td>
 </tr>
 </tbody>
@@ -2603,10 +2475,11 @@ SELECT COUNT() AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
 </div>
 <pre class="r"><code>sakila_lite %&gt;%
   tbl(&quot;film&quot;) %&gt;%
-  filter(rating == &quot;PG&quot; &amp;&amp; length &gt; 90)</code></pre>
+  filter(rating == &quot;PG&quot; &amp; length &gt; 90) %&gt;%
+  collect()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["film_id"],"name":[1],"type":["int"],"align":["right"]},{"label":["title"],"name":[2],"type":["chr"],"align":["left"]},{"label":["description"],"name":[3],"type":["chr"],"align":["left"]},{"label":["release_year"],"name":[4],"type":["chr"],"align":["left"]},{"label":["language_id"],"name":[5],"type":["int"],"align":["right"]},{"label":["original_language_id"],"name":[6],"type":["int"],"align":["right"]},{"label":["rental_duration"],"name":[7],"type":["int"],"align":["right"]},{"label":["rental_rate"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["length"],"name":[9],"type":["int"],"align":["right"]},{"label":["replacement_cost"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["rating"],"name":[11],"type":["chr"],"align":["left"]},{"label":["special_features"],"name":[12],"type":["chr"],"align":["left"]},{"label":["last_update"],"name":[13],"type":["chr"],"align":["left"]}],"data":[{"1":"6","2":"AGENT TRUMAN","3":"A Intrepid Panorama of a Robot And a Boy who must Escape a Sumo Wrestler in Ancient China","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"169","10":"17.99","11":"PG","12":"Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"12","2":"ALASKA PHANTOM","3":"A Fanciful Saga of a Hunter And a Pastry Chef who must Vanquish a Boy in Australia","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"136","10":"22.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"13","2":"ALI FOREVER","3":"A Action-Packed Drama of a Dentist And a Crocodile who must Battle a Feminist in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"150","10":"21.99","11":"PG","12":"Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"19","2":"AMADEUS HOLY","3":"A Emotional Display of a Pioneer And a Technical Writer who must Battle a Man in A Baloon","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"113","10":"20.99","11":"PG","12":"Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"37","2":"ARIZONA BANG","3":"A Brilliant Panorama of a Mad Scientist And a Mad Cow who must Meet a Pioneer in A Monastery","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"121","10":"28.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"41","2":"ARSENIC INDEPENDENCE","3":"A Fanciful Documentary of a Mad Cow And a Womanizer who must Find a Dentist in Berlin","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"137","10":"17.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"65","2":"BEHAVIOR RUNAWAY","3":"A Unbelieveable Drama of a Student And a Husband who must Outrace a Sumo Wrestler in Berlin","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"100","10":"20.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"72","2":"BILL OTHERS","3":"A Stunning Saga of a Mad Scientist And a Forensic Psychologist who must Challenge a Squirrel in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"93","10":"12.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"74","2":"BIRCH ANTITRUST","3":"A Fanciful Panorama of a Husband And a Pioneer who must Outgun a Dog in A Baloon","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"162","10":"18.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"84","2":"BOILED DARES","3":"A Awe-Inspiring Story of a Waitress And a Dog who must Discover a Dentist in Ancient Japan","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"102","10":"13.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"88","2":"BORN SPINAL","3":"A Touching Epistle of a Frisbee And a Husband who must Pursue a Student in Nigeria","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"179","10":"17.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"91","2":"BOUND CHEAPER","3":"A Thrilling Panorama of a Database Administrator And a Astronaut who must Challenge a Lumberjack in A Baloon","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"98","10":"17.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"93","2":"BRANNIGAN SUNRISE","3":"A Amazing Epistle of a Moose And a Crocodile who must Outrace a Dog in Berlin","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"121","10":"27.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"99","2":"BRINGING HYSTERICAL","3":"A Fateful Saga of a A Shark And a Technical Writer who must Find a Woman in A Jet Boat","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"136","10":"14.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"103","2":"BUCKET BROTHERHOOD","3":"A Amazing Display of a Girl And a Womanizer who must Succumb a Lumberjack in A Baloon Factory","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"133","10":"27.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"121","2":"CAROL TEXAS","3":"A Astounding Character Study of a Composer And a Student who must Overcome a Composer in A Monastery","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"151","10":"15.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"122","2":"CARRIE BUNCH","3":"A Amazing Epistle of a Student And a Astronaut who must Discover a Frisbee in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"7","8":"0.99","9":"114","10":"11.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"131","2":"CENTER DINOSAUR","3":"A Beautiful Character Study of a Sumo Wrestler And a Dentist who must Find a Dog in California","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"152","10":"12.99","11":"PG","12":"Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"132","2":"CHAINSAW UPTOWN","3":"A Beautiful Documentary of a Boy And a Robot who must Discover a Squirrel in Australia","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"114","10":"25.99","11":"PG","12":"Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"139","2":"CHASING FIGHT","3":"A Astounding Saga of a Technical Writer And a Butler who must Battle a Butler in A Shark Tank","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"114","10":"21.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"142","2":"CHICKEN HELLFIGHTERS","3":"A Emotional Drama of a Dog And a Explorer who must Outrace a Technical Writer in Australia","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"122","10":"24.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"143","2":"CHILL LUCK","3":"A Lacklusture Epistle of a Boat And a Technical Writer who must Fight a A Shark in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"142","10":"17.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"150","2":"CIDER DESIRE","3":"A Stunning Character Study of a Composer And a Mad Cow who must Succumb a Cat in Soviet Georgia","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"101","10":"9.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"185","2":"COWBOY DOOM","3":"A Astounding Drama of a Boy And a Lumberjack who must Fight a Butler in A Baloon","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"146","10":"10.99","11":"PG","12":"Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"188","2":"CRAZY HOME","3":"A Fanciful Panorama of a Boy And a Woman who must Vanquish a Database Administrator in The Outback","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"136","10":"24.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"194","2":"CROW GREASE","3":"A Awe-Inspiring Documentary of a Woman And a Husband who must Sink a Database Administrator in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"104","10":"22.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"201","2":"CYCLONE FAMILY","3":"A Lacklusture Drama of a Student And a Monkey who must Sink a Womanizer in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"176","10":"18.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"204","2":"DALMATIONS SWEDEN","3":"A Emotional Epistle of a Moose And a Hunter who must Overcome a Robot in A Manhattan Penthouse","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"106","10":"25.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"207","2":"DANGEROUS UPTOWN","3":"A Unbelieveable Story of a Mad Scientist And a Woman who must Overcome a Dog in California","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"121","10":"26.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"233","2":"DISCIPLE MOTHER","3":"A Touching Reflection of a Mad Scientist And a Boat who must Face a Moose in A Shark Tank","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"141","10":"17.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"252","2":"DREAM PICKUP","3":"A Epic Display of a Car And a Composer who must Overcome a Forensic Psychologist in The Gulf of Mexico","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"135","10":"18.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"258","2":"DRUMS DYNAMITE","3":"A Epic Display of a Crocodile And a Crocodile who must Confront a Dog in An Abandoned Amusement Park","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"96","10":"11.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"265","2":"DYING MAKER","3":"A Intrepid Tale of a Boat And a Monkey who must Kill a Cat in California","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"168","10":"28.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"273","2":"EFFECT GLADIATOR","3":"A Beautiful Display of a Pastry Chef And a Pastry Chef who must Outgun a Forensic Psychologist in A Manhattan Penthouse","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"107","10":"14.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"290","2":"EVERYONE CRAFT","3":"A Fateful Display of a Waitress And a Dentist who must Reach a Butler in Nigeria","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"163","10":"29.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"295","2":"EXPENDABLE STALLION","3":"A Amazing Character Study of a Mad Cow And a Squirrel who must Discover a Hunter in A U-Boat","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"97","10":"14.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"305","2":"FATAL HAUNTED","3":"A Beautiful Drama of a Student And a Secret Agent who must Confront a Dentist in Ancient Japan","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"91","10":"24.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"308","2":"FERRIS MOTHER","3":"A Touching Display of a Frisbee And a Frisbee who must Kill a Girl in The Gulf of Mexico","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"142","10":"13.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"317","2":"FIREBALL PHILADELPHIA","3":"A Amazing Yarn of a Dentist And a A Shark who must Vanquish a Madman in An Abandoned Mine Shaft","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"148","10":"25.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"327","2":"FOOL MOCKINGBIRD","3":"A Lacklusture Tale of a Crocodile And a Composer who must Defeat a Madman in A U-Boat","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"158","10":"24.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"336","2":"FRENCH HOLIDAY","3":"A Thrilling Epistle of a Dog And a Feminist who must Kill a Madman in Berlin","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"99","10":"22.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"343","2":"FULL FLATLINERS","3":"A Beautiful Documentary of a Astronaut And a Moose who must Pursue a Monkey in A Shark Tank","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"94","10":"14.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"345","2":"GABLES METROPOLIS","3":"A Fateful Display of a Cat And a Pioneer who must Challenge a Pastry Chef in A Baloon Factory","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"161","10":"17.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"351","2":"GASLIGHT CRUSADE","3":"A Amazing Epistle of a Boy And a Astronaut who must Redeem a Man in The Gulf of Mexico","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"106","10":"10.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"359","2":"GLADIATOR WESTWARD","3":"A Astounding Reflection of a Squirrel And a Sumo Wrestler who must Sink a Dentist in Ancient Japan","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"173","10":"20.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"374","2":"GRAFFITI LOVE","3":"A Unbelieveable Epistle of a Sumo Wrestler And a Hunter who must Build a Composer in Berlin","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"117","10":"29.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"380","2":"GREEK EVERYONE","3":"A Stunning Display of a Butler And a Teacher who must Confront a A Shark in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"176","10":"11.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"382","2":"GRIT CLOCKWORK","3":"A Thoughtful Display of a Dentist And a Squirrel who must Confront a Lumberjack in A Shark Tank","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"137","10":"21.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"404","2":"HATE HANDICAP","3":"A Intrepid Reflection of a Mad Scientist And a Pioneer who must Overcome a Hunter in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"107","10":"26.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"420","2":"HOLES BRANNIGAN","3":"A Fast-Paced Reflection of a Technical Writer And a Student who must Fight a Boy in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"128","10":"27.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"433","2":"HORN WORKING","3":"A Stunning Display of a Mad Scientist And a Technical Writer who must Succumb a Monkey in A Shark Tank","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"95","10":"23.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"446","2":"HYSTERICAL GRAIL","3":"A Amazing Saga of a Madman And a Dentist who must Build a Car in A Manhattan Penthouse","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"150","10":"19.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"463","2":"INSTINCT AIRPORT","3":"A Touching Documentary of a Mad Cow And a Explorer who must Confront a Butler in A Manhattan Penthouse","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"116","10":"21.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"468","2":"INVASION CYCLONE","3":"A Lacklusture Character Study of a Mad Scientist And a Womanizer who must Outrace a Explorer in A Monastery","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"97","10":"12.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"477","2":"JAWBREAKER BROOKLYN","3":"A Stunning Reflection of a Boat And a Pastry Chef who must Succumb a A Shark in A Jet Boat","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"118","10":"15.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"479","2":"JEDI BENEATH","3":"A Astounding Reflection of a Explorer And a Dentist who must Pursue a Student in Nigeria","4":"2006","5":"1","6":"NA","7":"7","8":"0.99","9":"128","10":"12.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"495","2":"KENTUCKIAN GIANT","3":"A Stunning Yarn of a Woman And a Frisbee who must Escape a Waitress in A U-Boat","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"169","10":"10.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"515","2":"LEGALLY SECRETARY","3":"A Astounding Tale of a A Shark And a Moose who must Meet a Womanizer in The Sahara Desert","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"113","10":"14.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"518","2":"LIAISONS SWEET","3":"A Boring Drama of a A Shark And a Explorer who must Redeem a Waitress in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"140","10":"15.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"547","2":"MAGIC MALLRATS","3":"A Touching Documentary of a Pastry Chef And a Pastry Chef who must Build a Mad Scientist in California","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"117","10":"19.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"551","2":"MAIDEN HOME","3":"A Lacklusture Saga of a Moose And a Teacher who must Kill a Forensic Psychologist in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"138","10":"9.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"552","2":"MAJESTIC FLOATS","3":"A Thrilling Character Study of a Moose And a Student who must Escape a Butler in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"130","10":"15.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"555","2":"MALLRATS UNITED","3":"A Thrilling Yarn of a Waitress And a Dentist who must Find a Hunter in A Monastery","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"133","10":"25.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"557","2":"MANCHURIAN CURTAIN","3":"A Stunning Tale of a Mad Cow And a Boy who must Battle a Boy in Berlin","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"177","10":"27.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"564","2":"MASSAGE IMAGE","3":"A Fateful Drama of a Frisbee And a Crocodile who must Vanquish a Dog in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"161","10":"11.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"576","2":"MIGHTY LUCK","3":"A Astounding Epistle of a Mad Scientist And a Pioneer who must Escape a Database Administrator in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"122","10":"13.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"590","2":"MONEY HAROLD","3":"A Touching Tale of a Explorer And a Boat who must Defeat a Robot in Australia","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"135","10":"17.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"591","2":"MONSOON CAUSE","3":"A Astounding Tale of a Crocodile And a Car who must Outrace a Squirrel in A U-Boat","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"182","10":"20.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"592","2":"MONSTER SPARTACUS","3":"A Fast-Paced Story of a Waitress And a Cat who must Fight a Girl in Australia","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"107","10":"28.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"600","2":"MOTIONS DETAILS","3":"A Awe-Inspiring Reflection of a Dog And a Student who must Kill a Car in An Abandoned Fun House","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"166","10":"16.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"602","2":"MOURNING PURPLE","3":"A Lacklusture Display of a Waitress And a Lumberjack who must Chase a Pioneer in New Orleans","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"146","10":"14.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"605","2":"MULHOLLAND BEAST","3":"A Awe-Inspiring Display of a Husband And a Squirrel who must Battle a Sumo Wrestler in A Jet Boat","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"157","10":"13.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"608","2":"MURDER ANTITRUST","3":"A Brilliant Yarn of a Car And a Database Administrator who must Escape a Boy in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"166","10":"11.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"618","2":"NECKLACE OUTBREAK","3":"A Astounding Epistle of a Database Administrator And a Mad Scientist who must Pursue a Cat in California","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"132","10":"21.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"624","2":"NIGHTMARE CHILL","3":"A Brilliant Display of a Robot And a Butler who must Fight a Waitress in An Abandoned Mine Shaft","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"149","10":"25.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"628","2":"NORTHWEST POLISH","3":"A Boring Character Study of a Boy And a A Shark who must Outrace a Womanizer in The Outback","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"172","10":"24.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"636","2":"OLEANDER CLUE","3":"A Boring Story of a Teacher And a Monkey who must Succumb a Forensic Psychologist in A Jet Boat","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"161","10":"12.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"637","2":"OPEN AFRICAN","3":"A Lacklusture Drama of a Secret Agent And a Explorer who must Discover a Car in A U-Boat","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"131","10":"16.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"639","2":"OPPOSITE NECKLACE","3":"A Fateful Epistle of a Crocodile And a Moose who must Kill a Explorer in Nigeria","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"92","10":"9.99","11":"PG","12":"Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"644","2":"OSCAR GOLD","3":"A Insightful Tale of a Database Administrator And a Dog who must Face a Madman in Soviet Georgia","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"115","10":"29.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"645","2":"OTHERS SOUP","3":"A Lacklusture Documentary of a Mad Cow And a Madman who must Sink a Moose in The Gulf of Mexico","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"118","10":"18.99","11":"PG","12":"Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"656","2":"PAPI NECKLACE","3":"A Fanciful Display of a Car And a Monkey who must Escape a Squirrel in Ancient Japan","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"128","10":"9.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"660","2":"PARTY KNOCK","3":"A Fateful Display of a Technical Writer And a Butler who must Battle a Sumo Wrestler in An Abandoned Mine Shaft","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"107","10":"11.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"662","2":"PATHS CONTROL","3":"A Astounding Documentary of a Butler And a Cat who must Find a Frisbee in Ancient China","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"118","10":"9.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"665","2":"PATTON INTERVIEW","3":"A Thrilling Documentary of a Composer And a Secret Agent who must Succumb a Cat in Berlin","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"175","10":"22.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"674","2":"PET HAUNTING","3":"A Unbelieveable Reflection of a Explorer And a Boat who must Conquer a Woman in California","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"99","10":"11.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"680","2":"PINOCCHIO SIMON","3":"A Action-Packed Reflection of a Mad Scientist And a A Shark who must Find a Feminist in California","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"103","10":"21.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"681","2":"PIRATES ROXANNE","3":"A Stunning Drama of a Woman And a Lumberjack who must Overcome a A Shark in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"100","10":"20.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"689","2":"POLLOCK DELIVERANCE","3":"A Intrepid Story of a Madman And a Frisbee who must Outgun a Boat in The Sahara Desert","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"137","10":"14.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"693","2":"POTTER CONNECTICUT","3":"A Thrilling Epistle of a Frisbee And a Cat who must Fight a Technical Writer in Berlin","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"115","10":"16.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"695","2":"PRESIDENT BANG","3":"A Fateful Panorama of a Technical Writer And a Moose who must Battle a Robot in Soviet Georgia","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"144","10":"12.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"699","2":"PRIVATE DROP","3":"A Stunning Story of a Technical Writer And a Hunter who must Succumb a Secret Agent in A Baloon","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"106","10":"26.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"703","2":"PUNK DIVORCE","3":"A Fast-Paced Tale of a Pastry Chef And a Boat who must Face a Frisbee in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"100","10":"18.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"706","2":"QUEEN LUKE","3":"A Astounding Story of a Girl And a Boy who must Challenge a Composer in New Orleans","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"163","10":"22.99","11":"PG","12":"Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"715","2":"RANGE MOONWALKER","3":"A Insightful Documentary of a Hunter And a Dentist who must Confront a Crocodile in A Baloon","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"147","10":"25.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"719","2":"RECORDS ZORRO","3":"A Amazing Drama of a Mad Scientist And a Composer who must Build a Husband in The Outback","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"182","10":"11.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"727","2":"RESURRECTION SILVERADO","3":"A Epic Yarn of a Robot And a Explorer who must Challenge a Girl in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"117","10":"12.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"729","2":"RIDER CADDYSHACK","3":"A Taut Reflection of a Monkey And a Womanizer who must Chase a Moose in Nigeria","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"177","10":"28.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"755","2":"SABRINA MIDNIGHT","3":"A Emotional Story of a Squirrel And a Crocodile who must Succumb a Husband in The Sahara Desert","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"99","10":"11.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"761","2":"SANTA PARIS","3":"A Emotional Documentary of a Moose And a Car who must Redeem a Mad Cow in A Baloon Factory","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"154","10":"23.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"777","2":"SECRETARY ROUGE","3":"A Action-Packed Panorama of a Mad Cow And a Composer who must Discover a Robot in A Baloon Factory","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"158","10":"10.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"780","2":"SENSIBILITY REAR","3":"A Emotional Tale of a Robot And a Sumo Wrestler who must Redeem a Pastry Chef in A Baloon Factory","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"98","10":"15.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"783","2":"SHANE DARKNESS","3":"A Action-Packed Saga of a Moose And a Lumberjack who must Find a Woman in Berlin","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"93","10":"22.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"802","2":"SKY MIRACLE","3":"A Epic Drama of a Mad Scientist And a Explorer who must Succumb a Waitress in An Abandoned Fun House","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"132","10":"15.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"806","2":"SLEEPY JAPANESE","3":"A Emotional Epistle of a Moose And a Composer who must Fight a Technical Writer in The Outback","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"137","10":"25.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"810","2":"SLUMS DUCK","3":"A Amazing Character Study of a Teacher And a Database Administrator who must Defeat a Waitress in A Jet Boat","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"147","10":"21.99","11":"PG","12":"Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"814","2":"SNATCH SLIPPER","3":"A Insightful Panorama of a Woman And a Feminist who must Defeat a Forensic Psychologist in Berlin","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"110","10":"15.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"832","2":"SPLASH GUMP","3":"A Taut Saga of a Crocodile And a Boat who must Conquer a Hunter in A Shark Tank","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"175","10":"16.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"836","2":"SQUAD FISH","3":"A Fast-Paced Display of a Pastry Chef And a Dog who must Kill a Teacher in Berlin","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"136","10":"14.99","11":"PG","12":"Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"841","2":"STAR OPERATION","3":"A Insightful Character Study of a Girl And a Car who must Pursue a Mad Cow in A Shark Tank","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"181","10":"9.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"844","2":"STEERS ARMAGEDDON","3":"A Stunning Character Study of a Car And a Girl who must Succumb a Car in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"140","10":"16.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"847","2":"STOCK GLASS","3":"A Boring Epistle of a Crocodile And a Lumberjack who must Outgun a Moose in Ancient China","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"160","10":"10.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"859","2":"SUGAR WONKA","3":"A Touching Story of a Dentist And a Database Administrator who must Conquer a Astronaut in An Abandoned Amusement Park","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"114","10":"20.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"868","2":"SUPERFLY TRIP","3":"A Beautiful Saga of a Lumberjack And a Teacher who must Build a Technical Writer in An Abandoned Fun House","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"114","10":"27.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"871","2":"SWEDEN SHINING","3":"A Taut Documentary of a Car And a Robot who must Conquer a Boy in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"176","10":"19.99","11":"PG","12":"Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"874","2":"TADPOLE PARK","3":"A Beautiful Tale of a Frisbee And a Moose who must Vanquish a Dog in An Abandoned Amusement Park","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"155","10":"13.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"875","2":"TALENTED HOMICIDE","3":"A Lacklusture Panorama of a Dentist And a Forensic Psychologist who must Outrace a Pioneer in A U-Boat","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"173","10":"9.99","11":"PG","12":"Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"879","2":"TELEGRAPH VOYAGE","3":"A Fateful Yarn of a Husband And a Dog who must Battle a Waitress in A Jet Boat","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"148","10":"20.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"893","2":"TITANS JERK","3":"A Unbelieveable Panorama of a Feminist And a Sumo Wrestler who must Challenge a Technical Writer in Ancient China","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"91","10":"11.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"896","2":"TOOTSIE PILOT","3":"A Awe-Inspiring Documentary of a Womanizer And a Pastry Chef who must Kill a Lumberjack in Berlin","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"157","10":"10.99","11":"PG","12":"Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"902","2":"TRADING PINOCCHIO","3":"A Emotional Character Study of a Student And a Explorer who must Discover a Frisbee in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"170","10":"22.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"906","2":"TRAMP OTHERS","3":"A Brilliant Display of a Composer And a Cat who must Succumb a A Shark in Ancient India","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"171","10":"27.99","11":"PG","12":"Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"918","2":"TWISTED PIRATES","3":"A Touching Display of a Frisbee And a Boat who must Kill a Girl in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"152","10":"23.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"924","2":"UNFORGIVEN ZOOLANDER","3":"A Taut Epistle of a Monkey And a Sumo Wrestler who must Vanquish a A Shark in A Baloon Factory","4":"2006","5":"1","6":"NA","7":"7","8":"0.99","9":"129","10":"15.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"950","2":"VOLUME HOUSE","3":"A Boring Tale of a Dog And a Woman who must Meet a Dentist in California","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"132","10":"12.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"952","2":"WAGON JAWS","3":"A Intrepid Drama of a Moose And a Boat who must Kill a Explorer in A Manhattan Penthouse","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"152","10":"17.99","11":"PG","12":"Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"955","2":"WALLS ARTIST","3":"A Insightful Panorama of a Teacher And a Teacher who must Overcome a Mad Cow in An Abandoned Fun House","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"135","10":"19.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"983","2":"WON DARES","3":"A Unbelieveable Documentary of a Teacher And a Monkey who must Defeat a Explorer in A U-Boat","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"105","10":"18.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"985","2":"WONDERLAND CHRISTMAS","3":"A Awe-Inspiring Character Study of a Waitress And a Car who must Pursue a Mad Scientist in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"111","10":"19.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"987","2":"WORDS HUNTER","3":"A Action-Packed Reflection of a Composer And a Mad Scientist who must Face a Pioneer in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"116","10":"13.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"991","2":"WORST BANGER","3":"A Thrilling Drama of a Madman And a Dentist who must Conquer a Boy in The Outback","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"185","10":"26.99","11":"PG","12":"Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["film_id"],"name":[1],"type":["int"],"align":["right"]},{"label":["title"],"name":[2],"type":["chr"],"align":["left"]},{"label":["description"],"name":[3],"type":["chr"],"align":["left"]},{"label":["release_year"],"name":[4],"type":["chr"],"align":["left"]},{"label":["language_id"],"name":[5],"type":["int"],"align":["right"]},{"label":["original_language_id"],"name":[6],"type":["int"],"align":["right"]},{"label":["rental_duration"],"name":[7],"type":["int"],"align":["right"]},{"label":["rental_rate"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["length"],"name":[9],"type":["int"],"align":["right"]},{"label":["replacement_cost"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["rating"],"name":[11],"type":["chr"],"align":["left"]},{"label":["special_features"],"name":[12],"type":["chr"],"align":["left"]},{"label":["last_update"],"name":[13],"type":["chr"],"align":["left"]}],"data":[{"1":"6","2":"AGENT TRUMAN","3":"A Intrepid Panorama of a Robot And a Boy who must Escape a Sumo Wrestler in Ancient China","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"169","10":"17.99","11":"PG","12":"Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"12","2":"ALASKA PHANTOM","3":"A Fanciful Saga of a Hunter And a Pastry Chef who must Vanquish a Boy in Australia","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"136","10":"22.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"13","2":"ALI FOREVER","3":"A Action-Packed Drama of a Dentist And a Crocodile who must Battle a Feminist in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"150","10":"21.99","11":"PG","12":"Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"19","2":"AMADEUS HOLY","3":"A Emotional Display of a Pioneer And a Technical Writer who must Battle a Man in A Baloon","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"113","10":"20.99","11":"PG","12":"Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"37","2":"ARIZONA BANG","3":"A Brilliant Panorama of a Mad Scientist And a Mad Cow who must Meet a Pioneer in A Monastery","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"121","10":"28.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"41","2":"ARSENIC INDEPENDENCE","3":"A Fanciful Documentary of a Mad Cow And a Womanizer who must Find a Dentist in Berlin","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"137","10":"17.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"65","2":"BEHAVIOR RUNAWAY","3":"A Unbelieveable Drama of a Student And a Husband who must Outrace a Sumo Wrestler in Berlin","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"100","10":"20.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"72","2":"BILL OTHERS","3":"A Stunning Saga of a Mad Scientist And a Forensic Psychologist who must Challenge a Squirrel in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"93","10":"12.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"74","2":"BIRCH ANTITRUST","3":"A Fanciful Panorama of a Husband And a Pioneer who must Outgun a Dog in A Baloon","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"162","10":"18.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"84","2":"BOILED DARES","3":"A Awe-Inspiring Story of a Waitress And a Dog who must Discover a Dentist in Ancient Japan","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"102","10":"13.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"88","2":"BORN SPINAL","3":"A Touching Epistle of a Frisbee And a Husband who must Pursue a Student in Nigeria","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"179","10":"17.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"91","2":"BOUND CHEAPER","3":"A Thrilling Panorama of a Database Administrator And a Astronaut who must Challenge a Lumberjack in A Baloon","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"98","10":"17.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"93","2":"BRANNIGAN SUNRISE","3":"A Amazing Epistle of a Moose And a Crocodile who must Outrace a Dog in Berlin","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"121","10":"27.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"99","2":"BRINGING HYSTERICAL","3":"A Fateful Saga of a A Shark And a Technical Writer who must Find a Woman in A Jet Boat","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"136","10":"14.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"103","2":"BUCKET BROTHERHOOD","3":"A Amazing Display of a Girl And a Womanizer who must Succumb a Lumberjack in A Baloon Factory","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"133","10":"27.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"121","2":"CAROL TEXAS","3":"A Astounding Character Study of a Composer And a Student who must Overcome a Composer in A Monastery","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"151","10":"15.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"122","2":"CARRIE BUNCH","3":"A Amazing Epistle of a Student And a Astronaut who must Discover a Frisbee in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"7","8":"0.99","9":"114","10":"11.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"131","2":"CENTER DINOSAUR","3":"A Beautiful Character Study of a Sumo Wrestler And a Dentist who must Find a Dog in California","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"152","10":"12.99","11":"PG","12":"Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"132","2":"CHAINSAW UPTOWN","3":"A Beautiful Documentary of a Boy And a Robot who must Discover a Squirrel in Australia","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"114","10":"25.99","11":"PG","12":"Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"139","2":"CHASING FIGHT","3":"A Astounding Saga of a Technical Writer And a Butler who must Battle a Butler in A Shark Tank","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"114","10":"21.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"142","2":"CHICKEN HELLFIGHTERS","3":"A Emotional Drama of a Dog And a Explorer who must Outrace a Technical Writer in Australia","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"122","10":"24.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"143","2":"CHILL LUCK","3":"A Lacklusture Epistle of a Boat And a Technical Writer who must Fight a A Shark in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"142","10":"17.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"150","2":"CIDER DESIRE","3":"A Stunning Character Study of a Composer And a Mad Cow who must Succumb a Cat in Soviet Georgia","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"101","10":"9.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"185","2":"COWBOY DOOM","3":"A Astounding Drama of a Boy And a Lumberjack who must Fight a Butler in A Baloon","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"146","10":"10.99","11":"PG","12":"Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"188","2":"CRAZY HOME","3":"A Fanciful Panorama of a Boy And a Woman who must Vanquish a Database Administrator in The Outback","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"136","10":"24.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"194","2":"CROW GREASE","3":"A Awe-Inspiring Documentary of a Woman And a Husband who must Sink a Database Administrator in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"104","10":"22.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"201","2":"CYCLONE FAMILY","3":"A Lacklusture Drama of a Student And a Monkey who must Sink a Womanizer in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"176","10":"18.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"204","2":"DALMATIONS SWEDEN","3":"A Emotional Epistle of a Moose And a Hunter who must Overcome a Robot in A Manhattan Penthouse","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"106","10":"25.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"207","2":"DANGEROUS UPTOWN","3":"A Unbelieveable Story of a Mad Scientist And a Woman who must Overcome a Dog in California","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"121","10":"26.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"233","2":"DISCIPLE MOTHER","3":"A Touching Reflection of a Mad Scientist And a Boat who must Face a Moose in A Shark Tank","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"141","10":"17.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"252","2":"DREAM PICKUP","3":"A Epic Display of a Car And a Composer who must Overcome a Forensic Psychologist in The Gulf of Mexico","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"135","10":"18.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"258","2":"DRUMS DYNAMITE","3":"A Epic Display of a Crocodile And a Crocodile who must Confront a Dog in An Abandoned Amusement Park","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"96","10":"11.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"265","2":"DYING MAKER","3":"A Intrepid Tale of a Boat And a Monkey who must Kill a Cat in California","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"168","10":"28.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"273","2":"EFFECT GLADIATOR","3":"A Beautiful Display of a Pastry Chef And a Pastry Chef who must Outgun a Forensic Psychologist in A Manhattan Penthouse","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"107","10":"14.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"290","2":"EVERYONE CRAFT","3":"A Fateful Display of a Waitress And a Dentist who must Reach a Butler in Nigeria","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"163","10":"29.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"295","2":"EXPENDABLE STALLION","3":"A Amazing Character Study of a Mad Cow And a Squirrel who must Discover a Hunter in A U-Boat","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"97","10":"14.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"305","2":"FATAL HAUNTED","3":"A Beautiful Drama of a Student And a Secret Agent who must Confront a Dentist in Ancient Japan","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"91","10":"24.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"308","2":"FERRIS MOTHER","3":"A Touching Display of a Frisbee And a Frisbee who must Kill a Girl in The Gulf of Mexico","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"142","10":"13.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"317","2":"FIREBALL PHILADELPHIA","3":"A Amazing Yarn of a Dentist And a A Shark who must Vanquish a Madman in An Abandoned Mine Shaft","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"148","10":"25.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"327","2":"FOOL MOCKINGBIRD","3":"A Lacklusture Tale of a Crocodile And a Composer who must Defeat a Madman in A U-Boat","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"158","10":"24.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"336","2":"FRENCH HOLIDAY","3":"A Thrilling Epistle of a Dog And a Feminist who must Kill a Madman in Berlin","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"99","10":"22.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"343","2":"FULL FLATLINERS","3":"A Beautiful Documentary of a Astronaut And a Moose who must Pursue a Monkey in A Shark Tank","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"94","10":"14.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"345","2":"GABLES METROPOLIS","3":"A Fateful Display of a Cat And a Pioneer who must Challenge a Pastry Chef in A Baloon Factory","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"161","10":"17.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"351","2":"GASLIGHT CRUSADE","3":"A Amazing Epistle of a Boy And a Astronaut who must Redeem a Man in The Gulf of Mexico","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"106","10":"10.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"359","2":"GLADIATOR WESTWARD","3":"A Astounding Reflection of a Squirrel And a Sumo Wrestler who must Sink a Dentist in Ancient Japan","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"173","10":"20.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"374","2":"GRAFFITI LOVE","3":"A Unbelieveable Epistle of a Sumo Wrestler And a Hunter who must Build a Composer in Berlin","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"117","10":"29.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"380","2":"GREEK EVERYONE","3":"A Stunning Display of a Butler And a Teacher who must Confront a A Shark in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"176","10":"11.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"382","2":"GRIT CLOCKWORK","3":"A Thoughtful Display of a Dentist And a Squirrel who must Confront a Lumberjack in A Shark Tank","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"137","10":"21.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"404","2":"HATE HANDICAP","3":"A Intrepid Reflection of a Mad Scientist And a Pioneer who must Overcome a Hunter in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"107","10":"26.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"420","2":"HOLES BRANNIGAN","3":"A Fast-Paced Reflection of a Technical Writer And a Student who must Fight a Boy in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"128","10":"27.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"433","2":"HORN WORKING","3":"A Stunning Display of a Mad Scientist And a Technical Writer who must Succumb a Monkey in A Shark Tank","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"95","10":"23.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"446","2":"HYSTERICAL GRAIL","3":"A Amazing Saga of a Madman And a Dentist who must Build a Car in A Manhattan Penthouse","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"150","10":"19.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"463","2":"INSTINCT AIRPORT","3":"A Touching Documentary of a Mad Cow And a Explorer who must Confront a Butler in A Manhattan Penthouse","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"116","10":"21.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"468","2":"INVASION CYCLONE","3":"A Lacklusture Character Study of a Mad Scientist And a Womanizer who must Outrace a Explorer in A Monastery","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"97","10":"12.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"477","2":"JAWBREAKER BROOKLYN","3":"A Stunning Reflection of a Boat And a Pastry Chef who must Succumb a A Shark in A Jet Boat","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"118","10":"15.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"479","2":"JEDI BENEATH","3":"A Astounding Reflection of a Explorer And a Dentist who must Pursue a Student in Nigeria","4":"2006","5":"1","6":"NA","7":"7","8":"0.99","9":"128","10":"12.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"495","2":"KENTUCKIAN GIANT","3":"A Stunning Yarn of a Woman And a Frisbee who must Escape a Waitress in A U-Boat","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"169","10":"10.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"515","2":"LEGALLY SECRETARY","3":"A Astounding Tale of a A Shark And a Moose who must Meet a Womanizer in The Sahara Desert","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"113","10":"14.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"518","2":"LIAISONS SWEET","3":"A Boring Drama of a A Shark And a Explorer who must Redeem a Waitress in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"140","10":"15.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"547","2":"MAGIC MALLRATS","3":"A Touching Documentary of a Pastry Chef And a Pastry Chef who must Build a Mad Scientist in California","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"117","10":"19.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"551","2":"MAIDEN HOME","3":"A Lacklusture Saga of a Moose And a Teacher who must Kill a Forensic Psychologist in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"138","10":"9.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"552","2":"MAJESTIC FLOATS","3":"A Thrilling Character Study of a Moose And a Student who must Escape a Butler in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"130","10":"15.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"555","2":"MALLRATS UNITED","3":"A Thrilling Yarn of a Waitress And a Dentist who must Find a Hunter in A Monastery","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"133","10":"25.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"557","2":"MANCHURIAN CURTAIN","3":"A Stunning Tale of a Mad Cow And a Boy who must Battle a Boy in Berlin","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"177","10":"27.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"564","2":"MASSAGE IMAGE","3":"A Fateful Drama of a Frisbee And a Crocodile who must Vanquish a Dog in The First Manned Space Station","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"161","10":"11.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"576","2":"MIGHTY LUCK","3":"A Astounding Epistle of a Mad Scientist And a Pioneer who must Escape a Database Administrator in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"122","10":"13.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"590","2":"MONEY HAROLD","3":"A Touching Tale of a Explorer And a Boat who must Defeat a Robot in Australia","4":"2006","5":"1","6":"NA","7":"3","8":"2.99","9":"135","10":"17.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"591","2":"MONSOON CAUSE","3":"A Astounding Tale of a Crocodile And a Car who must Outrace a Squirrel in A U-Boat","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"182","10":"20.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"592","2":"MONSTER SPARTACUS","3":"A Fast-Paced Story of a Waitress And a Cat who must Fight a Girl in Australia","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"107","10":"28.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"600","2":"MOTIONS DETAILS","3":"A Awe-Inspiring Reflection of a Dog And a Student who must Kill a Car in An Abandoned Fun House","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"166","10":"16.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"602","2":"MOURNING PURPLE","3":"A Lacklusture Display of a Waitress And a Lumberjack who must Chase a Pioneer in New Orleans","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"146","10":"14.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"605","2":"MULHOLLAND BEAST","3":"A Awe-Inspiring Display of a Husband And a Squirrel who must Battle a Sumo Wrestler in A Jet Boat","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"157","10":"13.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"608","2":"MURDER ANTITRUST","3":"A Brilliant Yarn of a Car And a Database Administrator who must Escape a Boy in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"6","8":"2.99","9":"166","10":"11.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"618","2":"NECKLACE OUTBREAK","3":"A Astounding Epistle of a Database Administrator And a Mad Scientist who must Pursue a Cat in California","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"132","10":"21.99","11":"PG","12":"Trailers,Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"624","2":"NIGHTMARE CHILL","3":"A Brilliant Display of a Robot And a Butler who must Fight a Waitress in An Abandoned Mine Shaft","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"149","10":"25.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"628","2":"NORTHWEST POLISH","3":"A Boring Character Study of a Boy And a A Shark who must Outrace a Womanizer in The Outback","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"172","10":"24.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"636","2":"OLEANDER CLUE","3":"A Boring Story of a Teacher And a Monkey who must Succumb a Forensic Psychologist in A Jet Boat","4":"2006","5":"1","6":"NA","7":"5","8":"0.99","9":"161","10":"12.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"637","2":"OPEN AFRICAN","3":"A Lacklusture Drama of a Secret Agent And a Explorer who must Discover a Car in A U-Boat","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"131","10":"16.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"639","2":"OPPOSITE NECKLACE","3":"A Fateful Epistle of a Crocodile And a Moose who must Kill a Explorer in Nigeria","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"92","10":"9.99","11":"PG","12":"Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"644","2":"OSCAR GOLD","3":"A Insightful Tale of a Database Administrator And a Dog who must Face a Madman in Soviet Georgia","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"115","10":"29.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"645","2":"OTHERS SOUP","3":"A Lacklusture Documentary of a Mad Cow And a Madman who must Sink a Moose in The Gulf of Mexico","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"118","10":"18.99","11":"PG","12":"Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"656","2":"PAPI NECKLACE","3":"A Fanciful Display of a Car And a Monkey who must Escape a Squirrel in Ancient Japan","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"128","10":"9.99","11":"PG","12":"Trailers,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"660","2":"PARTY KNOCK","3":"A Fateful Display of a Technical Writer And a Butler who must Battle a Sumo Wrestler in An Abandoned Mine Shaft","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"107","10":"11.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"662","2":"PATHS CONTROL","3":"A Astounding Documentary of a Butler And a Cat who must Find a Frisbee in Ancient China","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"118","10":"9.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"665","2":"PATTON INTERVIEW","3":"A Thrilling Documentary of a Composer And a Secret Agent who must Succumb a Cat in Berlin","4":"2006","5":"1","6":"NA","7":"4","8":"2.99","9":"175","10":"22.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"674","2":"PET HAUNTING","3":"A Unbelieveable Reflection of a Explorer And a Boat who must Conquer a Woman in California","4":"2006","5":"1","6":"NA","7":"3","8":"0.99","9":"99","10":"11.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"680","2":"PINOCCHIO SIMON","3":"A Action-Packed Reflection of a Mad Scientist And a A Shark who must Find a Feminist in California","4":"2006","5":"1","6":"NA","7":"4","8":"4.99","9":"103","10":"21.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"681","2":"PIRATES ROXANNE","3":"A Stunning Drama of a Woman And a Lumberjack who must Overcome a A Shark in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"4","8":"0.99","9":"100","10":"20.99","11":"PG","12":"Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"689","2":"POLLOCK DELIVERANCE","3":"A Intrepid Story of a Madman And a Frisbee who must Outgun a Boat in The Sahara Desert","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"137","10":"14.99","11":"PG","12":"Commentaries","13":"2019-04-11 18:11:48"},{"1":"693","2":"POTTER CONNECTICUT","3":"A Thrilling Epistle of a Frisbee And a Cat who must Fight a Technical Writer in Berlin","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"115","10":"16.99","11":"PG","12":"Trailers,Commentaries","13":"2019-04-11 18:11:48"},{"1":"695","2":"PRESIDENT BANG","3":"A Fateful Panorama of a Technical Writer And a Moose who must Battle a Robot in Soviet Georgia","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"144","10":"12.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"699","2":"PRIVATE DROP","3":"A Stunning Story of a Technical Writer And a Hunter who must Succumb a Secret Agent in A Baloon","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"106","10":"26.99","11":"PG","12":"Trailers","13":"2019-04-11 18:11:48"},{"1":"703","2":"PUNK DIVORCE","3":"A Fast-Paced Tale of a Pastry Chef And a Boat who must Face a Frisbee in The Canadian Rockies","4":"2006","5":"1","6":"NA","7":"6","8":"4.99","9":"100","10":"18.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"706","2":"QUEEN LUKE","3":"A Astounding Story of a Girl And a Boy who must Challenge a Composer in New Orleans","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"163","10":"22.99","11":"PG","12":"Commentaries,Deleted Scenes,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"715","2":"RANGE MOONWALKER","3":"A Insightful Documentary of a Hunter And a Dentist who must Confront a Crocodile in A Baloon","4":"2006","5":"1","6":"NA","7":"3","8":"4.99","9":"147","10":"25.99","11":"PG","12":"Trailers,Commentaries,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"719","2":"RECORDS ZORRO","3":"A Amazing Drama of a Mad Scientist And a Composer who must Build a Husband in The Outback","4":"2006","5":"1","6":"NA","7":"7","8":"4.99","9":"182","10":"11.99","11":"PG","12":"Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"727","2":"RESURRECTION SILVERADO","3":"A Epic Yarn of a Robot And a Explorer who must Challenge a Girl in A MySQL Convention","4":"2006","5":"1","6":"NA","7":"6","8":"0.99","9":"117","10":"12.99","11":"PG","12":"Trailers,Deleted Scenes","13":"2019-04-11 18:11:48"},{"1":"729","2":"RIDER CADDYSHACK","3":"A Taut Reflection of a Monkey And a Womanizer who must Chase a Moose in Nigeria","4":"2006","5":"1","6":"NA","7":"5","8":"2.99","9":"177","10":"28.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"755","2":"SABRINA MIDNIGHT","3":"A Emotional Story of a Squirrel And a Crocodile who must Succumb a Husband in The Sahara Desert","4":"2006","5":"1","6":"NA","7":"5","8":"4.99","9":"99","10":"11.99","11":"PG","12":"Trailers,Behind the Scenes","13":"2019-04-11 18:11:48"},{"1":"761","2":"SANTA PARIS","3":"A Emotional Documentary of a Moose And a Car who must Redeem a Mad Cow in A Baloon Factory","4":"2006","5":"1","6":"NA","7":"7","8":"2.99","9":"154","10":"23.99","11":"PG","12":"Commentaries,Behind the Scenes","13":"2019-04-11 18:11:48"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <ul>
@@ -2798,6 +2671,7 @@ SELECT COUNT() AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
 <ul>
 <li>The <code>LIKE</code> operator</li>
 </ul>
+<p>See <a href="https://www.w3schools.com/sql/sql_like.asp" class="uri">https://www.w3schools.com/sql/sql_like.asp</a></p>
 <pre class="sql"><code>SELECT &quot;title&quot; FROM &quot;film&quot; WHERE &quot;title&quot; LIKE &#39;%victory%&#39;;</code></pre>
 <div class="knitsql-table">
 <table>
@@ -2821,6 +2695,9 @@ SELECT COUNT() AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
 <pre class="sql"><code>SELECT &quot;title&quot; FROM &quot;film&quot; WHERE &quot;title&quot; LIKE &#39;%victory%&#39;;</code></pre>
 <p>In Postgres, there is a <code>ILIKE</code> (case insensitive <code>LIKE</code>) operator</p>
 <pre class="sql"><code>SELECT &quot;title&quot; FROM &quot;film&quot; WHERE &quot;title&quot; ILIKE &#39;%victory%&#39;;</code></pre>
+<ul>
+<li>REGEX (let me figure it out in Postgres)</li>
+</ul>
 </div>
 <div id="case" class="section level3">
 <h3>CASE</h3>
@@ -2832,7 +2709,7 @@ SELECT COUNT() AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
     WHEN &quot;length&quot; &lt; 60 THEN &#39;short&#39;
     WHEN &quot;length&quot; &lt; 90 THEN &#39;mid&#39;
     ELSE &#39;long&#39;
-  END &quot;length&quot;
+  END &quot;len&quot;
 FROM &quot;film&quot;;</code></pre>
 <div class="knitsql-table">
 <table>
@@ -2841,7 +2718,7 @@ FROM &quot;film&quot;;</code></pre>
 <tr class="header">
 <th align="left">film_id</th>
 <th align="left">title</th>
-<th align="left">length</th>
+<th align="left">len</th>
 </tr>
 </thead>
 <tbody>
@@ -2961,7 +2838,22 @@ FROM &quot;film&quot;;</code></pre>
 </tbody>
 </table>
 </div>
+<pre class="r"><code>inner_join(
+  tbl(sakila_lite, &quot;inventory&quot;), 
+  tbl(sakila_lite, &quot;rental&quot;), 
+  by = &quot;inventory_id&quot;) %&gt;%
+  select(inventory_id, customer_id) %&gt;% 
+  arrange(inventory_id) %&gt;%
+  collect()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["inventory_id"],"name":[1],"type":["int"],"align":["right"]},{"label":["customer_id"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"1","2":"431"},{"1":"1","2":"518"},{"1":"1","2":"279"},{"1":"2","2":"411"},{"1":"2","2":"170"},{"1":"2","2":"161"},{"1":"2","2":"581"},{"1":"2","2":"359"},{"1":"3","2":"39"},{"1":"3","2":"541"},{"1":"4","2":"301"},{"1":"4","2":"344"},{"1":"6","2":"587"},{"1":"6","2":"597"},{"1":"6","2":"44"},{"1":"6","2":"252"},{"1":"6","2":"554"},{"1":"7","2":"345"},{"1":"7","2":"406"},{"1":"7","2":"487"},{"1":"7","2":"92"},{"1":"8","2":"8"},{"1":"8","2":"34"},{"1":"9","2":"271"},{"1":"9","2":"366"},{"1":"10","2":"145"},{"1":"10","2":"82"},{"1":"10","2":"139"},{"1":"11","2":"180"},{"1":"11","2":"533"},{"1":"12","2":"224"},{"1":"12","2":"417"},{"1":"13","2":"247"},{"1":"13","2":"269"},{"1":"14","2":"25"},{"1":"14","2":"100"},{"1":"14","2":"277"},{"1":"14","2":"1"},{"1":"14","2":"65"},{"1":"15","2":"147"},{"1":"15","2":"316"},{"1":"15","2":"178"},{"1":"16","2":"184"},{"1":"16","2":"268"},{"1":"16","2":"560"},{"1":"17","2":"150"},{"1":"17","2":"197"},{"1":"17","2":"302"},{"1":"17","2":"418"},{"1":"17","2":"151"},{"1":"18","2":"148"},{"1":"18","2":"216"},{"1":"19","2":"459"},{"1":"19","2":"239"},{"1":"19","2":"111"},{"1":"20","2":"261"},{"1":"20","2":"24"},{"1":"20","2":"73"},{"1":"20","2":"397"},{"1":"21","2":"66"},{"1":"21","2":"501"},{"1":"21","2":"111"},{"1":"22","2":"562"},{"1":"22","2":"449"},{"1":"22","2":"464"},{"1":"23","2":"106"},{"1":"23","2":"489"},{"1":"23","2":"438"},{"1":"23","2":"566"},{"1":"23","2":"336"},{"1":"24","2":"410"},{"1":"24","2":"266"},{"1":"24","2":"32"},{"1":"24","2":"127"},{"1":"25","2":"497"},{"1":"25","2":"49"},{"1":"25","2":"590"},{"1":"26","2":"391"},{"1":"26","2":"45"},{"1":"26","2":"506"},{"1":"26","2":"585"},{"1":"26","2":"183"},{"1":"27","2":"46"},{"1":"27","2":"355"},{"1":"27","2":"14"},{"1":"27","2":"389"},{"1":"28","2":"5"},{"1":"28","2":"209"},{"1":"29","2":"108"},{"1":"29","2":"50"},{"1":"29","2":"527"},{"1":"30","2":"482"},{"1":"30","2":"213"},{"1":"30","2":"320"},{"1":"30","2":"537"},{"1":"30","2":"214"},{"1":"31","2":"204"},{"1":"31","2":"38"},{"1":"32","2":"369"},{"1":"32","2":"471"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <p>We could also join a more sophisticated subquery.</p>
+<ul>
+<li>Find all the inventories where were rented and not retured.</li>
+</ul>
 <pre class="sql"><code>SELECT a.&quot;inventory_id&quot;, b.&quot;customer_id&quot;
   FROM &quot;inventory&quot; a 
   JOIN (
@@ -3096,7 +2988,7 @@ FROM &quot;film&quot;;</code></pre>
 <ul>
 <li>Semi Join - return all records in the left table which has a match in the right table.</li>
 </ul>
-<pre class="sql"><code>SELECT &quot;inventory_id&quot;
+<pre class="sql"><code>SELECT *
   FROM &quot;inventory&quot; i
   WHERE EXISTS (
     SELECT * FROM &quot;rental&quot; r
@@ -3108,38 +3000,71 @@ FROM &quot;film&quot;;</code></pre>
 <thead>
 <tr class="header">
 <th align="right">inventory_id</th>
+<th align="right">film_id</th>
+<th align="right">store_id</th>
+<th align="left">last_update</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="right">6</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">9</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">21</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">25</td>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">70</td>
+<td align="right">13</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">81</td>
+<td align="right">17</td>
+<td align="right">1</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">97</td>
+<td align="right">19</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">106</td>
+<td align="right">21</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">112</td>
+<td align="right">22</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">177</td>
+<td align="right">39</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 </tbody>
 </table>
@@ -3147,7 +3072,7 @@ FROM &quot;film&quot;;</code></pre>
 <ul>
 <li>Anti Join - remove all records in the left table which has a match in the right table.</li>
 </ul>
-<pre class="sql"><code>SELECT &quot;inventory_id&quot;
+<pre class="sql"><code>SELECT *
   FROM &quot;inventory&quot; i
   WHERE NOT EXISTS (
     SELECT * FROM &quot;rental&quot; r
@@ -3159,38 +3084,71 @@ FROM &quot;film&quot;;</code></pre>
 <thead>
 <tr class="header">
 <th align="right">inventory_id</th>
+<th align="right">film_id</th>
+<th align="right">store_id</th>
+<th align="left">last_update</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">7</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">8</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">10</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">11</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">12</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 </tbody>
 </table>
@@ -3224,7 +3182,7 @@ FROM &quot;film&quot;;</code></pre>
 </div>
 <div id="group-by" class="section level3">
 <h3>Group By</h3>
-<pre class="sql"><code>SELECT &quot;rating&quot;, &quot;rental_duration&quot;, AVG(&quot;length&quot;) AS &quot;avg_length&quot; 
+<pre class="sql"><code>SELECT &quot;rating&quot;, AVG(&quot;length&quot;) AS &quot;avg_length&quot; 
   FROM &quot;film&quot; GROUP BY &quot;rating&quot;;</code></pre>
 <div class="knitsql-table">
 <table>
@@ -3232,34 +3190,28 @@ FROM &quot;film&quot;;</code></pre>
 <thead>
 <tr class="header">
 <th align="left">rating</th>
-<th align="right">rental_duration</th>
 <th align="right">avg_length</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">G</td>
-<td align="right">3</td>
 <td align="right">111.0506</td>
 </tr>
 <tr class="even">
 <td align="left">NC-17</td>
-<td align="right">7</td>
 <td align="right">113.2286</td>
 </tr>
 <tr class="odd">
 <td align="left">PG</td>
-<td align="right">6</td>
 <td align="right">112.0052</td>
 </tr>
 <tr class="even">
 <td align="left">PG-13</td>
-<td align="right">6</td>
 <td align="right">120.4439</td>
 </tr>
 <tr class="odd">
 <td align="left">R</td>
-<td align="right">6</td>
 <td align="right">118.6615</td>
 </tr>
 </tbody>
@@ -3339,129 +3291,393 @@ FROM &quot;film&quot;;</code></pre>
 <li>INTERSECT – return the intersection of two or more queries using the INTERSECT operator.</li>
 <li>EXCEPT – subtract a result set from another result set using the EXCEPT operator</li>
 </ul>
-<pre class="sql"><code>SELECT &quot;film_id&quot; FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 3
+<pre class="sql"><code>SELECT * FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 3
 UNION
-SELECT &quot;film_id&quot; FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 4</code></pre>
+SELECT * FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 4;</code></pre>
 <div class="knitsql-table">
 <table>
 <caption>4 records</caption>
 <thead>
 <tr class="header">
 <th align="left">film_id</th>
+<th align="left">title</th>
+<th align="left">description</th>
+<th align="left">release_year</th>
+<th align="right">language_id</th>
+<th align="right">original_language_id</th>
+<th align="right">rental_duration</th>
+<th align="right">rental_rate</th>
+<th align="right">length</th>
+<th align="right">replacement_cost</th>
+<th align="left">rating</th>
+<th align="left">special_features</th>
+<th align="left">last_update</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">1</td>
+<td align="left">ACADEMY DINOSAUR</td>
+<td align="left">A Epic Drama of a Feminist And a Mad Scientist who must Battle a Teacher in The Canadian Rockies</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">6</td>
+<td align="right">0.99</td>
+<td align="right">86</td>
+<td align="right">20.99</td>
+<td align="left">PG</td>
+<td align="left">Deleted Scenes,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="left">2</td>
+<td align="left">ACE GOLDFINGER</td>
+<td align="left">A Astounding Epistle of a Database Administrator And a Explorer who must Find a Car in Ancient China</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">3</td>
+<td align="right">4.99</td>
+<td align="right">48</td>
+<td align="right">12.99</td>
+<td align="left">G</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="left">3</td>
+<td align="left">ADAPTATION HOLES</td>
+<td align="left">A Astounding Reflection of a Lumberjack And a Car who must Sink a Lumberjack in A Baloon Factory</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">7</td>
+<td align="right">2.99</td>
+<td align="right">50</td>
+<td align="right">18.99</td>
+<td align="left">NC-17</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="left">4</td>
+<td align="left">AFFAIR PREJUDICE</td>
+<td align="left">A Fanciful Documentary of a Frisbee And a Lumberjack who must Chase a Monkey in A Shark Tank</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">5</td>
+<td align="right">2.99</td>
+<td align="right">117</td>
+<td align="right">26.99</td>
+<td align="left">G</td>
+<td align="left">Commentaries,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 </tbody>
 </table>
 </div>
 <p><code>UNION ALL</code> doesn’t remove duplications</p>
-<pre class="sql"><code>SELECT &quot;film_id&quot; FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 3
+<pre class="sql"><code>SELECT * FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 3
 UNION ALL
-SELECT &quot;film_id&quot; FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 4</code></pre>
+SELECT * FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 4;</code></pre>
 <div class="knitsql-table">
 <table>
 <caption>7 records</caption>
 <thead>
 <tr class="header">
 <th align="right">film_id</th>
+<th align="left">title</th>
+<th align="left">description</th>
+<th align="left">release_year</th>
+<th align="right">language_id</th>
+<th align="right">original_language_id</th>
+<th align="right">rental_duration</th>
+<th align="right">rental_rate</th>
+<th align="right">length</th>
+<th align="right">replacement_cost</th>
+<th align="left">rating</th>
+<th align="left">special_features</th>
+<th align="left">last_update</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="right">1</td>
+<td align="left">ACADEMY DINOSAUR</td>
+<td align="left">A Epic Drama of a Feminist And a Mad Scientist who must Battle a Teacher in The Canadian Rockies</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">6</td>
+<td align="right">0.99</td>
+<td align="right">86</td>
+<td align="right">20.99</td>
+<td align="left">PG</td>
+<td align="left">Deleted Scenes,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
+<td align="left">ACE GOLDFINGER</td>
+<td align="left">A Astounding Epistle of a Database Administrator And a Explorer who must Find a Car in Ancient China</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">3</td>
+<td align="right">4.99</td>
+<td align="right">48</td>
+<td align="right">12.99</td>
+<td align="left">G</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
+<td align="left">ADAPTATION HOLES</td>
+<td align="left">A Astounding Reflection of a Lumberjack And a Car who must Sink a Lumberjack in A Baloon Factory</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">7</td>
+<td align="right">2.99</td>
+<td align="right">50</td>
+<td align="right">18.99</td>
+<td align="left">NC-17</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">1</td>
+<td align="left">ACADEMY DINOSAUR</td>
+<td align="left">A Epic Drama of a Feminist And a Mad Scientist who must Battle a Teacher in The Canadian Rockies</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">6</td>
+<td align="right">0.99</td>
+<td align="right">86</td>
+<td align="right">20.99</td>
+<td align="left">PG</td>
+<td align="left">Deleted Scenes,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">2</td>
+<td align="left">ACE GOLDFINGER</td>
+<td align="left">A Astounding Epistle of a Database Administrator And a Explorer who must Find a Car in Ancient China</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">3</td>
+<td align="right">4.99</td>
+<td align="right">48</td>
+<td align="right">12.99</td>
+<td align="left">G</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="right">3</td>
+<td align="left">ADAPTATION HOLES</td>
+<td align="left">A Astounding Reflection of a Lumberjack And a Car who must Sink a Lumberjack in A Baloon Factory</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">7</td>
+<td align="right">2.99</td>
+<td align="right">50</td>
+<td align="right">18.99</td>
+<td align="left">NC-17</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="right">4</td>
+<td align="left">AFFAIR PREJUDICE</td>
+<td align="left">A Fanciful Documentary of a Frisbee And a Lumberjack who must Chase a Monkey in A Shark Tank</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">5</td>
+<td align="right">2.99</td>
+<td align="right">117</td>
+<td align="right">26.99</td>
+<td align="left">G</td>
+<td align="left">Commentaries,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 </tbody>
 </table>
 </div>
-<pre class="sql"><code>SELECT &quot;film_id&quot; FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 5
+<pre class="sql"><code>SELECT * FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 5
 INTERSECT
-SELECT &quot;film_id&quot; FROM &quot;film&quot; where &quot;film_id&quot; &gt;= 2;</code></pre>
+SELECT * FROM &quot;film&quot; where &quot;film_id&quot; &gt;= 2;</code></pre>
 <div class="knitsql-table">
 <table>
 <caption>4 records</caption>
 <thead>
 <tr class="header">
 <th align="left">film_id</th>
+<th align="left">title</th>
+<th align="left">description</th>
+<th align="left">release_year</th>
+<th align="right">language_id</th>
+<th align="right">original_language_id</th>
+<th align="right">rental_duration</th>
+<th align="right">rental_rate</th>
+<th align="right">length</th>
+<th align="right">replacement_cost</th>
+<th align="left">rating</th>
+<th align="left">special_features</th>
+<th align="left">last_update</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">2</td>
+<td align="left">ACE GOLDFINGER</td>
+<td align="left">A Astounding Epistle of a Database Administrator And a Explorer who must Find a Car in Ancient China</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">3</td>
+<td align="right">4.99</td>
+<td align="right">48</td>
+<td align="right">12.99</td>
+<td align="left">G</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="left">3</td>
+<td align="left">ADAPTATION HOLES</td>
+<td align="left">A Astounding Reflection of a Lumberjack And a Car who must Sink a Lumberjack in A Baloon Factory</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">7</td>
+<td align="right">2.99</td>
+<td align="right">50</td>
+<td align="right">18.99</td>
+<td align="left">NC-17</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="left">4</td>
+<td align="left">AFFAIR PREJUDICE</td>
+<td align="left">A Fanciful Documentary of a Frisbee And a Lumberjack who must Chase a Monkey in A Shark Tank</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">5</td>
+<td align="right">2.99</td>
+<td align="right">117</td>
+<td align="right">26.99</td>
+<td align="left">G</td>
+<td align="left">Commentaries,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="left">5</td>
+<td align="left">AFRICAN EGG</td>
+<td align="left">A Fast-Paced Documentary of a Pastry Chef And a Dentist who must Pursue a Forensic Psychologist in The Gulf of Mexico</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">6</td>
+<td align="right">2.99</td>
+<td align="right">130</td>
+<td align="right">22.99</td>
+<td align="left">G</td>
+<td align="left">Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 </tbody>
 </table>
 </div>
-<pre class="sql"><code>SELECT &quot;film_id&quot; FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 5
+<pre class="sql"><code>SELECT * FROM &quot;film&quot; where &quot;film_id&quot; &lt;= 5
 EXCEPT
-SELECT &quot;film_id&quot; FROM &quot;film&quot; where &quot;film_id&quot; &gt;= 4;</code></pre>
+SELECT * FROM &quot;film&quot; where &quot;film_id&quot; &gt;= 4;</code></pre>
 <div class="knitsql-table">
 <table>
 <caption>3 records</caption>
 <thead>
 <tr class="header">
 <th align="left">film_id</th>
+<th align="left">title</th>
+<th align="left">description</th>
+<th align="left">release_year</th>
+<th align="right">language_id</th>
+<th align="right">original_language_id</th>
+<th align="right">rental_duration</th>
+<th align="right">rental_rate</th>
+<th align="right">length</th>
+<th align="right">replacement_cost</th>
+<th align="left">rating</th>
+<th align="left">special_features</th>
+<th align="left">last_update</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">1</td>
+<td align="left">ACADEMY DINOSAUR</td>
+<td align="left">A Epic Drama of a Feminist And a Mad Scientist who must Battle a Teacher in The Canadian Rockies</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">6</td>
+<td align="right">0.99</td>
+<td align="right">86</td>
+<td align="right">20.99</td>
+<td align="left">PG</td>
+<td align="left">Deleted Scenes,Behind the Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="even">
 <td align="left">2</td>
+<td align="left">ACE GOLDFINGER</td>
+<td align="left">A Astounding Epistle of a Database Administrator And a Explorer who must Find a Car in Ancient China</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">3</td>
+<td align="right">4.99</td>
+<td align="right">48</td>
+<td align="right">12.99</td>
+<td align="left">G</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 <tr class="odd">
 <td align="left">3</td>
+<td align="left">ADAPTATION HOLES</td>
+<td align="left">A Astounding Reflection of a Lumberjack And a Car who must Sink a Lumberjack in A Baloon Factory</td>
+<td align="left">2006</td>
+<td align="right">1</td>
+<td align="right">NA</td>
+<td align="right">7</td>
+<td align="right">2.99</td>
+<td align="right">50</td>
+<td align="right">18.99</td>
+<td align="left">NC-17</td>
+<td align="left">Trailers,Deleted Scenes</td>
+<td align="left">2019-04-11 18:11:48</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<div id="data-manipulation" class="section level3">
-<h3>Data Manipulation</h3>
+<div id="table-manipulation" class="section level3">
+<h3>Table Manipulation</h3>
+<pre class="r"><code># create a local empty SQLite database called mydb.sqlite
+mydb &lt;- dbConnect(RSQLite::SQLite(), dbname = &quot;mydb.sqlite&quot;)</code></pre>
 <ul>
 <li>delete a table permanently.</li>
 </ul>
-<pre class="r"><code># create a local empty SQLite database called mydb.sqlite
-mydb &lt;- dbConnect(RSQLite::SQLite(), dbname = &quot;mydb.sqlite&quot;)</code></pre>
 <pre class="r"><code>drop_sql &lt;- sqlInterpolate(mydb, &quot;DROP TABLE ?tablename;&quot;, tablename = &quot;table1&quot;)
 mydb %&gt;% dbExecute(drop_sql)</code></pre>
 <p>Remark: the use of sqlInterpolate is to avoid SQL injection attack</p>
@@ -3488,18 +3704,20 @@ mydb %&gt;% dbReadTable(&quot;table1&quot;)</code></pre>
   tibble(fruit = &quot;apple&quot;, count = 2))
 mydb %&gt;% dbReadTable(&quot;table1&quot;)</code></pre>
 <pre class="sql"><code>INSERT INTO table2 (id, last_name, first_name, age)
-  VALUES (1, &quot;Lai&quot;, &quot;Hello&quot;, 16);  </code></pre>
+  VALUES (1, &quot;Lai&quot;, &quot;Randy&quot;, 16);  </code></pre>
+<pre class="sql"><code>INSERT INTO table2 (id, last_name, first_name, age)
+  VALUES (2, &quot;Lai&quot;, &quot;Natalie&quot;);  </code></pre>
 <pre class="r"><code>mydb %&gt;% dbReadTable(&quot;table2&quot;)</code></pre>
 <ul>
 <li>UPDATE – update existing data in a table.</li>
 </ul>
-<pre class="sql"><code>UPDATE table_name
-SET column1 = value1, column2 = value2, ...
-WHERE condition;</code></pre>
+<pre class="sql"><code>UPDATE table2 SET age = 33 WHERE id = 1;</code></pre>
+<pre class="r"><code>mydb %&gt;% dbReadTable(&quot;table2&quot;)</code></pre>
 <ul>
 <li>DELETE – delete data from a table permanently.</li>
 </ul>
-<pre class="sql"><code>DELETE FROM table_name WHERE condition;</code></pre>
+<pre class="sql"><code>DELETE FROM table2 WHERE id = 1;</code></pre>
+<pre class="r"><code>mydb %&gt;% dbReadTable(&quot;table2&quot;)</code></pre>
 </div>
 </div>
 <div id="reference" class="section level1">

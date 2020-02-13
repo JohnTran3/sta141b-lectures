@@ -1,9 +1,9 @@
 ---
 title: "Database and SQL"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 date: "02-11-2020"
 ---
 
@@ -122,7 +122,7 @@ Suppose we want to make the result a bit more beautiful.
 sakila_lite %>%
   tbl("actor") %>%
   filter(str_to_lower(first_name) == str_to_lower("Scarlett")) %>%
-  collect() %>%
+  collect() %>% 
   mutate(first_name = str_to_title(first_name), last_name = str_to_title(last_name))
 ```
 
@@ -293,7 +293,7 @@ SELECT COUNT() AS `n` from `actor`;
 
 ```{sql connection = sakila_psql, eval = FALSE}
 -- The standard way
-SELECT COUNT() AS "n" from "actor";
+SELECT COUNT(*) AS "n" from "actor";
 ```
 
 ### SELECT
@@ -313,7 +313,8 @@ For comparision,
 ```{r}
 sakila_lite %>%
   tbl("actor") %>%
-  transmute(family_name = str_to_lower(last_name))
+  transmute(family_name = str_to_lower(last_name)) %>%
+  collect()
 ```
 
 
@@ -374,14 +375,20 @@ In SQL standard, strings are quoted in single quotes.
 
 - In SQL standard, we should use `=` for comparison, but not `==`.
 
+```{r}
+sakila_lite %>% tbl("film") %>% distinct(rating)
+```
+
+
 ```{sql connection = sakila_lite}
-SELECT * FROM "film" WHERE "rating" = 'PG' AND "length" > 90;
+SELECT * FROM "film" WHERE "rating" = 'PG' AND "length" = 90;
 ```
 
 ```{r}
 sakila_lite %>%
   tbl("film") %>%
-  filter(rating == "PG" && length > 90)
+  filter(rating == "PG" & length > 90) %>%
+  collect()
 ```
 
 - The `IN` operator
@@ -397,6 +404,8 @@ sakila_lite %>%
 ```
 
 - The `LIKE` operator
+
+See https://www.w3schools.com/sql/sql_like.asp
 
 ```{sql connection = sakila_lite}
 SELECT "title" FROM "film" WHERE "title" LIKE '%victory%';
@@ -414,6 +423,8 @@ In Postgres, there is a `ILIKE` (case insensitive `LIKE`) operator
 SELECT "title" FROM "film" WHERE "title" ILIKE '%victory%';
 ```
 
+- REGEX (let me figure it out in Postgres)
+
 
 ### CASE
 
@@ -427,7 +438,7 @@ SELECT
     WHEN "length" < 60 THEN 'short'
     WHEN "length" < 90 THEN 'mid'
     ELSE 'long'
-  END "length"
+  END "len"
 FROM "film";
 ```
 
@@ -443,7 +454,21 @@ SELECT a."inventory_id", b."customer_id"
   ORDER BY a."inventory_id"
 ```
 
+```{r}
+inner_join(
+  tbl(sakila_lite, "inventory"), 
+  tbl(sakila_lite, "rental"), 
+  by = "inventory_id") %>%
+  select(inventory_id, customer_id) %>% 
+  arrange(inventory_id) %>%
+  collect()
+```
+
+
 We could also join a more sophisticated subquery.
+
+- Find all the inventories where were rented and not retured.
+
 
 ```{sql connection = sakila_lite}
 SELECT a."inventory_id", b."customer_id"
@@ -482,7 +507,7 @@ SELECT a."inventory_id", b."customer_id"
 - Semi Join - return all records in the left table which has a match in the right table.
 
 ```{sql connection = sakila_lite}
-SELECT "inventory_id"
+SELECT *
   FROM "inventory" i
   WHERE EXISTS (
     SELECT * FROM "rental" r
@@ -494,7 +519,7 @@ SELECT "inventory_id"
 - Anti Join - remove all records in the left table which has a match in the right table.
 
 ```{sql connection = sakila_lite}
-SELECT "inventory_id"
+SELECT *
   FROM "inventory" i
   WHERE NOT EXISTS (
     SELECT * FROM "rental" r
@@ -519,7 +544,7 @@ SELECT AVG("length") as "avg_length" FROM "film"
 ### Group By
 
 ```{sql connection = sakila_lite}
-SELECT "rating", "rental_duration", AVG("length") AS "avg_length" 
+SELECT "rating", AVG("length") AS "avg_length" 
   FROM "film" GROUP BY "rating";
 ```
 
@@ -535,39 +560,38 @@ SELECT "rating", "rental_duration", AVG("length") AS "avg_length"
 - EXCEPT – subtract a result set from another result set using the EXCEPT operator
 
 ```{sql connection = sakila_lite}
-SELECT "film_id" FROM "film" where "film_id" <= 3
+SELECT * FROM "film" where "film_id" <= 3
 UNION
-SELECT "film_id" FROM "film" where "film_id" <= 4
+SELECT * FROM "film" where "film_id" <= 4;
 ```
 `UNION ALL` doesn't remove duplications
 
 ```{sql connection = sakila_lite}
-SELECT "film_id" FROM "film" where "film_id" <= 3
+SELECT * FROM "film" where "film_id" <= 3
 UNION ALL
-SELECT "film_id" FROM "film" where "film_id" <= 4
+SELECT * FROM "film" where "film_id" <= 4;
 ```
 
 ```{sql connection = sakila_lite}
-SELECT "film_id" FROM "film" where "film_id" <= 5
+SELECT * FROM "film" where "film_id" <= 5
 INTERSECT
-SELECT "film_id" FROM "film" where "film_id" >= 2;
+SELECT * FROM "film" where "film_id" >= 2;
 ```
 
 ```{sql connection = sakila_lite}
-SELECT "film_id" FROM "film" where "film_id" <= 5
+SELECT * FROM "film" where "film_id" <= 5
 EXCEPT
-SELECT "film_id" FROM "film" where "film_id" >= 4;
+SELECT * FROM "film" where "film_id" >= 4;
 ```
 
-### Data Manipulation
-
-- delete a table permanently.
+### Table Manipulation
 
 ```{r}
 # create a local empty SQLite database called mydb.sqlite
 mydb <- dbConnect(RSQLite::SQLite(), dbname = "mydb.sqlite")
 ```
 
+- delete a table permanently.
 
 ```{r, eval = FALSE}
 drop_sql <- sqlInterpolate(mydb, "DROP TABLE ?tablename;", tablename = "table1")
@@ -608,7 +632,11 @@ mydb %>% dbReadTable("table1")
 
 ```{sql, connection = mydb, eval = FALSE}
 INSERT INTO table2 (id, last_name, first_name, age)
-  VALUES (1, "Lai", "Hello", 16);  
+  VALUES (1, "Lai", "Randy", 16);  
+```
+```{sql, connection = mydb, eval = FALSE}
+INSERT INTO table2 (id, last_name, first_name, age)
+  VALUES (2, "Lai", "Natalie");  
 ```
 
 ```{r, eval = FALSE}
@@ -619,16 +647,20 @@ mydb %>% dbReadTable("table2")
 - UPDATE – update existing data in a table.
 
 ```{sql, connection = mydb, eval = FALSE}
-UPDATE table_name
-SET column1 = value1, column2 = value2, ...
-WHERE condition;
+UPDATE table2 SET age = 33 WHERE id = 1;
 ```
-
+```{r, eval = FALSE}
+mydb %>% dbReadTable("table2")
+```
 
 - DELETE – delete data from a table permanently.
 
 ```{sql, connection = mydb, eval = FALSE}
-DELETE FROM table_name WHERE condition;
+DELETE FROM table2 WHERE id = 1;
+```
+
+```{r, eval = FALSE}
+mydb %>% dbReadTable("table2")
 ```
 
 # Reference
