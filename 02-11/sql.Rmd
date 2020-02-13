@@ -1,9 +1,9 @@
 ---
 title: "Database and SQL"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 date: "02-11-2020"
 ---
 
@@ -15,6 +15,7 @@ library(DBI)
 ```{r, echo = FALSE}
 # to suppress the object not found error when kniting
 sakila_psql <- NULL
+mydb <- NULL
 ```
 
 
@@ -414,18 +415,6 @@ SELECT "title" FROM "film" WHERE "title" ILIKE '%victory%';
 ```
 
 
-### SQL interpolation
-
-```{r}
-rating <- "PG"
-x <- 90
-```
-
-```{sql connection = sakila_lite}
-SELECT * FROM "film" WHERE "rating" == ?rating AND "length" > ?x;
-```
-
-
 ### CASE
 
 Similar to `case_when()` in `dplyr`.
@@ -570,11 +559,77 @@ EXCEPT
 SELECT "film_id" FROM "film" where "film_id" >= 4;
 ```
 
-### Data Manipulation Language (DML) Statements
+### Data Manipulation
+
+- delete a table permanently.
+
+```{r}
+# create a local empty SQLite database called mydb.sqlite
+mydb <- dbConnect(RSQLite::SQLite(), dbname = "mydb.sqlite")
+```
+
+
+```{r, eval = FALSE}
+drop_sql <- sqlInterpolate(mydb, "DROP TABLE ?tablename;", tablename = "table1")
+mydb %>% dbExecute(drop_sql)
+```
+
+Remark: the use of sqlInterpolate is to avoid SQL injection attack
+
+
+- create table
+  
+```{r, eval = FALSE}
+mydb %>% dbCreateTable(
+  "table1",
+  tibble(fruit = character(0), count = integer(0))
+)
+mydb %>% dbReadTable("table1")
+```
+
+```{sql, connection = mydb, eval = FALSE}
+CREATE TABLE table2 (
+    id int NOT NULL,
+    last_name varchar(255) NOT NULL,
+    first_name varchar(255),
+    age int,
+    PRIMARY KEY (ID)
+);
+```
 
 - INSERT – insert one or more rows into a table.
+
+```{r, eval = FALSE}
+mydb %>% dbAppendTable(
+  "table1",
+  tibble(fruit = "apple", count = 2))
+mydb %>% dbReadTable("table1")
+```
+
+```{sql, connection = mydb, eval = FALSE}
+INSERT INTO table2 (id, last_name, first_name, age)
+  VALUES (1, "Lai", "Hello", 16);  
+```
+
+```{r, eval = FALSE}
+mydb %>% dbReadTable("table2")
+```
+
+
 - UPDATE – update existing data in a table.
+
+```{sql, connection = mydb, eval = FALSE}
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+```
+
+
 - DELETE – delete data from a table permanently.
+
+```{sql, connection = mydb, eval = FALSE}
+DELETE FROM table_name WHERE condition;
+```
 
 # Reference
 

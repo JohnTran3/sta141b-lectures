@@ -2822,186 +2822,6 @@ SELECT COUNT() AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
 <p>In Postgres, there is a <code>ILIKE</code> (case insensitive <code>LIKE</code>) operator</p>
 <pre class="sql"><code>SELECT &quot;title&quot; FROM &quot;film&quot; WHERE &quot;title&quot; ILIKE &#39;%victory%&#39;;</code></pre>
 </div>
-<div id="sql-interpolation" class="section level3">
-<h3>SQL interpolation</h3>
-<pre class="r"><code>rating &lt;- &quot;PG&quot;
-x &lt;- 90</code></pre>
-<pre class="sql"><code>SELECT * FROM &quot;film&quot; WHERE &quot;rating&quot; == ?rating AND &quot;length&quot; &gt; ?x;</code></pre>
-<div class="knitsql-table">
-<table>
-<caption>Displaying records 1 - 10</caption>
-<thead>
-<tr class="header">
-<th align="right">film_id</th>
-<th align="left">title</th>
-<th align="left">description</th>
-<th align="left">release_year</th>
-<th align="right">language_id</th>
-<th align="right">original_language_id</th>
-<th align="right">rental_duration</th>
-<th align="right">rental_rate</th>
-<th align="right">length</th>
-<th align="right">replacement_cost</th>
-<th align="left">rating</th>
-<th align="left">special_features</th>
-<th align="left">last_update</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">6</td>
-<td align="left">AGENT TRUMAN</td>
-<td align="left">A Intrepid Panorama of a Robot And a Boy who must Escape a Sumo Wrestler in Ancient China</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">3</td>
-<td align="right">2.99</td>
-<td align="right">169</td>
-<td align="right">17.99</td>
-<td align="left">PG</td>
-<td align="left">Deleted Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="even">
-<td align="right">12</td>
-<td align="left">ALASKA PHANTOM</td>
-<td align="left">A Fanciful Saga of a Hunter And a Pastry Chef who must Vanquish a Boy in Australia</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">6</td>
-<td align="right">0.99</td>
-<td align="right">136</td>
-<td align="right">22.99</td>
-<td align="left">PG</td>
-<td align="left">Commentaries,Deleted Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="odd">
-<td align="right">13</td>
-<td align="left">ALI FOREVER</td>
-<td align="left">A Action-Packed Drama of a Dentist And a Crocodile who must Battle a Feminist in The Canadian Rockies</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">4</td>
-<td align="right">4.99</td>
-<td align="right">150</td>
-<td align="right">21.99</td>
-<td align="left">PG</td>
-<td align="left">Deleted Scenes,Behind the Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="even">
-<td align="right">19</td>
-<td align="left">AMADEUS HOLY</td>
-<td align="left">A Emotional Display of a Pioneer And a Technical Writer who must Battle a Man in A Baloon</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">6</td>
-<td align="right">0.99</td>
-<td align="right">113</td>
-<td align="right">20.99</td>
-<td align="left">PG</td>
-<td align="left">Commentaries,Deleted Scenes,Behind the Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="odd">
-<td align="right">37</td>
-<td align="left">ARIZONA BANG</td>
-<td align="left">A Brilliant Panorama of a Mad Scientist And a Mad Cow who must Meet a Pioneer in A Monastery</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">3</td>
-<td align="right">2.99</td>
-<td align="right">121</td>
-<td align="right">28.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Deleted Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="even">
-<td align="right">41</td>
-<td align="left">ARSENIC INDEPENDENCE</td>
-<td align="left">A Fanciful Documentary of a Mad Cow And a Womanizer who must Find a Dentist in Berlin</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">4</td>
-<td align="right">0.99</td>
-<td align="right">137</td>
-<td align="right">17.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Deleted Scenes,Behind the Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="odd">
-<td align="right">65</td>
-<td align="left">BEHAVIOR RUNAWAY</td>
-<td align="left">A Unbelieveable Drama of a Student And a Husband who must Outrace a Sumo Wrestler in Berlin</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">3</td>
-<td align="right">4.99</td>
-<td align="right">100</td>
-<td align="right">20.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Deleted Scenes,Behind the Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="even">
-<td align="right">72</td>
-<td align="left">BILL OTHERS</td>
-<td align="left">A Stunning Saga of a Mad Scientist And a Forensic Psychologist who must Challenge a Squirrel in A MySQL Convention</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">6</td>
-<td align="right">2.99</td>
-<td align="right">93</td>
-<td align="right">12.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Commentaries</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="odd">
-<td align="right">74</td>
-<td align="left">BIRCH ANTITRUST</td>
-<td align="left">A Fanciful Panorama of a Husband And a Pioneer who must Outgun a Dog in A Baloon</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">4</td>
-<td align="right">4.99</td>
-<td align="right">162</td>
-<td align="right">18.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Commentaries,Deleted Scenes</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-<tr class="even">
-<td align="right">84</td>
-<td align="left">BOILED DARES</td>
-<td align="left">A Awe-Inspiring Story of a Waitress And a Dog who must Discover a Dentist in Ancient Japan</td>
-<td align="left">2006</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-<td align="right">7</td>
-<td align="right">4.99</td>
-<td align="right">102</td>
-<td align="right">13.99</td>
-<td align="left">PG</td>
-<td align="left">Trailers,Commentaries</td>
-<td align="left">2019-04-11 18:11:48</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <div id="case" class="section level3">
 <h3>CASE</h3>
 <p>Similar to <code>case_when()</code> in <code>dplyr</code>.</p>
@@ -3635,13 +3455,51 @@ SELECT &quot;film_id&quot; FROM &quot;film&quot; where &quot;film_id&quot; &gt;=
 </table>
 </div>
 </div>
-<div id="data-manipulation-language-dml-statements" class="section level3">
-<h3>Data Manipulation Language (DML) Statements</h3>
+<div id="data-manipulation" class="section level3">
+<h3>Data Manipulation</h3>
+<ul>
+<li>delete a table permanently.</li>
+</ul>
+<pre class="r"><code># create a local empty SQLite database called mydb.sqlite
+mydb &lt;- dbConnect(RSQLite::SQLite(), dbname = &quot;mydb.sqlite&quot;)</code></pre>
+<pre class="r"><code>drop_sql &lt;- sqlInterpolate(mydb, &quot;DROP TABLE ?tablename;&quot;, tablename = &quot;table1&quot;)
+mydb %&gt;% dbExecute(drop_sql)</code></pre>
+<p>Remark: the use of sqlInterpolate is to avoid SQL injection attack</p>
+<ul>
+<li>create table</li>
+</ul>
+<pre class="r"><code>mydb %&gt;% dbCreateTable(
+  &quot;table1&quot;,
+  tibble(fruit = character(0), count = integer(0))
+)
+mydb %&gt;% dbReadTable(&quot;table1&quot;)</code></pre>
+<pre class="sql"><code>CREATE TABLE table2 (
+    id int NOT NULL,
+    last_name varchar(255) NOT NULL,
+    first_name varchar(255),
+    age int,
+    PRIMARY KEY (ID)
+);</code></pre>
 <ul>
 <li>INSERT – insert one or more rows into a table.</li>
+</ul>
+<pre class="r"><code>mydb %&gt;% dbAppendTable(
+  &quot;table1&quot;,
+  tibble(fruit = &quot;apple&quot;, count = 2))
+mydb %&gt;% dbReadTable(&quot;table1&quot;)</code></pre>
+<pre class="sql"><code>INSERT INTO table2 (id, last_name, first_name, age)
+  VALUES (1, &quot;Lai&quot;, &quot;Hello&quot;, 16);  </code></pre>
+<pre class="r"><code>mydb %&gt;% dbReadTable(&quot;table2&quot;)</code></pre>
+<ul>
 <li>UPDATE – update existing data in a table.</li>
+</ul>
+<pre class="sql"><code>UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;</code></pre>
+<ul>
 <li>DELETE – delete data from a table permanently.</li>
 </ul>
+<pre class="sql"><code>DELETE FROM table_name WHERE condition;</code></pre>
 </div>
 </div>
 <div id="reference" class="section level1">
