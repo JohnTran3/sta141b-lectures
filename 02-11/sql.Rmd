@@ -1,6 +1,8 @@
 ---
 title: "Database and SQL"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 date: "02-11-2020"
 ---
 
@@ -8,6 +10,12 @@ date: "02-11-2020"
 library(tidyverse)
 library(DBI)
 ```
+
+```{r, echo = FALSE}
+# to suppress the object not found error when kniting
+sakila_psql <- NULL
+```
+
 
 What is a database? It is what google says
 
@@ -39,8 +47,10 @@ In the following, we are going to use both `sqlite` and `postgresql`.
 The database is called `sakila.sqlite`. You could either git clone from lectures repo or download using the code
 
 ```{r}
-if (!file.exists("sakila.sqlite")) {
-  download.file("https://github.com/UCDavis-STA-141B-Winter-2020/sta141b-lectures/raw/master/02-11/sakila.sqlite", destfile = "sakila.sqlite")
+if (!file.exists("sakila.sqlite") || file.size("sakila.sqlite") == 0) {
+  download.file(
+    "https://github.com/UCDavis-STA-141B-Winter-2020/sta141b-lectures/raw/master/02-11/sakila.sqlite", 
+    destfile = "sakila.sqlite")
 }
 ```
 
@@ -53,7 +63,7 @@ sakila_lite %>% dbListTables()
 
 ### Postgresql
 
-I have also uploaded the Sakila database to a postgres server owned by the department. (You'll need to either on the campus or over vpn to connect to it)
+I have also uploaded the Sakila database to a postgres server owned by the department. (You'll need to either on the campus or over UCD vpn to connect to it)
 
 ```{r, eval = FALSE}
 sakila_psql <- dbConnect(RPostgres::Postgres(),
@@ -112,6 +122,16 @@ sakila_lite %>%
   filter(str_to_lower(first_name) == str_to_lower("Scarlett")) %>%
   collect() %>%
   mutate(first_name = str_to_title(first_name), last_name = str_to_title(last_name))
+```
+
+Note: SQLite doesn't support transforming title case but Postgresql does.
+
+```{r, eval = FALSE}
+sakila_psql %>%
+  tbl("actor") %>%
+  filter(str_to_lower(first_name) == str_to_lower("Scarlett")) %>%
+  mutate(first_name = str_to_title(first_name), last_name = str_to_title(last_name)) %>% 
+  collect()
 ```
 
 - Which actors have the last name Johansson?
@@ -228,32 +248,29 @@ Why learning SQL when there is dplyr?
 - Job interviews
 
 
-First we will need to connect to the database, 
+In R, a sql query can be made by using `dbGetQuery`
 
-In R,
 ```{r}
-sakila_lite <- dbConnect(RSQLite::SQLite(), dbname = "sakila.sqlite")
 sakila_lite %>%
   dbGetQuery("SELECT COUNT() AS `n` FROM `rental`")
 ```
 
-We could also make SQL query by sql block. In here, we are using the connection `sakila_lite`.
-The result will be printed directly.
+We could also make SQL query by sql block. In here, we are using the connection `sakila_lite`. The result will be printed directly.
+
 ```{sql connection = sakila_lite}
 SELECT COUNT() AS `n` FROM `rental`;
 ```
 
-
-We could store the output to `rental_count`
+In we need the output, set `output.var` to `rental_count`
 
 ```{sql connection=sakila_lite, output.var = "rental_count"}
 SELECT COUNT() AS `n` FROM `rental`;
 ```
 
+The output could be later used in R blocks
 ```{r}
 rental_count
 ```
-
 
 For comparsion, in Python, we use
 ```{python, eval = FALSE}
@@ -264,27 +281,33 @@ c.execute("SELECT COUNT() AS `n` FROM `rental`")
 c.fetchall()
 ```
 
-It is not stricly neccsaary to use backticks to quote identifiers and use upper cased keywords.
-```{sql connection = sakila_lite}
-select count() as `n` from `actor`;
-```
-However, it is a good pratice to use backticks to quote identifiers because some databases, for example, postgresql would otherwise convert the upper case identifiers to lower case identifiers
+SQLite supports both double quotes (which is the standard) and backticks to quote identifiers. Backticks are used in another popular database MySQL. Double quotes are used in Postgresql. It is always a good practice to quote the identifers.
 
+
+```{sql connection = sakila_lite, eval = FALSE}
+-- MySQL style
+SELECT COUNT() AS `n` from `actor`;
+```
+
+```{sql connection = sakila_psql, eval = FALSE}
+-- The standard way
+SELECT COUNT() AS "n" from "actor";
+```
 
 ### SELECT
 
 The SELECT statement is pretty much the `select()` function in `dplyr`.
 
 ```{sql connection = sakila_lite}
-SELECT `last_name` FROM `actor`;
+SELECT "last_name" FROM "actor";
 ```
 
 
 ```{sql connection = sakila_lite}
-SELECT LOWER(`last_name`) AS `family_name` FROM `actor`;
+SELECT LOWER("last_name") AS "family_name" FROM "actor";
 ```
 
-FOr comparision,
+For comparision,
 ```{r}
 sakila_lite %>%
   tbl("actor") %>%
@@ -293,11 +316,11 @@ sakila_lite %>%
 
 
 ```{sql connection = sakila_lite}
-SELECT * FROM `actor`;
+SELECT * FROM "actor";
 ```
 
 ```{sql connection = sakila_lite}
-SELECT `rental_id`, `last_update` FROM `rental`;
+SELECT "rental_id", "last_update" FROM "rental";
 ```
 
 
@@ -306,7 +329,7 @@ SELECT `rental_id`, `last_update` FROM `rental`;
 It is equivalent to `arrange()` in `dplyr`
 
 ```{sql connection = sakila_lite}
-SELECT * FROM `actor` ORDER BY `LAST_NAME`;
+SELECT * FROM "actor" ORDER BY "last_name";
 ```
 
 
@@ -315,7 +338,7 @@ SELECT * FROM `actor` ORDER BY `LAST_NAME`;
 DISTINCT operator to remove duplicates from a result set. It is equivalent to `distinct()` function in `dplyr`.
 
 ```{sql connection = sakila_lite}
-SELECT DISTINCT `last_name` FROM `actor`;
+SELECT DISTINCT "last_name" FROM "actor";
 ```
 
 ```{r}
@@ -327,7 +350,7 @@ sakila_lite %>%
 ### LIMIT
 
 ```{sql connection = sakila_lite}
-SELECT * FROM `actor` LIMIT 2;
+SELECT * FROM "actor" LIMIT 2;
 ```
 
 ```{r}
@@ -340,10 +363,10 @@ sakila_lite %>%
 
 It is equivalent to `filter()` in `dplyr`.
 
-Normally, strings are quoted in single quotes.
+In SQL standard, strings are quoted in single quotes.
 
 ```{sql connection = sakila_lite}
-SELECT * FROM `film` WHERE `rating` == 'PG' AND `length` > 90;
+SELECT * FROM "film" WHERE "rating" == 'PG' AND "length" > 90;
 ```
 
 
@@ -353,16 +376,16 @@ sakila_lite %>%
   filter(rating == "PG" && length > 90)
 ```
 
-The IN and LIKE operators
+The IN operator
 
 ```{sql connection = sakila_lite}
--- sqlite LIKE operator is case insensitive in default
--- you could make it case sensitive by using
-PRAGMA case_sensitive_like = false;
+SELECT * FROM "film" WHERE "rating" IN ('PG', 'PG-13');
 ```
 
+The LIKE operator
+
 ```{sql connection = sakila_lite}
-SELECT * FROM `film` WHERE `rating` IN ('PG', 'PG-13') AND `title` LIKE "%car%";
+SELECT * FROM "film" WHERE "rating" IN ('PG', 'PG-13');
 ```
 
 ### SQL interpolation
@@ -373,7 +396,7 @@ x <- 90
 ```
 
 ```{sql connection = sakila_lite}
-SELECT * FROM `film` WHERE `rating` == ?rating AND `length` > ?x;
+SELECT * FROM "film" WHERE "rating" == ?rating AND "length" > ?x;
 ```
 
 
@@ -383,14 +406,14 @@ Similar to `case_when()` in `dplyr`.
 
 ```{sql connection = sakila_lite}
 SELECT 
-  film_id, 
-  title, 
+  "film_id", 
+  "title", 
   CASE 
-    WHEN length < 60 THEN 'short'
-    WHEN length < 90 THEN 'mid'
+    WHEN "length" < 60 THEN 'short'
+    WHEN "length" < 90 THEN 'mid'
     ELSE 'long'
-  END length
-FROM `film`;
+  END "length"
+FROM "film";
 ```
 
 ### JOIN operations
@@ -398,7 +421,7 @@ FROM `film`;
 - Inner Join
 
 ```{sql connection = sakila_lite}
-SELECT fa.`actor_id`, `last_name`, `first_name` FROM `film_actor` fa JOIN `actor` a ON fa.`actor_id` = a.`actor_id`
+SELECT fa."actor_id", "last_name", "first_name" FROM "film_actor" fa JOIN "actor" a ON fa."actor_id" = a."actor_id"
 ```
 
 - Left Join
