@@ -663,6 +663,9 @@ DELETE FROM table2 WHERE id = 1;
 mydb %>% dbReadTable("table2")
 ```
 
+Check the `shiny_with_db` folder for a shiny app that connects to a remote postgresql server.
+
+
 # Reference
 
 - SQL Tutorial https://www.sqltutorial.org/
