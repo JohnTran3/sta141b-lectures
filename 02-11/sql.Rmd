@@ -1,9 +1,9 @@
 ---
 title: "Database and SQL"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 date: "02-11-2020"
 ---
 
@@ -624,6 +624,8 @@ CREATE TABLE table2 (
     PRIMARY KEY (ID)
 );
 ```
+
+There is also `dbWriteTable` which export the whole data frame as a table of the database.
 
 - INSERT – insert one or more rows into a table.
 
