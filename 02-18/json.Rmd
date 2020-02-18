@@ -1,5 +1,6 @@
 ---
 title: "JSON"
+output: pdf_document
 date: "02-18-2020"
 ---
 
@@ -54,13 +55,21 @@ In JSON, values must be one of the following data types:
 - null
 
 
-## Parsing JSON from text
+## Parsing JSON
 
 ```{r}
 txt <- "[12, 3, 7]"
 x <- fromJSON(txt)
 x
 ```
+
+```{r, eval = FALSE}
+# from file
+fromJSON("somefile.json")
+# from the web
+fromJSON("https://www.example.com/hello.json")
+```
+
 
 ## Simplification
 
