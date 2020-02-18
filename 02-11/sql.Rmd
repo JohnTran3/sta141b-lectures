@@ -1,9 +1,9 @@
 ---
 title: "Database and SQL"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 date: "02-11-2020"
 ---
 
@@ -423,7 +423,11 @@ In Postgres, there is a `ILIKE` (case insensitive `LIKE`) operator
 SELECT "title" FROM "film" WHERE "title" ILIKE '%victory%';
 ```
 
-- REGEX (let me figure it out in Postgres)
+- REGEX
+
+Different servers use different operators to match regular expression. For MySQL, it is the REGEXP operator. For Postgresql, it is SIMILAR TO. For SQLite, it simiply doesn't support regex.
+
+Though, Postgresql's implementation of regular expression is a bit different from the standard regex, see for example https://www.postgresql.org/docs/9.0/functions-matching.html
 
 
 ### CASE

@@ -2696,8 +2696,10 @@ SELECT COUNT(*) AS &quot;n&quot; from &quot;actor&quot;;</code></pre>
 <p>In Postgres, there is a <code>ILIKE</code> (case insensitive <code>LIKE</code>) operator</p>
 <pre class="sql"><code>SELECT &quot;title&quot; FROM &quot;film&quot; WHERE &quot;title&quot; ILIKE &#39;%victory%&#39;;</code></pre>
 <ul>
-<li>REGEX (let me figure it out in Postgres)</li>
+<li>REGEX</li>
 </ul>
+<p>Different servers use different operators to match regular expression. For MySQL, it is the REGEXP operator. For Postgresql, it is SIMILAR TO. For SQLite, it simiply doesn’t support regex.</p>
+<p>Though, Postgresql’s implementation of regular expression is a bit different from the standard regex, see for example <a href="https://www.postgresql.org/docs/9.0/functions-matching.html" class="uri">https://www.postgresql.org/docs/9.0/functions-matching.html</a></p>
 </div>
 <div id="case" class="section level3">
 <h3>CASE</h3>
@@ -3718,6 +3720,7 @@ mydb %&gt;% dbReadTable(&quot;table1&quot;)</code></pre>
 </ul>
 <pre class="sql"><code>DELETE FROM table2 WHERE id = 1;</code></pre>
 <pre class="r"><code>mydb %&gt;% dbReadTable(&quot;table2&quot;)</code></pre>
+<p>Check the <code>shiny_with_db</code> folder for a shiny app that connects to a remote postgresql server.</p>
 </div>
 </div>
 <div id="reference" class="section level1">
