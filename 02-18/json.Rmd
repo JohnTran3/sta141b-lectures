@@ -63,6 +63,13 @@ x <- fromJSON(txt)
 x
 ```
 
+```{r}
+txt <- '{"apple": 1, "banana": 2}'
+x <- fromJSON(txt)
+x
+```
+
+
 ```{r, eval = FALSE}
 # from file
 fromJSON("somefile.json")
@@ -121,7 +128,7 @@ The data frame gets converted back into the original JSON structure by `toJSON` 
 
 ```{r}
 mydf$Ranking <- c(3, 1, 2, 4)
-toJSON(mydf, pretty=TRUE)
+toJSON(mydf, pretty = TRUE)
 ```
 
 Hence you can go back and forth between dataframes and JSON, without any manual data restructuring.
@@ -146,20 +153,8 @@ Again, we can use `toJSON` to convert the matrix or array back into the original
 toJSON(mymatrix, pretty = TRUE)
 ```
 
-The simplification works for arrays of arbitrary dimensionality, as long as the dimensions match (R does not support ragged arrays).
-
 ```{r}
-json <- '[
-   [[1, 2], 
-    [3, 4]],
-   [[5, 6], 
-    [7, 8]],
-   [[9, 10],
-    [11, 12]]
-]'
-myarray <- fromJSON(json)
-myarray[1, , ]
-myarray[ , ,1]
+fromJSON(json, simplifyMatrix = FALSE)
 ```
 
 # API
@@ -173,6 +168,8 @@ A single public API that shows location, status and current availability for all
 
 ```{r}
 citibike <- fromJSON("https://gbfs.citibikenyc.com/gbfs/en/station_status.json")
+library(lubridate)
+as_datetime(citibike$last_updated)
 stations <- citibike$data$stations
 colnames(stations)
 ```
@@ -213,3 +210,4 @@ organizations %>% head(10) %>% select(name, city, state)
 
 jsonlite quick start: https://cran.r-project.org/web/packages/jsonlite/vignettes/json-aaquickstart.html
 jsonlite apis: https://cran.r-project.org/web/packages/jsonlite/vignettes/json-apis.html
+

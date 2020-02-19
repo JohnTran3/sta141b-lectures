@@ -370,14 +370,14 @@ summary {
 <div id="getting-started-with-json" class="section level1">
 <h1>Getting started with JSON</h1>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✓ ggplot2 3.2.1     ✓ purrr   0.3.3
-## ✓ tibble  2.1.3     ✓ dplyr   0.8.3
-## ✓ tidyr   1.0.0     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.4.0</code></pre>
-<pre><code>## ── Conflicts ────────── tidyverse_conflicts() ──
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.2.1     ✔ purrr   0.3.3
+## ✔ tibble  2.1.3     ✔ dplyr   0.8.4
+## ✔ tidyr   1.0.2     ✔ stringr 1.4.0
+## ✔ readr   1.3.1     ✔ forcats 0.4.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>library(jsonlite)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;jsonlite&#39;</code></pre>
@@ -428,6 +428,14 @@ summary {
 x &lt;- fromJSON(txt)
 x</code></pre>
 <pre><code>## [1] 12  3  7</code></pre>
+<pre class="r"><code>txt &lt;- &#39;{&quot;apple&quot;: 1, &quot;banana&quot;: 2}&#39;
+x &lt;- fromJSON(txt)
+x</code></pre>
+<pre><code>## $apple
+## [1] 1
+## 
+## $banana
+## [1] 2</code></pre>
 <pre class="r"><code># from file
 fromJSON(&quot;somefile.json&quot;)
 # from the web
@@ -514,7 +522,7 @@ mydf</code></pre>
 ## 4 Bowser  NA      Koopa</code></pre>
 <p>The data frame gets converted back into the original JSON structure by <code>toJSON</code> (whitespace and line breaks are ignorable in JSON).</p>
 <pre class="r"><code>mydf$Ranking &lt;- c(3, 1, 2, 4)
-toJSON(mydf, pretty=TRUE)</code></pre>
+toJSON(mydf, pretty = TRUE)</code></pre>
 <pre><code>## [
 ##   {
 ##     &quot;Name&quot;: &quot;Mario&quot;,
@@ -560,25 +568,15 @@ mymatrix</code></pre>
 ##   [5, 6, 7, 8],
 ##   [9, 10, 11, 12]
 ## ]</code></pre>
-<p>The simplification works for arrays of arbitrary dimensionality, as long as the dimensions match (R does not support ragged arrays).</p>
-<pre class="r"><code>json &lt;- &#39;[
-   [[1, 2], 
-    [3, 4]],
-   [[5, 6], 
-    [7, 8]],
-   [[9, 10],
-    [11, 12]]
-]&#39;
-myarray &lt;- fromJSON(json)
-myarray[1, , ]</code></pre>
-<pre><code>##      [,1] [,2]
-## [1,]    1    2
-## [2,]    3    4</code></pre>
-<pre class="r"><code>myarray[ , ,1]</code></pre>
-<pre><code>##      [,1] [,2]
-## [1,]    1    3
-## [2,]    5    7
-## [3,]    9   11</code></pre>
+<pre class="r"><code>fromJSON(json, simplifyMatrix = FALSE)</code></pre>
+<pre><code>## [[1]]
+## [1] 1 2 3 4
+## 
+## [[2]]
+## [1] 5 6 7 8
+## 
+## [[3]]
+## [1]  9 10 11 12</code></pre>
 </div>
 </div>
 </div>
@@ -589,7 +587,15 @@ myarray[1, , ]</code></pre>
 <h2>CitiBike NYC</h2>
 <p>A single public API that shows location, status and current availability for all stations in the New York City bike sharing imitative. <a href="https://www.citibikenyc.com/system-data" class="uri">https://www.citibikenyc.com/system-data</a></p>
 <pre class="r"><code>citibike &lt;- fromJSON(&quot;https://gbfs.citibikenyc.com/gbfs/en/station_status.json&quot;)
-stations &lt;- citibike$data$stations
+library(lubridate)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;lubridate&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     date</code></pre>
+<pre class="r"><code>as_datetime(citibike$last_updated)</code></pre>
+<pre><code>## [1] &quot;2020-02-19 06:31:25 UTC&quot;</code></pre>
+<pre class="r"><code>stations &lt;- citibike$data$stations
 colnames(stations)</code></pre>
 <pre><code>##  [1] &quot;station_id&quot;                     &quot;num_bikes_available&quot;           
 ##  [3] &quot;num_ebikes_available&quot;           &quot;num_bikes_disabled&quot;            

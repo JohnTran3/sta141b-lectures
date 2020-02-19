@@ -3696,7 +3696,7 @@ mydb %&gt;% dbReadTable(&quot;table1&quot;)</code></pre>
     last_name varchar(255) NOT NULL,
     first_name varchar(255),
     age int,
-    PRIMARY KEY (ID)
+    PRIMARY KEY (id)
 );</code></pre>
 <p>There is also <code>dbWriteTable</code> which export the whole data frame as a table of the database.</p>
 <ul>
@@ -3705,20 +3705,31 @@ mydb %&gt;% dbReadTable(&quot;table1&quot;)</code></pre>
 <pre class="r"><code>mydb %&gt;% dbAppendTable(
   &quot;table1&quot;,
   tibble(fruit = &quot;apple&quot;, count = 2))
+
+# alternatively
+sql &lt;- mydb %&gt;% sqlAppendTable(
+  &quot;table1&quot;,
+  tibble(fruit = &quot;apple&quot;, count = 2), row.names = FALSE)
+mydb %&gt;% dbExecute(sql)
+
+
 mydb %&gt;% dbReadTable(&quot;table1&quot;)</code></pre>
-<pre class="sql"><code>INSERT INTO table2 (id, last_name, first_name, age)
+<pre class="sql"><code>INSERT INTO &#39;table2&#39; (id, last_name, first_name, age)
   VALUES (1, &quot;Lai&quot;, &quot;Randy&quot;, 16);  </code></pre>
-<pre class="sql"><code>INSERT INTO table2 (id, last_name, first_name, age)
-  VALUES (2, &quot;Lai&quot;, &quot;Natalie&quot;);  </code></pre>
+<pre class="sql"><code>INSERT INTO &#39;table2&#39; (id, last_name, first_name)
+  VALUES (2, &quot;Lai&quot;, &quot;Natalie&quot;);</code></pre>
 <pre class="r"><code>mydb %&gt;% dbReadTable(&quot;table2&quot;)</code></pre>
 <ul>
 <li>UPDATE – update existing data in a table.</li>
 </ul>
+<pre class="r"><code>mydb %&gt;% dbExecute(&quot;UPDATE table2 SET age = 33 WHERE id = 1;&quot;)</code></pre>
 <pre class="sql"><code>UPDATE table2 SET age = 33 WHERE id = 1;</code></pre>
 <pre class="r"><code>mydb %&gt;% dbReadTable(&quot;table2&quot;)</code></pre>
 <ul>
 <li>DELETE – delete data from a table permanently.</li>
 </ul>
+<pre class="r"><code>mydb %&gt;% dbExecute(&quot;DELETE FROM table2 WHERE id = 1;&quot;)</code></pre>
+<pre><code>## [1] 0</code></pre>
 <pre class="sql"><code>DELETE FROM table2 WHERE id = 1;</code></pre>
 <pre class="r"><code>mydb %&gt;% dbReadTable(&quot;table2&quot;)</code></pre>
 <p>Check the <code>shiny_with_db</code> folder for a shiny app that connects to a remote postgresql server.</p>
