@@ -18,12 +18,12 @@
 | 01-07 | [introduction](01-07/01-07-introduction.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-07/01-07-introduction.html) | [pdf](01-07/01-07-introduction.pdf) |
 | 01-09, 01-14 | [tidy data](01-09/01-09-tidy-data.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-09/01-09-tidy-data.html) | [pdf](01-09/01-09-tidy-data.pdf) |
 | 01-16 | [special data](01-16/01-16-special-data.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-16/01-16-special-data.html) | [pdf](01-16/01-16-special-data.pdf) |
-| 01-21 | [visualization](01-21/01-21-visualization.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-21/01-21-visualization.html) | |
-|  01-23| [maps](01-23/maps.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/maps.html) | |
+| 01-21 | [visualization](01-21/01-21-visualization.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-21/01-21-visualization.html) | [pdf](01-21/01-21-visualization.pdf)|
+|  01-23| [maps](01-23/maps.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/maps.html) | [pdf](01-23/maps.pdf) |
 |       | [data table](01-23/datatable.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/datatable.html) | |
 |       | [diagram](01-23/diagram.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-23/diagram.html) | |
 | 01-28, 01-30 | [regex](01-28/regex.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/01-28/regex.html) | [pdf](01-28/regex.pdf)|
-| 02-04, 02-06 | [shiny](02-04/shiny.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/02-04/shiny.html) | |
+| 02-04, 02-06 | [shiny](02-04/shiny.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/02-04/shiny.html) | [pdf](02-04/shiny.pdf) |
 | 02-11, 02-13 | [sql](02-11/sql.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/02-11/sql.html) | [pdf](02-11/sql.pdf)|
 | 02-18 | [json](02-18/json.Rmd) | [html](https://ucdavis-sta-141b-winter-2020.github.io/sta141b-lectures/02-18/json.html) | [pdf](02-18/json.pdf)|
 
