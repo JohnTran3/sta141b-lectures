@@ -203,8 +203,9 @@ Some APIs such as twitter, facebook, google, require using OAUTH to authenticate
 
 In our case, the "application" would be the R code.
 
-I use google as an demo. First, you need to setup an app at https://console.developers.google.com/
-For gmail services, you also need to enable the GMail api for your app.
+I use google as an demo. First, you need to setup an app at https://console.developers.google.com/.
+Additionally, you also need to enable the gmail api if you want the manage gmail.
+
 
 ```{r, cache = TRUE}
 myapp <- oauth_app(
@@ -237,5 +238,5 @@ email <- google_request(
 email$payload$headers %>% filter(name == "Subject") %>% select(value)
 ```
 
-Remark: if you just want to do google search, use this API https://serpapi.com/
-
+Remark 1: if you just want to manage gmail in R, use https://gmailr.r-lib.org/
+Remark 2: if you just want to do google search, use https://serpapi.com/
