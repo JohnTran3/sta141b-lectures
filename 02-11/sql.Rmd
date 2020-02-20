@@ -557,6 +557,49 @@ SELECT "rating", "rental_duration", AVG("length") AS "avg_length"
   FROM "film" GROUP BY "rating", "rental_duration";
 ```
 
+
+### Subquery and WITH
+
+We could use subquery to perform more complicated tasks.
+
+```{sql connection = sakila_psql}
+SELECT "rating", "avg_length"
+FROM
+  (
+  SELECT "rating", AVG("length") AS "avg_length" 
+    FROM "film" GROUP BY "rating"
+  ) "Temp"
+WHERE avg_length > 115;
+```
+
+The `WITH` clause allows us to refer to th temp table in WHERE statement.
+```{sql connection = sakila_lite}
+WITH "Temp" AS(
+    SELECT "rating", AVG("length") AS "avg_length" 
+      FROM "film" GROUP BY "rating"
+  )
+  SELECT "rating", "avg_length" 
+    FROM "Temp"
+    WHERE "avg_length" = (SELECT MAX("avg_length") FROM "Temp")
+```
+
+However, not all database systems support `WITH` (most does). Then those situation, you need to repeart the query.
+
+```{sql connection = sakila_psql}
+SELECT "rating"
+FROM (
+    SELECT "rating", AVG("length") AS "avg_length" 
+      FROM "film" GROUP BY "rating"
+  ) "Temp"
+WHERE "avg_length" = (
+  SELECT MAX("avg_length") FROM (
+    SELECT "rating", AVG("length") AS "avg_length" 
+    FROM "film" GROUP BY "rating"
+  ) "Temp2"
+)
+```
+
+
 ### SET Operators
 
 - UNION and UNION ALL – combine result set of two or more queries into a single result set using the UNION and UNION ALL operators.
@@ -587,6 +630,8 @@ SELECT * FROM "film" where "film_id" <= 5
 EXCEPT
 SELECT * FROM "film" where "film_id" >= 4;
 ```
+
+
 
 ### Table Manipulation
 
