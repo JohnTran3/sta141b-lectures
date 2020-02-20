@@ -1,9 +1,9 @@
 ---
 title: "JSON"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 date: "02-18-2020"
 ---
 
@@ -355,6 +355,7 @@ Some APIs such as twitter, facebook, google, require using OAUTH to authenticate
 In our case, the "application" would be the R code.
 
 I use google as an demo. First, you need to setup an app at https://console.developers.google.com/
+For gmail services, you also need to enable the GMail api for your app.
 
 ```{r, eval = FALSE}
 myapp <- oauth_app(
@@ -366,13 +367,28 @@ myapp <- oauth_app(
 google_token <- oauth2.0_token(
   oauth_endpoints("google"), 
   myapp,
-  scope = "https://www.googleapis.com/auth/userinfo.profile")
+  scope = c("profile", "email", 
+            "https://www.googleapis.com/auth/gmail.readonly"))
 
-r <- GET("https://www.googleapis.com/oauth2/v1/userinfo", config(token = google_token))
-stop_for_status(r)
-json <- content(r, as = "text")
-fromJSON(json)
+
+google_request <- function(endpoint, query = NULL) {
+  r <- GET(endpoint, config(token = google_token), query = query)
+  stop_for_status(r)
+  json <- content(r, as = "text")
+  fromJSON(json)
+}
+
+# search mailbox for GeoDataSource
+google_request("https://www.googleapis.com/gmail/v1/users/me/messages",
+                         query = list(q = "GeoDataSource"))
+
+# Get the title of a specific mail
+email <- google_request(
+  str_glue("https://www.googleapis.com/gmail/v1/users/me/messages/{thread}", thread = "17060c703052bd61"))
+email$payload$headers %>% filter(name == "Subject") %>% select(value)
 ```
+
+Remark: if you just want to do google search, use this API https://serpapi.com/
 
 
 
