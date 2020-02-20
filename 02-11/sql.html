@@ -3286,6 +3286,90 @@ FROM &quot;film&quot;;</code></pre>
 </table>
 </div>
 </div>
+<div id="subquery-and-with" class="section level3">
+<h3>Subquery and WITH</h3>
+<p>We could use subquery to perform more complicated tasks.</p>
+<pre class="sql"><code>SELECT &quot;rating&quot;, &quot;avg_length&quot;
+FROM
+  (
+  SELECT &quot;rating&quot;, AVG(&quot;length&quot;) AS &quot;avg_length&quot; 
+    FROM &quot;film&quot; GROUP BY &quot;rating&quot;
+  ) &quot;Temp&quot;
+WHERE avg_length &gt; 115;</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>2 records</caption>
+<thead>
+<tr class="header">
+<th align="left">rating</th>
+<th align="right">avg_length</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">PG-13</td>
+<td align="right">120.4439</td>
+</tr>
+<tr class="even">
+<td align="left">R</td>
+<td align="right">118.6615</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <code>WITH</code> clause allows us to refer to th temp table in WHERE statement.</p>
+<pre class="sql"><code>WITH &quot;Temp&quot; AS(
+    SELECT &quot;rating&quot;, AVG(&quot;length&quot;) AS &quot;avg_length&quot; 
+      FROM &quot;film&quot; GROUP BY &quot;rating&quot;
+  )
+  SELECT &quot;rating&quot;, &quot;avg_length&quot; 
+    FROM &quot;Temp&quot;
+    WHERE &quot;avg_length&quot; = (SELECT MAX(&quot;avg_length&quot;) FROM &quot;Temp&quot;)</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">rating</th>
+<th align="right">avg_length</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">PG-13</td>
+<td align="right">120.4439</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>However, not all database systems support <code>WITH</code> (most does). Then those situation, you need to repeart the query.</p>
+<pre class="sql"><code>SELECT &quot;rating&quot;
+FROM (
+    SELECT &quot;rating&quot;, AVG(&quot;length&quot;) AS &quot;avg_length&quot; 
+      FROM &quot;film&quot; GROUP BY &quot;rating&quot;
+  ) &quot;Temp&quot;
+WHERE &quot;avg_length&quot; = (
+  SELECT MAX(&quot;avg_length&quot;) FROM (
+    SELECT &quot;rating&quot;, AVG(&quot;length&quot;) AS &quot;avg_length&quot; 
+    FROM &quot;film&quot; GROUP BY &quot;rating&quot;
+  ) &quot;Temp2&quot;
+)</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">rating</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">PG-13</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="set-operators" class="section level3">
 <h3>SET Operators</h3>
 <ul>
@@ -3729,7 +3813,6 @@ mydb %&gt;% dbReadTable(&quot;table1&quot;)</code></pre>
 <li>DELETE – delete data from a table permanently.</li>
 </ul>
 <pre class="r"><code>mydb %&gt;% dbExecute(&quot;DELETE FROM table2 WHERE id = 1;&quot;)</code></pre>
-<pre><code>## [1] 0</code></pre>
 <pre class="sql"><code>DELETE FROM table2 WHERE id = 1;</code></pre>
 <pre class="r"><code>mydb %&gt;% dbReadTable(&quot;table2&quot;)</code></pre>
 <p>Check the <code>shiny_with_db</code> folder for a shiny app that connects to a remote postgresql server.</p>

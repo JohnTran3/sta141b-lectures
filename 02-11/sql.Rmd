@@ -1,9 +1,9 @@
 ---
 title: "Database and SQL"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 date: "02-11-2020"
 ---
 
@@ -562,7 +562,7 @@ SELECT "rating", "rental_duration", AVG("length") AS "avg_length"
 
 We could use subquery to perform more complicated tasks.
 
-```{sql connection = sakila_psql}
+```{sql connection = sakila_lite}
 SELECT "rating", "avg_length"
 FROM
   (
@@ -585,7 +585,7 @@ WITH "Temp" AS(
 
 However, not all database systems support `WITH` (most does). Then those situation, you need to repeart the query.
 
-```{sql connection = sakila_psql}
+```{sql connection = sakila_lite}
 SELECT "rating"
 FROM (
     SELECT "rating", AVG("length") AS "avg_length" 
@@ -719,7 +719,7 @@ mydb %>% dbReadTable("table2")
 
 - DELETE – delete data from a table permanently.
 
-```{r}
+```{r, eval = FALSE}
 mydb %>% dbExecute("DELETE FROM table2 WHERE id = 1;")
 ```
 
