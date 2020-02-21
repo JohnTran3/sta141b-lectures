@@ -63,9 +63,11 @@ deck_id <- deck$deck_id
 
 # draw two cards
 cards <- fromJSON(
-    str_glue("https://deckofcardsapi.com/api/deck/{deck_id}/draw/?count={count}", 
-              deck_id = deck$deck_id, count = 2), 
-    flatten = TRUE)
+  str_glue("https://deckofcardsapi.com/api/deck/{deck_id}/draw/?count={count}",
+    deck_id = deck$deck_id, count = 2
+  ),
+  flatten = TRUE
+)
 
 if (!identical(knitr:::pandoc_to(), "latex")) {
   # don't display the cards in pdf
@@ -96,11 +98,13 @@ In this secton, we are going to show you how we use an API which requires an API
 
 ```{r, eval = FALSE}
 r <- GET(
-  "https://api.geodatasource.com/cities", 
-  query=list(
+  "https://api.geodatasource.com/cities",
+  query = list(
     key = "HJ5C39B4S6V1JDBWFQX2WLWR3BP7TPWS",
     lat = 38.5449,
-    lng = -121.741))
+    lng = -121.741
+  )
+)
 
 stop_for_status(r)
 
@@ -120,11 +124,13 @@ There are multiple ways to protect your API key.
 ```{r}
 # you might need to change your working directory and restart R session to make it work
 r <- GET(
-  "https://api.geodatasource.com/cities", 
-  query=list(
+  "https://api.geodatasource.com/cities",
+  query = list(
     key = Sys.getenv("GEODATA_KEY"),
     lat = 38.5449,
-    lng = -121.741))
+    lng = -121.741
+  )
+)
 stop_for_status(r)
 json <- content(r, as = "text")
 fromJSON(json)
@@ -140,11 +146,13 @@ keyring::key_set("GEODATA_KEY")
 
 ```{r, eval = FALSE}
 r <- GET(
-  "https://api.geodatasource.com/cities", 
-  query=list(
+  "https://api.geodatasource.com/cities",
+  query = list(
     key = keyring::key_get("GEODATA_KEY"),
     lat = 38.5449,
-    lng = -121.741))
+    lng = -121.741
+  )
+)
 stop_for_status(r)
 json <- content(r, as = "text")
 fromJSON(json)
@@ -156,11 +164,13 @@ fromJSON(json)
 ```{r}
 search_guardian <- function(text, page = 1) {
   r <- GET(
-    "https://content.guardianapis.com/search", 
-    query=list(
+    "https://content.guardianapis.com/search",
+    query = list(
       `api-key` = Sys.getenv("GUARDIAN_KEY"),
       q = text,
-      page = page))
+      page = page
+    )
+  )
   stop_for_status(r)
   json <- content(r, as = "text", encoding = "UTF-8")
   fromJSON(json)$response
@@ -226,13 +236,15 @@ myapp <- oauth_app("twitter",
 )
 
 twitter_token <- oauth1.0_token(
-  oauth_endpoints("twitter"), 
-  myapp)
+  oauth_endpoints("twitter"),
+  myapp
+)
 
 # read my timeline
 r <- GET(
-  "https://api.twitter.com/1.1/statuses/home_timeline.json", 
-  config(token = twitter_token))
+  "https://api.twitter.com/1.1/statuses/home_timeline.json",
+  config(token = twitter_token)
+)
 
 stop_for_status(r)
 json <- content(r, as = "text")
@@ -244,7 +256,8 @@ fromJSON(json)
 r <- POST(
   "https://api.twitter.com/1.1/statuses/update.json",
   config(token = twitter_token),
-  query = list(status = "I posted a tweet from R using httr"))
+  query = list(status = "I posted a tweet from R using httr")
+)
 stop_for_status(r)
 ```
 
@@ -260,30 +273,34 @@ myapp <- oauth_app("twitter",
 twitter_token <- oauth2.0_token(
   oauth_endpoint(
     authorize = NULL,
-    access = "https://api.twitter.com/oauth2/token"), 
+    access = "https://api.twitter.com/oauth2/token"
+  ),
   myapp,
-  client_credentials = TRUE)
+  client_credentials = TRUE
+)
 ```
 
 
 ```{r}
 get_woeid <- function(city, country) {
   r <- GET(
-    "https://api.twitter.com/1.1/trends/available.json", 
-    config(token = twitter_token))
+    "https://api.twitter.com/1.1/trends/available.json",
+    config(token = twitter_token)
+  )
 
   stop_for_status(r)
   json <- content(r, as = "text")
-  fromJSON(json) %>% 
-    filter(name == {{city}}, country == {{country}}) %>% 
+  fromJSON(json) %>%
+    filter(name == {{ city }}, country == {{ country }}) %>%
     pull(woeid)
 }
 
 get_trends <- function(woeid) {
   r <- GET(
-    "https://api.twitter.com/1.1/trends/place.json", 
+    "https://api.twitter.com/1.1/trends/place.json",
     config(token = twitter_token),
-    query = list(id = woeid))
+    query = list(id = woeid)
+  )
 
   stop_for_status(r)
   json <- content(r, as = "text")
@@ -311,10 +328,13 @@ myapp <- oauth_app(
 )
 
 google_token <- oauth2.0_token(
-  oauth_endpoints("google"), 
+  oauth_endpoints("google"),
   myapp,
-  scope = c("profile", "email", 
-            "https://www.googleapis.com/auth/gmail.readonly"))
+  scope = c(
+    "profile", "email",
+    "https://www.googleapis.com/auth/gmail.readonly"
+  )
+)
 
 
 google_request <- function(endpoint, query = NULL) {
@@ -326,12 +346,16 @@ google_request <- function(endpoint, query = NULL) {
 
 # search mailbox for GeoDataSource
 google_request("https://www.googleapis.com/gmail/v1/users/me/messages",
-                         query = list(q = "GeoDataSource"))
+  query = list(q = "GeoDataSource")
+)
 
 # Get the title of a specific mail
 email <- google_request(
-  str_glue("https://www.googleapis.com/gmail/v1/users/me/messages/{thread}", thread = "17060c703052bd61"))
-email$payload$headers %>% filter(name == "Subject") %>% select(value)
+  str_glue("https://www.googleapis.com/gmail/v1/users/me/messages/{thread}", thread = "17060c703052bd61")
+)
+email$payload$headers %>%
+  filter(name == "Subject") %>%
+  select(value)
 ```
 
 Remark 1: if you just want to manage gmail in R, see gmailr https://gmailr.r-lib.org/
