@@ -1,6 +1,7 @@
 ---
 title: "API"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 date: "02-20-2020"
@@ -100,7 +101,7 @@ In this secton, we are going to show you how we use an API which requires an API
 r <- GET(
   "https://api.geodatasource.com/cities",
   query = list(
-    key = "HJ5C39B4S6V1JDBWFQX2WLWR3BP7TPWS",
+    key = "YOUR PRIVATE API KEY",
     lat = 38.5449,
     lng = -121.741
   )
@@ -223,7 +224,7 @@ There are two authentication methods for Twitter.
 - Oauth 2.0 (Client credientails grant type)
   
   Twitter's OAuth 2.0 only allows an app to access information publicly available on Twitter. 
-  (These are Twitter's specific difference between Oauth 1.0 and 2.0.)
+  (These are Twitter's specific differences between Oauth 1.0 and 2.0.)
   
 
 
