@@ -1,6 +1,8 @@
 ---
 title: "API"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 date: "02-20-2020"
 ---
 
@@ -25,6 +27,8 @@ citibike <- fromJSON("https://gbfs.citibikenyc.com/gbfs/en/station_status.json")
 library(lubridate)
 as_datetime(citibike$last_updated)
 stations <- citibike$data$stations
+stations %>%
+  filter(num_bikes_available > 0)
 colnames(stations)
 ```
 
@@ -76,12 +80,11 @@ The paramenters after `?` are called GET parameters. A more formal way to handle
 library(httr)
 ```
 
-
 ```{r}
 endpoint <- str_glue("https://deckofcardsapi.com/api/deck/{deck_id}/draw/", deck_id = deck$deck_id)
 r <- GET(endpoint, query = list(count = 3))
 json <- content(r, as = "text")
-cards <- fromJSON(json)
+cards <- fromJSON(json, flatten = TRUE)
 cards
 ```
 
@@ -95,11 +98,12 @@ In this secton, we are going to show you how we use an API which requires an API
 r <- GET(
   "https://api.geodatasource.com/cities", 
   query=list(
-    key = "THE API KEY COPIED FROM THE WEBSITE",
+    key = "HJ5C39B4S6V1JDBWFQX2WLWR3BP7TPWS",
     lat = 38.5449,
     lng = -121.741))
 
 stop_for_status(r)
+
 json <- content(r, as = "text")
 fromJSON(json)
 ```
@@ -133,6 +137,7 @@ fromJSON(json)
 # only need to do it once, you will be prompted for the API key
 keyring::key_set("GEODATA_KEY")
 ```
+
 ```{r, eval = FALSE}
 r <- GET(
   "https://api.geodatasource.com/cities", 
@@ -176,9 +181,9 @@ search_guardian("coronavirus", 2)$results %>% select(webTitle, webPublicationDat
 ```
 
 
-# Bearer token
+# Yelp
 
-Some APIs such as yelp uses Bearer token instead of query string.
+Some APIs such as yelp provides Bearer token instead of query string.
 
 First, you will need to register an app on yelp: https://www.yelp.com/developers
 
@@ -195,15 +200,106 @@ json <- content(r, as = "text")
 fromJSON(json)$businesses %>% select(name)
 ```
 
-# OAUTH
+# Twitter
 
-Some APIs such as twitter, facebook, google, require using OAUTH to authenticate.
+First, create an app at https://developer.twitter.com/. You will need to register a twitter developer account first.
 
-> OAuth is an open standard for access delegation, commonly used as a way for Internet users to grant websites or applications access to their information on other websites but without giving them the passwords
+There are two authentication methods for Twitter.
 
-In our case, the "application" would be the R code.
+- Oauth 1.0
+  
+  Twitter's Oauth 1.0 allows an app to access private account information or perform a Twitter action on behalf of a Twitter account. 
 
-I use google as an demo. First, you need to setup an app at https://console.developers.google.com/.
+- Oauth 2.0 (Client credientails grant type)
+  
+  Twitter's OAuth 2.0 only allows an app to access information publicly available on Twitter. 
+  (These are Twitter's specific difference between Oauth 1.0 and 2.0.)
+  
+
+
+*Oauth 1.0*
+
+```{r, eval = FALSE}
+myapp <- oauth_app("twitter",
+  key = "1vqbnsftUcNLucoVxQiWYnD2d",
+  secret = Sys.getenv("TWITTER_SECRET")
+)
+
+twitter_token <- oauth1.0_token(
+  oauth_endpoints("twitter"), 
+  myapp)
+
+# read my timeline
+r <- GET(
+  "https://api.twitter.com/1.1/statuses/home_timeline.json", 
+  config(token = twitter_token))
+
+stop_for_status(r)
+json <- content(r, as = "text")
+fromJSON(json)
+```
+
+```{r, eval = FALSE}
+# post a twitter
+r <- POST(
+  "https://api.twitter.com/1.1/statuses/update.json",
+  config(token = twitter_token),
+  query = list(status = "I posted a tweet from R using httr"))
+stop_for_status(r)
+```
+
+
+*Oauth 2.0* (Client credientails grant type)
+
+```{r}
+myapp <- oauth_app("twitter",
+  key = "1vqbnsftUcNLucoVxQiWYnD2d",
+  secret = Sys.getenv("TWITTER_SECRET")
+)
+
+twitter_token <- oauth2.0_token(
+  oauth_endpoint(
+    authorize = NULL,
+    access = "https://api.twitter.com/oauth2/token"), 
+  myapp,
+  client_credentials = TRUE)
+```
+
+
+```{r}
+get_woeid <- function(city, country) {
+  r <- GET(
+    "https://api.twitter.com/1.1/trends/available.json", 
+    config(token = twitter_token))
+
+  stop_for_status(r)
+  json <- content(r, as = "text")
+  fromJSON(json) %>% 
+    filter(name == {{city}}, country == {{country}}) %>% 
+    pull(woeid)
+}
+
+get_trends <- function(woeid) {
+  r <- GET(
+    "https://api.twitter.com/1.1/trends/place.json", 
+    config(token = twitter_token),
+    query = list(id = woeid))
+
+  stop_for_status(r)
+  json <- content(r, as = "text")
+  fromJSON(json)$trends[[1]]
+}
+
+woeid <- get_woeid("Sacramento", "United States")
+get_trends(woeid) %>% select(name)
+```
+
+PS: There is `rtweet` package, no one, in practice, will directly work with twitter API.
+
+
+## Google
+
+First, you need to setup an app at https://console.developers.google.com/.
 Additionally, you also need to enable the gmail api if you want the manage gmail.
 
 
@@ -238,5 +334,12 @@ email <- google_request(
 email$payload$headers %>% filter(name == "Subject") %>% select(value)
 ```
 
-Remark 1: if you just want to manage gmail in R, use https://gmailr.r-lib.org/
-Remark 2: if you just want to do google search, use https://serpapi.com/
+Remark 1: if you just want to manage gmail in R, see gmailr https://gmailr.r-lib.org/
+Remark 2: if you just want to do google search, see https://serpapi.com/
+Remark 3: if you want to use google API, see gargle https://gargle.r-lib.org/
+Remark 4: if you want to use google authentication in your shiny app, see googleAuthR https://code.markedmondson.me/googleAuthR/
+
+# Exisiting packages
+
+You might not have to interact with the APIs directly.
+

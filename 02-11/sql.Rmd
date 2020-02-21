@@ -380,6 +380,7 @@ sakila_lite %>% tbl("film") %>% distinct(rating)
 ```
 
 
+
 ```{sql connection = sakila_lite}
 SELECT * FROM "film" WHERE "rating" = 'PG' AND "length" = 90;
 ```
@@ -569,7 +570,7 @@ FROM
   SELECT "rating", AVG("length") AS "avg_length" 
     FROM "film" GROUP BY "rating"
   ) "Temp"
-WHERE avg_length > 115;
+WHERE "avg_length" > 115;
 ```
 
 The `WITH` clause allows us to refer to th temp table in WHERE statement.
