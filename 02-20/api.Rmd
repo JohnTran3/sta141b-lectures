@@ -116,7 +116,7 @@ fromJSON(json)
 
 There are multiple ways to protect your API key.
 
-- Create a file called `.Renviron` and put your API key into it.
+- Create a file called `.Renviron` and put your API key into it. We might want to use `usethis::edit_r_environ("project")` to create and edit the file directly.
 
   ```
   GEODATA_KEY="YOUR API KEY"
@@ -211,34 +211,95 @@ json <- content(r, as = "text")
 fromJSON(json)$businesses %>% select(name)
 ```
 
+
+# Noun Project https://thenounproject.com/
+
+The Noun Project uses one-legged OAuth 1.0 protocol to authenticate users.
+In OAuth protocal, there are two important pieces of strings
+
+- Client key
+- Client key secret
+
+```{r, out.width = "5%"}
+nouns_app <- oauth_app(
+  "nounproject",
+  key = "ed652bdcd50a4496bbc2253a603b9e9b",
+  secret = Sys.getenv("NOUN_SECRET")
+)
+
+get_nouns_api <- function(endpoint) {
+  signature <- oauth_signature(endpoint, app = nouns_app)
+  GET(endpoint, oauth_header(signature))
+}
+
+r <- get_nouns_api(
+  str_glue("https://api.thenounproject.com/icons/{term}", term = "statistics"))
+
+stop_for_status(r)
+json <- content(r, as = "text", encoding = "UTF-8")
+
+icons <- fromJSON(json)$icons %>% pull(preview_url)
+if (!identical(knitr:::pandoc_to(), "latex")) {
+  # don't display the cards in pdf
+  knitr::include_graphics(icons[1:10])
+}
+```
+
+
 # Twitter
 
 First, create an app at https://developer.twitter.com/. You will need to register a twitter developer account first.
 
 There are two authentication methods for Twitter.
 
-- Oauth 1.0
+- OAuth 1.0
   
-  Twitter's Oauth 1.0 allows an app to access private account information or perform a Twitter action on behalf of a Twitter account. 
+  Twitter's Oauth 1.0 allows an app to access private account information or perform a Twitter action on behalf of a Twitter account.
 
-- Oauth 2.0 (Client credientails grant type)
+- OAuth 2.0
   
   Twitter's OAuth 2.0 only allows an app to access information publicly available on Twitter. 
-  (These are Twitter's specific differences between Oauth 1.0 and 2.0.)
-  
+
+PS: These are Twitter's specific differences between Oauth 1.0 and 2.0. In general, both OAuth 1.0 and 2.0 can perform either two-legged and three-legged authentication.
 
 
-*Oauth 1.0*
+*Oauth 1.0* (one-legged, though some people called it two-legged)
+
+```{r}
+twitter_app <- oauth_app("twitter",
+  key = "1vqbnsftUcNLucoVxQiWYnD2d",
+  secret = Sys.getenv("TWITTER_SECRET")
+)
+
+get_twitter_api <- function(endpoint, query = NULL) {
+  signature <- oauth_signature(
+    endpoint, 
+    app = twitter_app,
+    token = "131203353-732JhLQdj519ILTQrraFXpU6bR7cMvb8LZzLxNSC",
+    token_secret = Sys.getenv("TWITTER_TOKEN_SECRET")
+  )
+  GET(endpoint, oauth_header(signature), query = query)
+}
+
+# read my timeline
+r <- get_twitter_api("https://api.twitter.com/1.1/statuses/home_timeline.json")
+stop_for_status(r)
+json <- content(r, as = "text")
+fromJSON(json)
+```
+
+
+*Oauth 1.0* (three-legged)
 
 ```{r, eval = FALSE}
-myapp <- oauth_app("twitter",
+twitter_app <- oauth_app("twitter",
   key = "1vqbnsftUcNLucoVxQiWYnD2d",
   secret = Sys.getenv("TWITTER_SECRET")
 )
 
 twitter_token <- oauth1.0_token(
   oauth_endpoints("twitter"),
-  myapp
+  twitter_app
 )
 
 # read my timeline
@@ -252,6 +313,7 @@ json <- content(r, as = "text")
 fromJSON(json)
 ```
 
+
 ```{r, eval = FALSE}
 # post a twitter
 r <- POST(
@@ -263,10 +325,10 @@ stop_for_status(r)
 ```
 
 
-*Oauth 2.0* (Client credientails grant type)
+*Oauth 2.0* (client credentials, aka, two-legged)
 
 ```{r}
-myapp <- oauth_app("twitter",
+twitter_app <- oauth_app("twitter",
   key = "1vqbnsftUcNLucoVxQiWYnD2d",
   secret = Sys.getenv("TWITTER_SECRET")
 )
@@ -276,13 +338,14 @@ twitter_token <- oauth2.0_token(
     authorize = NULL,
     access = "https://api.twitter.com/oauth2/token"
   ),
-  myapp,
+  twitter_app,
   client_credentials = TRUE
 )
 ```
 
 
 ```{r}
+# Where On Earth IDentifier
 get_woeid <- function(city, country) {
   r <- GET(
     "https://api.twitter.com/1.1/trends/available.json",
@@ -322,7 +385,7 @@ Additionally, you also need to enable the gmail api if you want the manage gmail
 
 
 ```{r, cache = TRUE}
-myapp <- oauth_app(
+gooogle_app <- oauth_app(
   "google",
   key = "929233483196-o0ge3pc7q3ec4gbe51ph21rg5tuucbbh.apps.googleusercontent.com",
   secret = Sys.getenv("GOOGLE_SECRET")
@@ -330,7 +393,7 @@ myapp <- oauth_app(
 
 google_token <- oauth2.0_token(
   oauth_endpoints("google"),
-  myapp,
+  gooogle_app,
   scope = c(
     "profile", "email",
     "https://www.googleapis.com/auth/gmail.readonly"
@@ -359,10 +422,10 @@ email$payload$headers %>%
   select(value)
 ```
 
-Remark 1: if you just want to manage gmail in R, see gmailr https://gmailr.r-lib.org/
-Remark 2: if you just want to do google search, see https://serpapi.com/
-Remark 3: if you want to use google API, see gargle https://gargle.r-lib.org/
-Remark 4: if you want to use google authentication in your shiny app, see googleAuthR https://code.markedmondson.me/googleAuthR/
+- Remark 1: if you just want to manage gmail in R, see gmailr https://gmailr.r-lib.org/
+- Remark 2: if you just want to do google search, see https://serpapi.com/
+- Remark 3: if you want to use google API, see gargle https://gargle.r-lib.org/
+- Remark 4: if you want to use google authentication in your shiny app, see googleAuthR https://code.markedmondson.me/googleAuthR/
 
 # Exisiting packages
 
