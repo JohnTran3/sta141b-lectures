@@ -1,0 +1,65 @@
+## Twitter
+
+Twitter's Oauth 1.0 allows an app to access private account information or perform a Twitter action on behalf of a Twitter account.
+
+
+*Oauth 1.0* (one-legged, though some people called it two-legged)
+
+```{r}
+twitter_app <- oauth_app("twitter",
+  key = "1vqbnsftUcNLucoVxQiWYnD2d",
+  secret = Sys.getenv("TWITTER_SECRET")
+)
+
+get_twitter_api <- function(endpoint, query = NULL) {
+  signature <- oauth_signature(
+    endpoint, 
+    app = twitter_app,
+    token = "131203353-732JhLQdj519ILTQrraFXpU6bR7cMvb8LZzLxNSC",
+    token_secret = Sys.getenv("TWITTER_TOKEN_SECRET")
+  )
+  GET(endpoint, oauth_header(signature), query = query)
+}
+
+# read my timeline
+r <- get_twitter_api("https://api.twitter.com/1.1/statuses/home_timeline.json")
+stop_for_status(r)
+json <- content(r, as = "text")
+fromJSON(json)
+```
+
+
+*Oauth 1.0* (three-legged)
+
+```{r, eval = FALSE}
+twitter_app <- oauth_app("twitter",
+  key = "1vqbnsftUcNLucoVxQiWYnD2d",
+  secret = Sys.getenv("TWITTER_SECRET")
+)
+
+twitter_token <- oauth1.0_token(
+  oauth_endpoints("twitter"),
+  twitter_app
+)
+
+# read my timeline
+r <- GET(
+  "https://api.twitter.com/1.1/statuses/home_timeline.json",
+  config(token = twitter_token)
+)
+
+stop_for_status(r)
+json <- content(r, as = "text")
+fromJSON(json)
+```
+
+
+```{r, eval = FALSE}
+# post a twitter
+r <- POST(
+  "https://api.twitter.com/1.1/statuses/update.json",
+  config(token = twitter_token),
+  query = list(status = "I posted a tweet from R using httr")
+)
+stop_for_status(r)
+```
