@@ -192,6 +192,30 @@ search_guardian("coronavirus", 2)$results %>% select(webTitle, webPublicationDat
 ```
 
 
+# Google map
+
+You will need to register a free (one-year) google clould platofmr account first.
+THen following the instruction here to generate an api key.
+https://developers.google.com/places/web-service/get-api-key
+
+
+```{r}
+r <- GET(
+  "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+  query = list(
+    key = Sys.getenv("GOOGLE_API_KEY"),
+    location = "38.5449,-121.741",
+    radius = 500,
+    types = "food",
+    name = "in-n-out"
+  )
+)
+stop_for_status(r)
+json <- content(r, as = "text", encoding = "UTF-8")
+fromJSON(json, flatten = TRUE)$results %>% pull(vicinity)
+```
+
+
 # Yelp
 
 Some APIs such as yelp provides Bearer token instead of query string.
@@ -250,82 +274,13 @@ if (!identical(knitr:::pandoc_to(), "latex")) {
 
 First, create an app at https://developer.twitter.com/. You will need to register a twitter developer account first.
 
-There are two authentication methods for Twitter.
-
-- OAuth 1.0
-  
-  Twitter's Oauth 1.0 allows an app to access private account information or perform a Twitter action on behalf of a Twitter account.
-
-- OAuth 2.0
-  
-  Twitter's OAuth 2.0 only allows an app to access information publicly available on Twitter. 
+Twitter's OAuth 2.0 allows an app to access information publicly available on Twitter. 
 
 PS: These are Twitter's specific differences between Oauth 1.0 and 2.0. In general, both OAuth 1.0 and 2.0 can perform either two-legged and three-legged authentication.
 
 
-*Oauth 1.0* (one-legged, though some people called it two-legged)
-
-```{r}
-twitter_app <- oauth_app("twitter",
-  key = "1vqbnsftUcNLucoVxQiWYnD2d",
-  secret = Sys.getenv("TWITTER_SECRET")
-)
-
-get_twitter_api <- function(endpoint, query = NULL) {
-  signature <- oauth_signature(
-    endpoint, 
-    app = twitter_app,
-    token = "131203353-732JhLQdj519ILTQrraFXpU6bR7cMvb8LZzLxNSC",
-    token_secret = Sys.getenv("TWITTER_TOKEN_SECRET")
-  )
-  GET(endpoint, oauth_header(signature), query = query)
-}
-
-# read my timeline
-r <- get_twitter_api("https://api.twitter.com/1.1/statuses/home_timeline.json")
-stop_for_status(r)
-json <- content(r, as = "text")
-fromJSON(json)
-```
-
-
-*Oauth 1.0* (three-legged)
-
-```{r, eval = FALSE}
-twitter_app <- oauth_app("twitter",
-  key = "1vqbnsftUcNLucoVxQiWYnD2d",
-  secret = Sys.getenv("TWITTER_SECRET")
-)
-
-twitter_token <- oauth1.0_token(
-  oauth_endpoints("twitter"),
-  twitter_app
-)
-
-# read my timeline
-r <- GET(
-  "https://api.twitter.com/1.1/statuses/home_timeline.json",
-  config(token = twitter_token)
-)
-
-stop_for_status(r)
-json <- content(r, as = "text")
-fromJSON(json)
-```
-
-
-```{r, eval = FALSE}
-# post a twitter
-r <- POST(
-  "https://api.twitter.com/1.1/statuses/update.json",
-  config(token = twitter_token),
-  query = list(status = "I posted a tweet from R using httr")
-)
-stop_for_status(r)
-```
-
-
 *Oauth 2.0* (client credentials, aka, two-legged)
+
 
 ```{r}
 twitter_app <- oauth_app("twitter",
@@ -376,58 +331,3 @@ get_trends(woeid) %>% select(name)
 ```
 
 PS: There is `rtweet` package, no one, in practice, will directly work with twitter API.
-
-
-## Google
-
-First, you need to setup an app at https://console.developers.google.com/.
-Additionally, you also need to enable the gmail api if you want the manage gmail.
-
-
-```{r, cache = TRUE}
-gooogle_app <- oauth_app(
-  "google",
-  key = "929233483196-o0ge3pc7q3ec4gbe51ph21rg5tuucbbh.apps.googleusercontent.com",
-  secret = Sys.getenv("GOOGLE_SECRET")
-)
-
-google_token <- oauth2.0_token(
-  oauth_endpoints("google"),
-  gooogle_app,
-  scope = c(
-    "profile", "email",
-    "https://www.googleapis.com/auth/gmail.readonly"
-  )
-)
-
-
-google_request <- function(endpoint, query = NULL) {
-  r <- GET(endpoint, config(token = google_token), query = query)
-  stop_for_status(r)
-  json <- content(r, as = "text")
-  fromJSON(json)
-}
-
-# search mailbox for GeoDataSource
-google_request("https://www.googleapis.com/gmail/v1/users/me/messages",
-  query = list(q = "GeoDataSource")
-)
-
-# Get the title of a specific mail
-email <- google_request(
-  str_glue("https://www.googleapis.com/gmail/v1/users/me/messages/{thread}", thread = "17060c703052bd61")
-)
-email$payload$headers %>%
-  filter(name == "Subject") %>%
-  select(value)
-```
-
-- Remark 1: if you just want to manage gmail in R, see gmailr https://gmailr.r-lib.org/
-- Remark 2: if you just want to do google search, see https://serpapi.com/
-- Remark 3: if you want to use google API, see gargle https://gargle.r-lib.org/
-- Remark 4: if you want to use google authentication in your shiny app, see googleAuthR https://code.markedmondson.me/googleAuthR/
-
-# Exisiting packages
-
-You might not have to interact with the APIs directly.
-
