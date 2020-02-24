@@ -23,5 +23,14 @@ If you have no idea what you are going to do. This github repo contains a number
     - user guide of the application
 - In the last week, your group will be given a chance to show your work to the class. The presentation will not be graded, however, it is a great chance for you to advertise your app to your classmates and me! 
 
-Details for the presentation and submission will be announced later.
 
+
+## Project Update
+
+- I hope that you have already started talking about the project.
+- API / Webscrapping
+- On Mar 10 or 12, each group will be given 5-10 minutes to present (depends on how many groups signed up)
+- Indicate your choice on https://forms.gle/PwhfB36trovBFXox8 (each group only enter once)
+- The presentation is not mandatory. Though, you could use this opportunity to show your work and get feedback from the class and me. I understand the work may not be completed at the time of the presentation (and that's why you need feedback). Also, note that it is not a disadvantage to present earlier on 3/12 because it means that your group has more time to implement the feedback.
+
+- The due date for the shiny app and the report is 3/20 (though I encourage you to finish it soon).
