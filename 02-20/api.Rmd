@@ -1,9 +1,9 @@
 ---
 title: "API"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 date: "02-20-2020"
 ---
 
@@ -192,6 +192,30 @@ search_guardian("coronavirus", 2)$results %>% select(webTitle, webPublicationDat
 ```
 
 
+# Wolfram alpha
+
+```{r}
+r <- GET(
+  "https://api.wolframalpha.com/v2/query",
+  query = list(
+    appid = Sys.getenv("WOLFRAM_ALPHA_KEY"),
+    input = "integrate x^3",
+    format = "plaintext",
+    output = "json"
+  )
+)
+stop_for_status(r)
+json <- content(r, as = "text", encoding = "UTF-8")
+
+if (!identical(knitr:::pandoc_to(), "latex")) {
+  fromJSON(json, flatten = TRUE)$queryresult$pods %>%
+    hoist(subpods, text = "plaintext") %>%
+    select(title, text) %>%
+    unnest(text)
+}
+```
+
+
 # Google map
 
 You will need to register a free (one-year) google clould platofmr account first.
@@ -257,7 +281,8 @@ get_nouns_api <- function(endpoint) {
 }
 
 r <- get_nouns_api(
-  str_glue("https://api.thenounproject.com/icons/{term}", term = "statistics"))
+  str_glue("https://api.thenounproject.com/icons/{term}", term = "statistics")
+)
 
 stop_for_status(r)
 json <- content(r, as = "text", encoding = "UTF-8")
@@ -274,12 +299,7 @@ if (!identical(knitr:::pandoc_to(), "latex")) {
 
 First, create an app at https://developer.twitter.com/. You will need to register a twitter developer account first.
 
-Twitter's OAuth 2.0 allows an app to access information publicly available on Twitter. 
-
-PS: These are Twitter's specific differences between Oauth 1.0 and 2.0. In general, both OAuth 1.0 and 2.0 can perform either two-legged and three-legged authentication.
-
-
-*Oauth 2.0* (client credentials, aka, two-legged)
+Twitter allows an app to access information publicly available on Twitter via two legged Oauth.
 
 
 ```{r}
