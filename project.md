@@ -43,3 +43,4 @@ If you have no idea what you are going to do. This github repo contains a number
 - Coding style. You want your code to be clean and well documented. Just imagine another group will be taking charge of the maintenance of your app. (Hint: make use of `styler`)
 - Is it user friendly. Of course , our course is not about software design but you do want to make sure that your app is not too hard to navigate.
 - Statistical correctness. You do not want to produce anything that are statistical wrong, for example, using a piechart to show a quantitative variable.
+- Good group collaboration. I recommand you to create a github organization and house the source code under the organization. You might also have to make good use of features like "Issues" and "Pull requests".
