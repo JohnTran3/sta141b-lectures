@@ -1,9 +1,9 @@
 ---
 title: "Web Scrpping"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 date: "02-25-2020"
 ---
 
@@ -43,7 +43,7 @@ It is important to identify the thing that you want to scrape in the webpage. Th
 
 Suppose we want to get the list of most top rated movies from https://www.imdb.com/chart/top/?ref_=nv_mv_250
 
-We see that all movies names are under the `<td>/<a>` nodes. The `<td>` node has a class name `titleColumn`.
+We see that all movies names are under the `<td>/<a>` nodes. The `<td>` nodes have class name `titleColumn`.
 
 ```{r}
 html <- read_html("https://www.imdb.com/chart/top/?ref_=nv_mv_250")
@@ -109,8 +109,20 @@ But it is not the complete url, we need to base url.
 ```{r}
 shawshank_full_url <- str_c("https://www.imdb.com/", shawshank_url)
 ```
-
 Then we could futher scrape things from `shawshank_full_url`.
+
+Besides using node class, you could also search a node by its `id`.
+
+Here we are first extracting the `div` node with `id="questions"`.
+
+```{r}
+read_html("https://stackoverflow.com/questions/tagged/r") %>% 
+  html_node("div#questions") %>% 
+  html_nodes("div.summary") %>% 
+  html_nodes("h3") %>% 
+  html_nodes("a") %>% 
+  html_text()
+```
 
 
 # Treat HTML as (kind of) XML 
@@ -168,12 +180,14 @@ PS: actually nba.com has a undocumented API, see https://github.com/seemethere/n
 
 ```{r}
 library(RSelenium)
+library(wdman)
 ```
 
 ```{r}
-# Your could use different browser
-server <- wdman::phantomjs(port = 4567L, verbose = FALSE)
-# server <- wdman::chrome(port = 4567L, version = "80.0.3987.106", verbose = FALSE)
+# `phantomjs` is a headless browser
+# you could use different browser, such as `chrome`
+# restart R if you see the error "port is used"
+server <- phantomjs(port = 4567L, verbose = FALSE)
 rd <- remoteDriver(browserName = "phantomjs", port = 4567L)
 ```
 
@@ -217,8 +231,41 @@ leader
 ```
 
 ```{r}
-# close the browser finally.
+# close the browser finally
 server$stop()
 ```
 
+
+## use Chrome programmatically
+
+```{r, eval = FALSE}
+# it is important to match your chrome version
+server <- chrome(port = 4567L, version = "80.0.3987.106", verbose = FALSE)
+rd <- remoteDriver(browserName = "chrome", port = 4567L)
+```
+
+```{r, eval = FALSE}
+rd$open(silent = TRUE)
+rd$navigate("https://www.gmail.com")
+```
+
+
+```{r, eval = FALSE}
+rd$sendKeysToActiveElement(list("ucdsta141b@gmail.com"))
+rd$sendKeysToActiveElement(list(key = "enter"))
+```
+
+You could try entering the password programatically
+```{r, eval = FALSE}
+rd$sendKeysToActiveElement(list(Sys.getenv("GMAIL_PASSWORD")))
+rd$sendKeysToActiveElement(list(key = "enter"))
+```
+Or just enter password via the chrome browser
+
+Then you could start scraping your emails.
+
+
+```{r, eval = FALSE}
+server$stop()
+```
 
