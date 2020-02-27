@@ -1,7 +1,8 @@
 ---
 title: "NoSQL"
 output:
-  pdf_document: default
+  pdf_document: 
+    latex_engine: xelatex
   html_document:
     df_print: paged
 date: "02-27-2020"
@@ -19,8 +20,8 @@ https://www.guru99.com/sql-vs-nosql.html
 | not good for hierarchical data  | good for hierarchical data      |
 | best suited for complex queries | not so good for complex queries |
 | verticlly Scalable              | horizontally scalable           |
-| table | collection |
-| record | document |
+| table                           | collection              |
+| record                          | document                |
 
 
 Among all the NoSQL databases, MongoDB is the most popular.
@@ -31,6 +32,7 @@ Among all the NoSQL databases, MongoDB is the most popular.
 https://docs.atlas.mongodb.com/sample-data/sample-airbnb/
 
 ```{r}
+library(tidyverse)
 library(mongolite)
 
 m <- mongo("airbnb", db = "data", url = "mongodb://mongouser:secret@alan.ucdavis.edu/data")
@@ -50,6 +52,7 @@ https://docs.mongodb.com/manual/tutorial/query-documents/
 m$find('{}', limit = 1)
 ```
 
+
 ```{r}
 # filter fileds
 m$find('{}', fields = '{"name": true}')
@@ -57,7 +60,7 @@ m$find('{}', fields = '{"name": true}')
 
 ```{r}
 # filter keys
-m$find('{"price": {"$lt": 20}}', fields = '{"name": true}')
+m$find('{"price": {"$lt": 20}}', fields = '{"name": true, "price": true}')
 ```
 
 Check for all the opeartors: https://docs.mongodb.com/manual/reference/operator/query-comparison/#query-selectors-comparison
@@ -75,3 +78,10 @@ m$find('{"bedrooms": {"$gte": 4}}',
        limit = 5)
 ```
 
+```{r}
+# query sub document
+m$find('{"address.country_code": "US"}', 
+       fields = '{"name": true, "address.country": 1}',
+       limit = 5) %>% 
+    mutate(address = NULL, country = .$address$country)
+```
