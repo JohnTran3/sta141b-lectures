@@ -90,7 +90,7 @@ There is also a cute function `html_table`.
 html %>% html_node("table.chart.full-width") %>% 
   html_table() %>% 
   as_tibble(.name_repair = "unique") %>% 
-  transmute(rank_and_title = `Rank & Title`, rating = `IMDb Rating`) %>% 
+  select(rank_and_title = `Rank & Title`, rating = `IMDb Rating`) %>% 
   separate(rank_and_title, c("rank", "title", "year"), sep = "\n")
 ```
 
@@ -111,7 +111,6 @@ shawshank_full_url <- str_c("https://www.imdb.com/", shawshank_url)
 ```
 
 Then we could futher scrape things from `shawshank_full_url`.
-
 
 
 # Treat HTML as (kind of) XML 
@@ -156,4 +155,70 @@ html %>%
       /../../td[@class = 'titleColumn']/a/text()") %>% 
   html_text()
 ```
+
+
+
+# Scrapping dynamic webpages
+
+`rvest` is only able to scrape static web pages. If you want to scrape dynamic web pages, we need to start a headless browser.
+
+https://stats.nba.com/ is one of such websites that are not static.
+
+PS: actually nba.com has a undocumented API, see https://github.com/seemethere/nba_py/wiki/stats.nba.com-Endpoint-Documentation
+
+```{r}
+library(RSelenium)
+```
+
+```{r}
+# Your could use different browser
+server <- wdman::phantomjs(port = 4567L, verbose = FALSE)
+# server <- wdman::chrome(port = 4567L, version = "80.0.3987.106", verbose = FALSE)
+rd <- remoteDriver(browserName = "phantomjs", port = 4567L)
+```
+
+
+```{r}
+rd$open(silent = TRUE)
+rd$navigate("https://stats.nba.com/leaders/?SeasonType=Regular%20Season")
+```
+
+Have no idea what's happening?
+```{r, eval = FALSE}
+rd$screenshot(display = TRUE)
+```
+
+
+```{r}
+rd$getPageSource() %>% 
+  str_flatten() %>% 
+  read_html() %>% 
+  html_node("div.nba-stat-table__overflow table") %>% 
+  html_table()
+```
+
+loop over the table by clicking the next button
+```{r}
+leader <- NULL
+for (i in 1:6) {
+  leader <- rd$getPageSource() %>% 
+    str_flatten() %>%
+    read_html() %>% 
+    html_node("div.nba-stat-table__overflow table") %>% 
+    html_table() %>% 
+    bind_rows(leader, .)
+  nextbutton <- rd$findElement("css", "a.stats-table-pagination__next")
+  nextbutton$clickElement()
+}
+```
+
+```{r, max.print = -1}
+leader
+```
+
+```{r}
+# close the browser finally.
+server$stop()
+```
+
 
