@@ -1,9 +1,9 @@
 ---
 title: "API"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 date: "02-20-2020"
 ---
 
@@ -113,14 +113,28 @@ json <- content(r, as = "text")
 fromJSON(json)
 ```
 
+# How to store your secrets
 
 There are multiple ways to protect your API key.
 
-- Create a file called `.Renviron` and put your API key into it. We might want to use `usethis::edit_r_environ("project")` to create and edit the file directly.
+- Make use of environment variables. Environment variables are stored in `.Renviron`.
+You could put this file in various places.
 
-  ```
-  GEODATA_KEY="YOUR API KEY"
-  ```
+  - HOME directory
+    
+    `usethis::edit_r_environ()`
+  
+  - Project home directory
+  
+    `usethis::edit_r_environ("project")`
+    
+  - Under the same directory as the Rscript
+
+    Create a file called `.Renviron` and put your API key into it. 
+
+```
+GEODATA_KEY="YOUR API KEY"
+```
 
 ```{r}
 # you might need to change your working directory and restart R session to make it work
@@ -137,7 +151,7 @@ json <- content(r, as = "text")
 fromJSON(json)
 ```
 
-- The second appoarch is to make use of the package `keyring`. (PS: this method doesn't work for shiny app)
+- The other appoarch is to make use of the package `keyring`. (PS: this method doesn't work for shiny app)
 
 ```{r, eval = FALSE}
 # use keyring::key_set to set a password
@@ -218,7 +232,7 @@ if (!identical(knitr:::pandoc_to(), "latex")) {
 
 # Google map
 
-You will need to register a free (one-year) google clould platofmr account first.
+You will need to register a google clould platfram account with $300 credit first.
 THen following the instruction here to generate an api key.
 https://developers.google.com/places/web-service/get-api-key
 
