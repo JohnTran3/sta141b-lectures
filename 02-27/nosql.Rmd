@@ -1,0 +1,77 @@
+---
+title: "NoSQL"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+date: "02-27-2020"
+---
+
+
+SQL vs NoSQL
+
+https://www.guru99.com/sql-vs-nosql.html
+
+| SQL                             | NOSQL                           |
+| ----                            | ----                            |
+| relational                      | non-relational                  |
+| static predefined schema        | dynamic schema                  |
+| not good for hierarchical data  | good for hierarchical data      |
+| best suited for complex queries | not so good for complex queries |
+| verticlly Scalable              | horizontally scalable           |
+| table | collection |
+| record | document |
+
+
+Among all the NoSQL databases, MongoDB is the most popular.
+
+
+# Airbnb sample data
+
+https://docs.atlas.mongodb.com/sample-data/sample-airbnb/
+
+```{r}
+library(mongolite)
+
+m <- mongo("airbnb", db = "data", url = "mongodb://mongouser:secret@alan.ucdavis.edu/data")
+```
+
+```{r}
+m$count()
+```
+
+
+Query Documents
+https://docs.mongodb.com/manual/tutorial/query-documents/
+
+
+```{r}
+# find the first document
+m$find('{}', limit = 1)
+```
+
+```{r}
+# filter fileds
+m$find('{}', fields = '{"name": true}')
+```
+
+```{r}
+# filter keys
+m$find('{"price": {"$lt": 20}}', fields = '{"name": true}')
+```
+
+Check for all the opeartors: https://docs.mongodb.com/manual/reference/operator/query-comparison/#query-selectors-comparison
+```{r}
+m$find('{"price": {"$lt": 50}, "bedrooms": {"$gte": 3}}', 
+       fields = '{"name": true, "price": true, "bedrooms": true}')
+```
+
+
+```{r}
+# sort
+m$find('{"bedrooms": {"$gte": 4}}', 
+       fields = '{"name": true, "price": true}',
+       sort = '{"price": -1}', 
+       limit = 5)
+```
+
