@@ -16,7 +16,7 @@ There are quite a number of R packages for doing text mining. For example,
 - corpus
 - koRpus
 
-See here for a nice comparsion between the packages.
+See here for a nice comparsion between the packages: https://quanteda.io/articles/pkgdown/comparison.html
 
 We will focus on `tidytext` for its simplicity.
 
@@ -26,7 +26,7 @@ So what do we do with text mining?
 (from https://www.linguamatics.com/)
 > Text mining (also referred to as text analytics) is an artificial intelligence (AI) technology that uses natural language processing (NLP) to transform the free (unstructured) text in documents and databases into normalized, structured data suitable for analysis or to drive machine learning (ML) algorithms.
 
-(Disclaimer: I am not an expert of NPL or text mining)
+(Disclaimer: I am not an expert of NLP or text mining)
 
 # Data structures
 
@@ -55,10 +55,10 @@ We want to convert the data frame so that it has one-token-per-document-per-row.
 
 ```{r}
 df %>% 
-  unnest_tokens(words, text)
+  unnest_tokens(word, text)
 ```
 
-After using unnest_tokens, we've split each row so that there is one token (word) in each row of the new data frame; the default tokenization in `unnest_tokens()` is for single words, as shown here. Also notice:
+After using `unnest_tokens`, we've split each row so that there is one token (word) in each row of the new data frame; the default tokenization in `unnest_tokens()` is for single words (unigram), as shown here. Also notice:
 
 - Other columns, such as the line number each word came from, are retained.
 - Punctuation has been stripped.
@@ -72,6 +72,13 @@ data(stop_words)
 stop_words
 ```
 
+```{r}
+df %>% 
+  unnest_tokens(word, text) %>% 
+  anti_join(stop_words)
+```
+
+
 
 ```{r}
 library(rvest)
@@ -82,24 +89,28 @@ Try to read some news headlines from yahoo
 ```{r, cache = TRUE}
 h3 <- read_html("http://news.yahoo.com/") %>% 
   html_nodes("h3")
+
 news_df <- tibble(
-  title = h3 %>% html_text(),
-  url = h3 %>%  html_node("a") %>% html_attr("href")
-)
-news_df <- news_df %>% 
+    title = h3 %>% html_text(),
+    url = h3 %>%  html_node("a") %>% html_attr("href")
+  ) %>% 
   filter(str_starts(url, "/")) %>% 
-  mutate(url = str_c("http://news.yahoo.com", url), id = row_number()) %>% 
-  head(10)
+  mutate(url = str_c("http://news.yahoo.com", url), id = sprintf("%02d", row_number())) %>% 
+  head(20)
 ```
 
 Read the contents
 ```{r, cache = TRUE}
 news_content <- NULL
 for (i in seq_len(nrow(news_df))) {
-  news_content <- bind_rows(news_content, read_html(news_df$url[i]) %>% 
-    html_nodes("article p") %>% 
-    html_text() %>% 
-    tibble(id = news_df$id[i], text = .))
+  news_content <- bind_rows(
+    news_content, 
+    read_html(news_df$url[i]) %>% 
+      html_nodes("article p") %>% 
+      html_text() %>% {
+        tibble(id = news_df$id[i], text = c(news_df$title[i], .))
+      }
+  )
 }
 ```
 
@@ -107,8 +118,9 @@ for (i in seq_len(nrow(news_df))) {
 news_tokens <- news_content %>%
   unnest_tokens(word, text) %>% 
   anti_join(stop_words) %>% 
-  group_by(id) %>% 
-  count(word, sort = TRUE)
+  group_by(id) %>%
+  count(word, sort = TRUE) %>% 
+  arrange(id)
 ```
 
 ```{r}
@@ -120,30 +132,43 @@ news_tokens <- news_content %>%
 ```
 
 
-```{r, message = FALSE}
-library(scales)
-```
-
-```{r}
-news_propotions %>% 
-  pivot_wider(names_from = id, names_prefix = "prop", values_from = propotion, values_fill = list(propotion = 0)) %>% 
-  pivot_longer(prop2:last_col(), names_to = "id", names_prefix = "prop", values_to = "prop") %>% 
-  ggplot(aes(prop, prop1)) + 
-    geom_point() +
-    geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
-    scale_x_sqrt() +
-    scale_y_sqrt() +  
-    xlab(NULL) +
-    facet_wrap(~id)
-```
-
 ```{r}
 library(wordcloud)
 news_tokens %>% 
-  filter(id == 1) %>% 
-  with(wordcloud(word, n, max.words = 100))
+  filter(id == "01") %>% 
+  with(wordcloud(
+    word, n, min.freq = 2, max.words = 100, random.order = FALSE,
+    colors = brewer.pal(8, "Dark2")))
 ```
 
+```{r, fig.height = 7, fig.width = 7}
+news_tokens %>%
+  top_n(5, n) %>%
+  ggplot(aes(x = fct_reorder(word, n), y = n, fill = id)) + 
+      geom_bar(stat = "identity", na.rm = TRUE, show.legend = FALSE) +
+      xlab("word") +
+      facet_wrap(~id, scales = "free") +
+      coord_flip()
+```
+
+The order the categories in each facet are not ordered correctly. 
+Following https://drsimonj.svbtle.com/ordering-categories-within-ggplot2-facets, I got the following fix.
+
+
+```{r, fig.height = 7, fig.width = 7}
+news_tokens %>%
+  top_n(5, n) %>%
+  ungroup() %>%
+  arrange(id, n) %>% 
+  mutate(order = row_number()) %>% {
+    ggplot(., aes(x = order, y = n, fill = id)) + 
+      geom_bar(stat = "identity", na.rm = TRUE, show.legend = FALSE) +
+      xlab("word") +
+      facet_wrap(~id, scales = "free") +
+      coord_flip() +
+      scale_x_continuous(breaks = .$order, labels = .$word, expand = c(0, 0))
+  }
+```
 
 
 ## Sentiment analysis
@@ -171,19 +196,21 @@ get_sentiments("nrc")
 news_tokens %>% 
   left_join(get_sentiments("bing")) %>% 
   group_by(id) %>% 
-  summarise(
+  summarize(
     positive = sum(sentiment == "positive", na.rm = TRUE), 
     negative = sum(sentiment == "negative", na.rm = TRUE), 
-    na = n() - positive - negative) %>%
+    netural = n() - positive - negative) %>%
   mutate(
     id,
     sentiment = case_when(
       positive > negative ~ "positive",
       positive < negative ~ "negative",
-      TRUE ~ "unknown"
+      TRUE ~ "netural"
     )
   ) %>% 
-  left_join(select(news_df, id, title))
+  left_join(select(news_df, id, title)) %>% 
+  mutate(title = str_trunc(title, 80)) %>% 
+  select(sentiment, title)
 ```
 
 # Analyzing word and document frequency: tf-idf
@@ -203,8 +230,8 @@ Show the 3 most important words in each document.
 ```{r}
 news_tokens %>% 
   bind_tf_idf(word, id, n) %>%
-  arrange(id) %>% 
-  filter(n() - row_number(tf_idf) + 1 <= 3)
+  top_n(3, tf_idf) %>%
+  select(id, word, n, tf_idf)
 ```
 
 Using term frequency and inverse document frequency allows us to find words that are characteristic for one document within a collection of documents.
@@ -214,6 +241,7 @@ Using term frequency and inverse document frequency allows us to find words that
 We’ve been using the unnest_tokens function to tokenize by word, or sometimes by sentence, which is useful for the kinds of sentiment and frequency analyses we’ve been doing so far. But we can also use the function to tokenize into consecutive sequences of words, called n-grams.
 
 
+We try to study the bigrams in Derivative wiki page.
 ```{r}
 derivative_bigrams <- read_html("https://en.wikipedia.org/wiki/Derivative") %>% 
   html_nodes("p") %>% 
@@ -231,6 +259,7 @@ derivative_bigrams %>%
   count(bigram, sort = TRUE)
 ```
 
+Back to the news
 ```{r}
 news_content %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
@@ -249,29 +278,70 @@ Our sentiment analysis approach above simply counted the appearance of positive 
 
 
 ```{r}
-stop_words_without_not <- stop_words %>% filter(word != "not")
-```
-
-
-```{r}
 # stop words are not removed in this case
 news_tokens2 <- news_content %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
   separate(bigram, c("word1", "word2"), sep = " ")
 ```
 
-Use 2-grams to do sentiment analysis
+Back to the sentiment analysis
 ```{r}
+negate_words <- c("not", "without", "no", "can't", "don't", "won't")
+
 news_tokens2 %>% 
   left_join(get_sentiments("bing"), by = c("word2" = "word")) %>%
-  mutate(if_else(word1 == "not" && sentiment == "negative", "positive", "negative")) %>% 
-  mutate(if_else(word1 == "not" && sentiment == "positive", "negative", "positive")) %>% 
+  mutate(if_else(word1 %in% negate_words && sentiment == "negative", "positive", "negative")) %>% 
+  mutate(if_else(word1 %in% negate_words && sentiment == "positive", "negative", "positive")) %>% 
   group_by(id) %>% 
-  summarise(
+  summarize(
     positive = sum(sentiment == "positive", na.rm = TRUE), 
     negative = sum(sentiment == "negative", na.rm = TRUE), 
-    na = n() - positive - negative)
+    netural = n() - positive - negative) %>%
+  mutate(
+    id,
+    sentiment = case_when(
+      positive > negative ~ "positive",
+      positive < negative ~ "negative",
+      TRUE ~ "netural"
+    )
+  ) %>% 
+  left_join(select(news_df, id, title)) %>% 
+  mutate(title = str_trunc(title, 80)) %>% 
+  select(sentiment, title)
 ```
+
+
+
+## Cluster analysis
+
+> Cluster analysis or clustering is the task of grouping a set of objects in such a way that objects in the same group (called a cluster) are more similar (in some sense) to each other than to those in other groups (clusters)
+
+
+First, we will need to define similarity.
+One way to quantity how similar two documents are is the cosine distance.
+
+Compare to regular euclidean distance, it is more situable for sparse vectors.
+
+```{r}
+library(proxy)
+docsdissim <- dist(as.matrix(cast_dtm(news_tokens, id, word, n)), method = "cosine")
+```
+
+```{r}
+h <- hclust(docsdissim, method = "ward.D2")
+plot(h)
+```
+
+We could use `cutree` to pick the number of groups.
+
+```{r}
+tibble(topic = cutree(h, k = 4), title = news_df$title) %>% 
+  arrange(topic) %>% 
+  mutate(title = str_trunc(title, 80)) %>% 
+  select(topic, title)
+```
+
+In cluster analysis, we only assign a single topic to a single document. In reality, a single document may contain multiple topics.
 
 ## LDA
 
@@ -284,24 +354,85 @@ Latent Dirichlet allocation is one of the most common algorithms for topic model
 library(topicmodels)
 ```
 
+We want to allocate the topics and documents into 4 different topics.
 ```{r}
 news_lda <- LDA(
   cast_dtm(news_tokens, id, word, n), 
-  k = 2, 
+  k = 4, 
   control = list(seed = 1234) )
 ```
 
 ### Word-topic probabilities
+
+The following table shows the probability of a specific term occurring in a topic.
+
 ```{r}
-tidy(news_lda, matrix = "beta")
+tidy(news_lda, matrix = "beta") %>% 
+  group_by(topic) %>% 
+  top_n(10, beta) %>% 
+  arrange(topic, desc(beta))
 ```
 
 ### Document-topic probabilities
 
+The following table shows the probability of a specific topic occurring in a document.
 
 ```{r}
+# t is the variable `alpha` on the wikipedia page of LDA
 tidy(news_lda, matrix = "gamma")
 ```
+
+```{r}
+tidy(news_lda, "gamma") %>%
+  mutate(topic = as_factor(topic)) %>% 
+  ggplot(aes(topic, gamma, fill = topic)) + 
+  geom_bar(stat = "identity") + 
+  facet_wrap(~document, 4) + 
+  coord_flip()
+```
+
+Ok, there is only one dominate topic in most documents.
+
+Let's use the most probable topic to classify a document.
+```{r}
+tidy(news_lda, matrix = "gamma") %>% 
+  group_by(document) %>% 
+  filter(row_number(gamma) == n()) %>% 
+  left_join(news_df, by = c("document" = "id")) %>% 
+  arrange(document) %>% 
+  mutate(title = str_trunc(title, 80)) %>% 
+  select(topic, title)
+```
+
+
+## CTM
+
+Correlated topic model is an extension of LDA which supports correlations between topics.
+
+```{r}
+news_ctm <- CTM(
+  cast_dtm(news_tokens, id, word, n), 
+  k = 4, 
+  control = list(seed = 1234) )
+```
+
+```{r}
+tidy(news_ctm, matrix = "beta") %>% 
+  group_by(topic) %>% 
+  top_n(10, beta) %>% 
+  arrange(topic, desc(beta))
+```
+
+```{r}
+tidy(news_ctm, "gamma") %>%
+  mutate(topic = as_factor(topic)) %>% 
+  ggplot(aes(topic, gamma, fill = topic)) + 
+  geom_bar(stat = "identity") + 
+  facet_wrap(~document, 4) + 
+  coord_flip()
+```
+
+
 
 # Reference:
 
