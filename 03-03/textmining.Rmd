@@ -1,6 +1,7 @@
 ---
 title: "Text Mining"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 date: "03-03-2020"
@@ -289,10 +290,13 @@ Back to the sentiment analysis
 negate_words <- c("not", "without", "no", "can't", "don't", "won't")
 
 news_tokens2 %>% 
-  left_join(get_sentiments("bing"), by = c("word2" = "word")) %>%
-  mutate(if_else(word1 %in% negate_words && sentiment == "negative", "positive", "negative")) %>% 
-  mutate(if_else(word1 %in% negate_words && sentiment == "positive", "negative", "positive")) %>% 
   group_by(id) %>% 
+  count(word1, word2) %>% 
+  left_join(get_sentiments("bing"), by = c("word2" = "word")) %>%
+  mutate(sentiment = case_when(
+    word1 %in% negate_words & sentiment == "negative" ~ "positive", 
+    word1 %in% negate_words & sentiment == "positive" ~ "negative",
+    TRUE ~ sentiment)) %>% 
   summarize(
     positive = sum(sentiment == "positive", na.rm = TRUE), 
     negative = sum(sentiment == "negative", na.rm = TRUE), 
@@ -322,10 +326,13 @@ One way to quantity how similar two documents are is the cosine distance.
 
 Compare to regular euclidean distance, it is more situable for sparse vectors.
 
+
 ```{r}
 library(proxy)
 docsdissim <- dist(as.matrix(cast_dtm(news_tokens, id, word, n)), method = "cosine")
 ```
+
+
 
 ```{r}
 h <- hclust(docsdissim, method = "ward.D2")
@@ -334,8 +341,9 @@ plot(h)
 
 We could use `cutree` to pick the number of groups.
 
+
 ```{r}
-tibble(topic = cutree(h, k = 4), title = news_df$title) %>% 
+tibble(topic = cutree(h, k = 3), title = news_df$title) %>% 
   arrange(topic) %>% 
   mutate(title = str_trunc(title, 80)) %>% 
   select(topic, title)
@@ -358,8 +366,8 @@ We want to allocate the topics and documents into 4 different topics.
 ```{r}
 news_lda <- LDA(
   cast_dtm(news_tokens, id, word, n), 
-  k = 4, 
-  control = list(seed = 1234) )
+  k = 4,
+  control = list(seed = 1234))
 ```
 
 ### Word-topic probabilities
@@ -379,7 +387,8 @@ The following table shows the probability of a specific topic occurring in a doc
 
 ```{r}
 # t is the variable `alpha` on the wikipedia page of LDA
-tidy(news_lda, matrix = "gamma")
+tidy(news_lda, matrix = "gamma") %>%
+    pivot_wider(names_from = topic, values_from = gamma)
 ```
 
 ```{r}
@@ -391,18 +400,6 @@ tidy(news_lda, "gamma") %>%
   coord_flip()
 ```
 
-Ok, there is only one dominate topic in most documents.
-
-Let's use the most probable topic to classify a document.
-```{r}
-tidy(news_lda, matrix = "gamma") %>% 
-  group_by(document) %>% 
-  filter(row_number(gamma) == n()) %>% 
-  left_join(news_df, by = c("document" = "id")) %>% 
-  arrange(document) %>% 
-  mutate(title = str_trunc(title, 80)) %>% 
-  select(topic, title)
-```
 
 
 ## CTM
