@@ -1,0 +1,48 @@
+## Google
+
+First, you need to setup an app at https://console.developers.google.com/.
+Additionally, you also need to enable the gmail api if you want the manage gmail.
+
+
+```{r, cache = TRUE}
+gooogle_app <- oauth_app(
+  "google",
+  key = "929233483196-o0ge3pc7q3ec4gbe51ph21rg5tuucbbh.apps.googleusercontent.com",
+  secret = Sys.getenv("GOOGLE_SECRET")
+)
+
+google_token <- oauth2.0_token(
+  oauth_endpoints("google"),
+  gooogle_app,
+  scope = c(
+    "profile", "email",
+    "https://www.googleapis.com/auth/gmail.readonly"
+  )
+)
+
+
+google_request <- function(endpoint, query = NULL) {
+  r <- GET(endpoint, config(token = google_token), query = query)
+  stop_for_status(r)
+  json <- content(r, as = "text")
+  fromJSON(json)
+}
+
+# search mailbox for GeoDataSource
+google_request("https://www.googleapis.com/gmail/v1/users/me/messages",
+  query = list(q = "GeoDataSource")
+)
+
+# Get the title of a specific mail
+email <- google_request(
+  str_glue("https://www.googleapis.com/gmail/v1/users/me/messages/{thread}", thread = "17060c703052bd61")
+)
+email$payload$headers %>%
+  filter(name == "Subject") %>%
+  select(value)
+```
+
+- Remark 1: if you just want to manage gmail in R, see gmailr https://gmailr.r-lib.org/
+- Remark 2: if you just want to do google search, see https://serpapi.com/
+- Remark 3: if you want to use google API, see gargle https://gargle.r-lib.org/
+- Remark 4: if you want to use google authentication in your shiny app, see googleAuthR https://code.markedmondson.me/googleAuthR/

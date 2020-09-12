@@ -1,0 +1,367 @@
+---
+title: "API"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+date: "02-20-2020"
+---
+
+```{r}
+library(tidyverse)
+library(jsonlite)
+```
+
+# API
+
+This section lists some examples of public HTTP APIs that publish data in JSON format. These are great to get a sense of the complex structures that are encountered in real world JSON data.
+
+See also https://github.com/public-apis/public-apis for a list of public APIs.
+
+## CitiBike NYC
+
+A single public API that shows location, status and current availability for all stations in the New York City bike sharing imitative. https://www.citibikenyc.com/system-data
+
+
+```{r}
+citibike <- fromJSON("https://gbfs.citibikenyc.com/gbfs/en/station_status.json")
+library(lubridate)
+as_datetime(citibike$last_updated)
+stations <- citibike$data$stations
+stations %>%
+  filter(num_bikes_available > 0)
+colnames(stations)
+```
+
+```{r}
+nrow(stations)
+```
+
+
+## OnWater https://onwater.io/
+
+```{r, cache = TRUE}
+# davis
+url <- str_glue("https://api.onwater.io/api/v1/results/{lat},{long}", lat = 38.54491, long = -121.74052)
+fromJSON(url)
+```
+
+```{r, cache = TRUE}
+# lake tahoe
+url <- str_glue("https://api.onwater.io/api/v1/results/{lat},{long}", lat = 39.0968, long = -120.0324)
+fromJSON(url)
+```
+
+
+## Deck of Cards http://deckofcardsapi.com/
+
+It is a very simple API which suffles cards.
+
+```{r, out.width = "20%"}
+# get a deck
+deck <- fromJSON("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
+deck_id <- deck$deck_id
+
+# draw two cards
+cards <- fromJSON(
+  str_glue("https://deckofcardsapi.com/api/deck/{deck_id}/draw/?count={count}",
+    deck_id = deck$deck_id, count = 2
+  ),
+  flatten = TRUE
+)
+
+if (!identical(knitr:::pandoc_to(), "latex")) {
+  # don't display the cards in pdf
+  knitr::include_graphics(cards$cards$images.svg)
+}
+```
+
+The paramenters after `?` are called GET parameters. A more formal way to handle GET parameters is to use the
+`httr` package. 
+
+```{r}
+library(httr)
+```
+
+```{r}
+endpoint <- str_glue("https://deckofcardsapi.com/api/deck/{deck_id}/draw/", deck_id = deck$deck_id)
+r <- GET(endpoint, query = list(count = 3))
+json <- content(r, as = "text")
+cards <- fromJSON(json, flatten = TRUE)
+cards
+```
+
+
+
+## GeoDataSource https://www.geodatasource.com/
+
+In this secton, we are going to show you how we use an API which requires an API key. API key allows you to use the services the API provides on behalf of yourself.
+
+```{r, eval = FALSE}
+r <- GET(
+  "https://api.geodatasource.com/cities",
+  query = list(
+    key = "YOUR PRIVATE API KEY",
+    lat = 38.5449,
+    lng = -121.741
+  )
+)
+
+stop_for_status(r)
+
+json <- content(r, as = "text")
+fromJSON(json)
+```
+
+# How to store your secrets
+
+There are multiple ways to protect your API key.
+
+- Make use of environment variables. Environment variables are stored in `.Renviron`.
+You could put this file in various places.
+
+  - HOME directory
+    
+    `usethis::edit_r_environ()`
+  
+  - Project home directory
+  
+    `usethis::edit_r_environ("project")`
+    
+  - Under the same directory as the Rscript
+
+    Create a file called `.Renviron` and put your API key into it. 
+
+```
+GEODATA_KEY="YOUR API KEY"
+```
+
+```{r}
+# you might need to change your working directory and restart R session to make it work
+r <- GET(
+  "https://api.geodatasource.com/cities",
+  query = list(
+    key = Sys.getenv("GEODATA_KEY"),
+    lat = 38.5449,
+    lng = -121.741
+  )
+)
+stop_for_status(r)
+json <- content(r, as = "text")
+fromJSON(json)
+```
+
+- The other appoarch is to make use of the package `keyring`. (PS: this method doesn't work for shiny app)
+
+```{r, eval = FALSE}
+# use keyring::key_set to set a password
+# only need to do it once, you will be prompted for the API key
+keyring::key_set("GEODATA_KEY")
+```
+
+```{r, eval = FALSE}
+r <- GET(
+  "https://api.geodatasource.com/cities",
+  query = list(
+    key = keyring::key_get("GEODATA_KEY"),
+    lat = 38.5449,
+    lng = -121.741
+  )
+)
+stop_for_status(r)
+json <- content(r, as = "text")
+fromJSON(json)
+```
+
+
+# The Guardian News https://open-platform.theguardian.com/
+
+```{r}
+search_guardian <- function(text, page = 1) {
+  r <- GET(
+    "https://content.guardianapis.com/search",
+    query = list(
+      `api-key` = Sys.getenv("GUARDIAN_KEY"),
+      q = text,
+      page = page
+    )
+  )
+  stop_for_status(r)
+  json <- content(r, as = "text", encoding = "UTF-8")
+  fromJSON(json)$response
+}
+
+response <- search_guardian("coronavirus")
+```
+
+```{r}
+# number of pages
+response$pages
+
+response$results %>% select(webTitle, webPublicationDate)
+```
+
+```{r}
+search_guardian("coronavirus", 2)$results %>% select(webTitle, webPublicationDate)
+```
+
+
+# Wolfram alpha
+
+```{r}
+r <- GET(
+  "https://api.wolframalpha.com/v2/query",
+  query = list(
+    appid = Sys.getenv("WOLFRAM_ALPHA_KEY"),
+    input = "integrate x^3",
+    format = "plaintext",
+    output = "json"
+  )
+)
+stop_for_status(r)
+json <- content(r, as = "text", encoding = "UTF-8")
+
+if (!identical(knitr:::pandoc_to(), "latex")) {
+  fromJSON(json, flatten = TRUE)$queryresult$pods %>%
+    hoist(subpods, text = "plaintext") %>%
+    select(title, text) %>%
+    unnest(text)
+}
+```
+
+
+# Google map
+
+You will need to register a google clould platfram account with $300 credit first.
+THen following the instruction here to generate an api key.
+https://developers.google.com/places/web-service/get-api-key
+
+
+```{r}
+r <- GET(
+  "https://maps.googleapis.com/maps/api/place/nearbysearch/json",
+  query = list(
+    key = Sys.getenv("GOOGLE_API_KEY"),
+    location = "38.5449,-121.741",
+    radius = 500,
+    types = "food",
+    name = "in-n-out"
+  )
+)
+stop_for_status(r)
+json <- content(r, as = "text", encoding = "UTF-8")
+fromJSON(json, flatten = TRUE)$results %>% pull(vicinity)
+```
+
+
+# Yelp
+
+Some APIs such as yelp provides Bearer token instead of query string.
+
+First, you will need to register an app on yelp: https://www.yelp.com/developers
+
+```{r}
+r <- GET(
+  "https://api.yelp.com/v3/businesses/search",
+  add_headers(Authorization = paste("Bearer", Sys.getenv("YELP_TOKEN"))),
+  query = list(
+    location = "Davis"
+  )
+)
+stop_for_status(r)
+json <- content(r, as = "text")
+fromJSON(json)$businesses %>% select(name)
+```
+
+
+# Noun Project https://thenounproject.com/
+
+The Noun Project uses one-legged OAuth 1.0 protocol to authenticate users.
+In OAuth protocal, there are two important pieces of strings
+
+- Client key
+- Client key secret
+
+```{r, out.width = "5%"}
+nouns_app <- oauth_app(
+  "nounproject",
+  key = "ed652bdcd50a4496bbc2253a603b9e9b",
+  secret = Sys.getenv("NOUN_SECRET")
+)
+
+get_nouns_api <- function(endpoint) {
+  signature <- oauth_signature(endpoint, app = nouns_app)
+  GET(endpoint, oauth_header(signature))
+}
+
+r <- get_nouns_api(
+  str_glue("https://api.thenounproject.com/icons/{term}", term = "statistics")
+)
+
+stop_for_status(r)
+json <- content(r, as = "text", encoding = "UTF-8")
+
+icons <- fromJSON(json)$icons %>% pull(preview_url)
+if (!identical(knitr:::pandoc_to(), "latex")) {
+  # don't display the cards in pdf
+  knitr::include_graphics(icons[1:10])
+}
+```
+
+
+# Twitter
+
+First, create an app at https://developer.twitter.com/. You will need to register a twitter developer account first.
+
+Twitter allows an app to access information publicly available on Twitter via two legged Oauth.
+
+
+```{r}
+twitter_app <- oauth_app("twitter",
+  key = "1vqbnsftUcNLucoVxQiWYnD2d",
+  secret = Sys.getenv("TWITTER_SECRET")
+)
+
+twitter_token <- oauth2.0_token(
+  oauth_endpoint(
+    authorize = NULL,
+    access = "https://api.twitter.com/oauth2/token"
+  ),
+  twitter_app,
+  client_credentials = TRUE
+)
+```
+
+
+```{r}
+# Where On Earth IDentifier
+get_woeid <- function(city, country) {
+  r <- GET(
+    "https://api.twitter.com/1.1/trends/available.json",
+    config(token = twitter_token)
+  )
+
+  stop_for_status(r)
+  json <- content(r, as = "text")
+  fromJSON(json) %>%
+    filter(name == {{ city }}, country == {{ country }}) %>%
+    pull(woeid)
+}
+
+get_trends <- function(woeid) {
+  r <- GET(
+    "https://api.twitter.com/1.1/trends/place.json",
+    config(token = twitter_token),
+    query = list(id = woeid)
+  )
+
+  stop_for_status(r)
+  json <- content(r, as = "text")
+  fromJSON(json)$trends[[1]]
+}
+
+woeid <- get_woeid("Sacramento", "United States")
+get_trends(woeid) %>% select(name)
+```
+
+PS: There is `rtweet` package, no one, in practice, will directly work with twitter API.

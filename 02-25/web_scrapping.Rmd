@@ -1,0 +1,271 @@
+---
+title: "Web Scrpping"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+date: "02-25-2020"
+---
+
+```{r}
+library(tidyverse)
+library(rvest)
+```
+
+# HTML and XML
+
+Here is an example of a simple HTML page:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+</head>
+<body>
+<h1>This is a Heading</h1>
+<p>This is a paragraph.</p>
+</body>
+</html>
+```
+
+Of course, there are a lot of different tags. Go to https://www.w3schools.com/html/ to see some html basics.
+Nevertheless, all these tags are predefined so your browser knows what each tag means.
+
+(We only need to only a bit HTML in order to do web scrapping)
+
+
+# Look at web page source code
+
+It is important to identify the thing that you want to scrape in the webpage. The best way to do it is to use the inspect function in the Chrome browser.
+
+## imdb example
+
+Suppose we want to get the list of most top rated movies from https://www.imdb.com/chart/top/?ref_=nv_mv_250
+
+We see that all movies names are under the `<td>/<a>` nodes. The `<td>` nodes have class name `titleColumn`.
+
+```{r}
+html <- read_html("https://www.imdb.com/chart/top/?ref_=nv_mv_250")
+# it finds all the <td> nodes, but we only need the node with class `titleColumn`
+td_nodes <- html %>% html_nodes("td")
+# it finds all the <td> nodes with class titleColumn
+title_columns <- html %>% html_nodes("td.titleColumn")
+# it finds all the <a> nodes within <td> nodes with class titleColumn
+a_nodes <- title_columns %>% html_nodes("a")
+# html_text to get the values inside the <a> </a> tag
+movie_names <- a_nodes %>% html_text()
+head(movie_names)
+```
+
+Now, we also want to capture the ratings.
+
+```{r}
+imdb_ratings <-  html %>% 
+  html_nodes("td.ratingColumn.imdbRating") %>% 
+  html_nodes("strong") %>% 
+  html_text()
+```
+```{r}
+tibble(title = movie_names, rating = imdb_ratings)
+```
+
+How if you also want to get the years?
+
+```{r}
+years <- html %>% 
+  html_nodes("td.titleColumn") %>% 
+  html_nodes("span.secondaryInfo") %>% 
+  html_text() %>% 
+  str_extract("\\d+")
+```
+
+```{r}
+tibble(title = movie_names, year = years, rating = imdb_ratings)
+```
+
+There is also a cute function `html_table`.
+
+```{r}
+html %>% html_node("table.chart.full-width") %>% 
+  html_table() %>% 
+  as_tibble(.name_repair = "unique") %>% 
+  select(rank_and_title = `Rank & Title`, rating = `IMDb Rating`) %>% 
+  separate(rank_and_title, c("rank", "title", "year"), sep = "\n")
+```
+
+
+Now, we want to url link to the movie "The Shawshank Redemption".
+
+```{r}
+shawshank_url <- html %>% 
+  html_nodes("td.titleColumn") %>% 
+  html_nodes("a") %>%
+  keep(html_text(.) == "The Shawshank Redemption") %>% 
+  html_attr("href")
+```
+
+But it is not the complete url, we need to base url.
+```{r}
+shawshank_full_url <- str_c("https://www.imdb.com/", shawshank_url)
+```
+Then we could futher scrape things from `shawshank_full_url`.
+
+Besides using node class, you could also search a node by its `id`.
+
+Here we are first extracting the `div` node with `id="questions"`.
+
+```{r}
+read_html("https://stackoverflow.com/questions/tagged/r") %>% 
+  html_node("div#questions") %>% 
+  html_nodes("div.summary") %>% 
+  html_nodes("h3") %>% 
+  html_nodes("a") %>% 
+  html_text()
+```
+
+
+# Treat HTML as (kind of) XML 
+
+What is XML?
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>
+```
+
+See https://www.w3schools.com/xml/ for more XML examples.
+
+
+In the XML technology, there is a powerful tool called `XPath`.
+See https://www.w3schools.com/xml/xpath_syntax.asp for details.
+
+
+The XPath syntax is quite powerful, we could get the url for Shawshank redeption in almost one line.
+
+```{r}
+html %>%
+  html_nodes(xpath = "
+     //td[@class = 'titleColumn']
+     /a[text() = 'The Shawshank Redemption']
+     /@href") %>% 
+  html_text()
+```
+
+We could also select all movies which has rating > 8.5.
+
+```{r}
+html %>%
+  html_nodes(xpath = "
+      //td[@class = 'ratingColumn imdbRating']
+      /strong[text() > 8.5]
+      /../../td[@class = 'titleColumn']/a/text()") %>% 
+  html_text()
+```
+
+
+
+# Scrapping dynamic webpages
+
+`rvest` is only able to scrape static web pages. If you want to scrape dynamic web pages, we need to start a headless browser.
+
+https://stats.nba.com/ is one of such websites that are not static.
+
+PS: actually nba.com has a undocumented API, see https://github.com/seemethere/nba_py/wiki/stats.nba.com-Endpoint-Documentation
+
+```{r}
+library(RSelenium)
+library(wdman)
+```
+
+```{r}
+# `phantomjs` is a headless browser
+# you could use different browser, such as `chrome`
+# restart R if you see the error "port is used"
+server <- phantomjs(port = 4567L, verbose = FALSE)
+rd <- remoteDriver(browserName = "phantomjs", port = 4567L)
+```
+
+
+```{r}
+rd$open(silent = TRUE)
+rd$navigate("https://stats.nba.com/leaders/?SeasonType=Regular%20Season")
+```
+
+Have no idea what's happening?
+```{r, eval = FALSE}
+rd$screenshot(display = TRUE)
+```
+
+
+```{r}
+rd$getPageSource() %>% 
+  str_flatten() %>% 
+  read_html() %>% 
+  html_node("div.nba-stat-table__overflow table") %>% 
+  html_table()
+```
+
+loop over the table by clicking the next button
+```{r}
+leader <- NULL
+for (i in 1:6) {
+  leader <- rd$getPageSource() %>% 
+    str_flatten() %>%
+    read_html() %>% 
+    html_node("div.nba-stat-table__overflow table") %>% 
+    html_table() %>% 
+    bind_rows(leader, .)
+  nextbutton <- rd$findElement("css", "a.stats-table-pagination__next")
+  nextbutton$clickElement()
+}
+```
+
+```{r, max.print = -1}
+leader
+```
+
+```{r}
+# close the browser finally
+server$stop()
+```
+
+
+## use Chrome programmatically
+
+```{r, eval = FALSE}
+# it is important to match your chrome version
+server <- chrome(port = 4567L, version = "80.0.3987.106", verbose = FALSE)
+rd <- remoteDriver(browserName = "chrome", port = 4567L)
+```
+
+```{r, eval = FALSE}
+rd$open(silent = TRUE)
+rd$navigate("https://www.gmail.com")
+```
+
+
+```{r, eval = FALSE}
+rd$sendKeysToActiveElement(list("ucdsta141b@gmail.com"))
+rd$sendKeysToActiveElement(list(key = "enter"))
+```
+
+You could try entering the password programatically
+```{r, eval = FALSE}
+rd$sendKeysToActiveElement(list(Sys.getenv("GMAIL_PASSWORD")))
+rd$sendKeysToActiveElement(list(key = "enter"))
+```
+Or just enter password via the chrome browser
+
+Then you could start scraping your emails.
+
+
+```{r, eval = FALSE}
+server$stop()
+```
+
